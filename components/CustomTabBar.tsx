@@ -13,8 +13,8 @@ const CustomTabBar = ({
 
     return (
         <View
-            className="flex-row bg-white border-t border-gray-200 shadow-sm"
-            style={{ paddingBottom: insets.bottom }}
+            className="flex-row bg-white py-2"
+            style={{ paddingBottom: insets.bottom + 8 }}
         >
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];

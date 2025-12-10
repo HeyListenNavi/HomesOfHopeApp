@@ -1,22 +1,13 @@
 import React from "react";
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    Animated,
-    StyleSheet,
-} from "react-native";
-import {
     createMaterialTopTabNavigator,
     MaterialTopTabNavigationEventMap,
     MaterialTopTabNavigationOptions,
-    MaterialTopTabBarProps,
 } from "@react-navigation/material-top-tabs";
 import { withLayoutContext } from "expo-router";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ClipboardList, Home, ListOrdered, MapPin, Users2 } from "lucide-react-native";
 import CustomTabBar from "~/components/CustomTabBar";
+import Boxicon from "~/components/Boxicons";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -36,6 +27,7 @@ export default function TabsLayout() {
             screenOptions={{
                 swipeEnabled: true,
                 animationEnabled: true,
+                lazy: true,
                 tabBarActiveTintColor: "#61b346",
             }}
         >
@@ -43,15 +35,25 @@ export default function TabsLayout() {
                 name="index"
                 options={{
                     title: "Inicio",
-                    tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+                    tabBarIcon: ({ color, focused }) => (
+                        <Boxicon
+                            name={focused ? "bxs-home" : "bx-home"}
+                            size={28}
+                            color={color}
+                        />
+                    ),
                 }}
             />
             <MaterialTopTabs.Screen
                 name="visits"
                 options={{
                     title: "Visitas",
-                    tabBarIcon: ({ color }) => (
-                        <MapPin size={24} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <Boxicon
+                            name={focused ? "bxs-map" : "bx-map"}
+                            size={28}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -59,8 +61,12 @@ export default function TabsLayout() {
                 name="interviews"
                 options={{
                     title: "Entrevistas",
-                    tabBarIcon: ({ color }) => (
-                        <ClipboardList size={24} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <Boxicon
+                            name={focused ? "bxs-clipboard-detail" : "bx-clipboard-detail"}
+                            size={28}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -68,8 +74,12 @@ export default function TabsLayout() {
                 name="families"
                 options={{
                     title: "Perfiles",
-                    tabBarIcon: ({ color }) => (
-                        <Users2 size={24} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <Boxicon
+                            name={focused ? "bxs-group" : "bx-group"}
+                            size={28}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -77,8 +87,12 @@ export default function TabsLayout() {
                 name="team"
                 options={{
                     title: "Equipo",
-                    tabBarIcon: ({ color }) => (
-                        <ListOrdered size={24} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <Boxicon
+                            name={focused ? "bxs-list-ul" : "bx-list-ul"}
+                            size={28}
+                            color={color}
+                        />
                     ),
                 }}
             />
