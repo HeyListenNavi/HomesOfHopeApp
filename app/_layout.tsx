@@ -16,6 +16,7 @@ const Layout = () => {
 
     const [fontsLoaded] = useFonts({
         Boxicons: require("../assets/fonts/boxicons.ttf"),
+        BrandBoxicons: require("../assets/fonts/boxicons-brands.ttf")
     });
 
     useEffect(() => {
