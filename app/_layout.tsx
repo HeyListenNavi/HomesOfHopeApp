@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Stack } from "expo-router";
 import "global.css";
-import { Text, TextClassContext } from "components/ui/text";
+import { Text } from "components/ui/text";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
@@ -34,6 +34,19 @@ const Layout = () => {
                 contentStyle: { backgroundColor: "#f3f4f6" },
             }}
         >
+            <Stack.Screen 
+                name="index" 
+                options={{ headerShown: false }} 
+            />
+
+            <Stack.Screen 
+                name="login" 
+                options={{ 
+                    headerShown: false,
+                    animation: 'fade', 
+                }} 
+            />
+
             <Stack.Screen
                 name="(tabs)"
                 options={{
