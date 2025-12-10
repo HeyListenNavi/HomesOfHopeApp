@@ -30,7 +30,7 @@ const Layout = () => {
         <Stack
             screenOptions={{
                 headerShadowVisible: false,
-                contentStyle: { backgroundColor: "#f2f2f2" },
+                contentStyle: { backgroundColor: "#f3f4f6" },
             }}
         >
             <Stack.Screen
@@ -39,7 +39,7 @@ const Layout = () => {
                     header: () => (
                         <View className="bg-gray-100">
                             <View
-                                className="flex flex-row items-center justify-between px-6 pb-6 bg-white rounded-b-3xl overflow-hidden shadow-md elevation-5"
+                                className="flex flex-row items-center justify-between px-6 pb-6 bg-white rounded-b-3xl"
                                 style={{ paddingTop: insets.top }}
                             >
                                 <Text
