@@ -44,7 +44,7 @@ const Layout = () => {
                                 style={{ paddingTop: insets.top }}
                             >
                                 <Text
-                                    className="font-bold text-2xl m-0"
+                                    className="font-bold text-primary text-2xl m-0"
                                     variant="h1"
                                 >
                                     Hope
