@@ -21,7 +21,7 @@
     "@react-navigation/native": "^6.1.18",
     "@rn-primitives/avatar": "^1.0.3",
     "@rn-primitives/progress": "^1.0.3",
-    "@rn-primitives/slot": "^1.0.3",
+    "@rn-primitives/slot": "^1.2.0",
     "@rn-primitives/tooltip": "^1.0.3",
     "@rn-primitives/types": "^1.0.3",
     "class-variance-authority": "^0.7.0",

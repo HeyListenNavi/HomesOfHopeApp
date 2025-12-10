@@ -15,7 +15,7 @@ import {
 import { withLayoutContext } from "expo-router";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Home, List } from "lucide-react-native";
+import { ClipboardList, Home, ListOrdered, MapPin, Users2 } from "lucide-react-native";
 import CustomTabBar from "~/components/CustomTabBar";
 
 const { Navigator } = createMaterialTopTabNavigator();
@@ -36,7 +36,7 @@ export default function TabsLayout() {
             screenOptions={{
                 swipeEnabled: true,
                 animationEnabled: true,
-                tabBarActiveTintColor: "#61b346"
+                tabBarActiveTintColor: "#61b346",
             }}
         >
             <MaterialTopTabs.Screen
@@ -47,10 +47,39 @@ export default function TabsLayout() {
                 }}
             />
             <MaterialTopTabs.Screen
-                name="following"
+                name="visits"
                 options={{
-                    title: "Detalles",
-                    tabBarIcon: ({ color }) => <List size={24} color={color} />,
+                    title: "Visitas",
+                    tabBarIcon: ({ color }) => (
+                        <MapPin size={24} color={color} />
+                    ),
+                }}
+            />
+            <MaterialTopTabs.Screen
+                name="interviews"
+                options={{
+                    title: "Entrevistas",
+                    tabBarIcon: ({ color }) => (
+                        <ClipboardList size={24} color={color} />
+                    ),
+                }}
+            />
+            <MaterialTopTabs.Screen
+                name="families"
+                options={{
+                    title: "Perfiles",
+                    tabBarIcon: ({ color }) => (
+                        <Users2 size={24} color={color} />
+                    ),
+                }}
+            />
+            <MaterialTopTabs.Screen
+                name="team"
+                options={{
+                    title: "Equipo",
+                    tabBarIcon: ({ color }) => (
+                        <ListOrdered size={24} color={color} />
+                    ),
                 }}
             />
         </MaterialTopTabs>

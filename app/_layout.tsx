@@ -1,8 +1,9 @@
-import { View, Text } from "react-native";
 import React from "react";
+import { View } from "react-native";
 import { Stack } from "expo-router";
-import { UserCircle2 } from "lucide-react-native";
-import "global.css"
+import { User2Icon, UserCircle2Icon } from "lucide-react-native";
+import "global.css";
+import { Text, TextClassContext } from "components/ui/text";
 
 const Layout = () => {
     return (
@@ -10,16 +11,19 @@ const Layout = () => {
             <Stack.Screen
                 name="(tabs)"
                 options={{
-                    headerLeft: () => <Text className="mx-2">Hope</Text>,
-                    headerRight: () => <UserCircle2 className="mx-2" size={28} />,
-                    headerTitle: () => null,
+                    header: () => (
+                        <View className="flex flex-row items-center justify-between px-3 pt-4 pb-6 bg-white rounded-b-3xl">
+                            <Text className="font-bold text-2xl m-0" variant="h1">Hope</Text>
+                            <UserCircle2Icon size={28} className="stroke-primary"/>
+                        </View>
+                    ),
                 }}
-                
             />
+
             <Stack.Screen
                 name="details"
                 options={{
-                    headerTitle: "Inicio",
+                    headerTitle: "Detalles",
                 }}
             />
         </Stack>

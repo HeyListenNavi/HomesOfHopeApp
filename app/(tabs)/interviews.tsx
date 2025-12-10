@@ -4,7 +4,7 @@ import React from 'react'
 const Page = () => {
   return (
     <View>
-      <Text>Following</Text>
+      <Text>Entrevistas</Text>
     </View>
   )
 }

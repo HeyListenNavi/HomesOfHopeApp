@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Animated } from 'react-native'
+import { View, Text, TouchableOpacity, Animated, Pressable } from 'react-native'
 import React from 'react'
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,13 +52,12 @@ const CustomTabBar = ({
                 };
 
                 return (
-                    <TouchableOpacity
+                    <Pressable
                         key={route.key}
-                        accessibilityRole="button"
+                        role="button"
                         onPress={onPress}
                         onLongPress={onLongPress}
                         className="flex-1 items-center justify-center py-3"
-                        activeOpacity={0.8}
                     >
                         <View
                             style={{
@@ -93,7 +92,7 @@ const CustomTabBar = ({
                                     })}
                             </Animated.View>
                         </View>
-                    </TouchableOpacity>
+                    </Pressable>
                 );
             })}
         </View>
