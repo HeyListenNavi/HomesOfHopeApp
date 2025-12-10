@@ -38,7 +38,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
                             name={focused ? "bxs-home" : "bx-home"}
-                            size={28}
+                            size={24}
                             color={color}
                         />
                     ),
@@ -51,7 +51,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
                             name={focused ? "bxs-map" : "bx-map"}
-                            size={28}
+                            size={24}
                             color={color}
                         />
                     ),
@@ -64,7 +64,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
                             name={focused ? "bxs-clipboard-detail" : "bx-clipboard-detail"}
-                            size={28}
+                            size={24}
                             color={color}
                         />
                     ),
@@ -77,7 +77,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
                             name={focused ? "bxs-group" : "bx-group"}
-                            size={28}
+                            size={24}
                             color={color}
                         />
                     ),
@@ -90,7 +90,7 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
                             name={focused ? "bxs-list-ul" : "bx-list-ul"}
-                            size={28}
+                            size={24}
                             color={color}
                         />
                     ),

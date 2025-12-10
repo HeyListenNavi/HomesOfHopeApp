@@ -62,7 +62,7 @@ const CustomTabBar = ({
                         <View
                             style={{
                                 width: 24,
-                                height: 24,
+                                height: 28,
                                 alignItems: "center",
                                 justifyContent: "center",
                             }}
