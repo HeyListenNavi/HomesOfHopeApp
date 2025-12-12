@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import Boxicon from "~/components/Boxicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PortalHost } from "@rn-primitives/portal";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -16,7 +17,7 @@ const Layout = () => {
 
     const [fontsLoaded] = useFonts({
         Boxicons: require("../assets/fonts/boxicons.ttf"),
-        BrandBoxicons: require("../assets/fonts/boxicons-brands.ttf")
+        BrandBoxicons: require("../assets/fonts/boxicons-brands.ttf"),
     });
 
     useEffect(() => {
@@ -28,58 +29,67 @@ const Layout = () => {
     if (!fontsLoaded) return null;
 
     return (
-        <Stack
-            screenOptions={{
-                headerShadowVisible: false,
-                contentStyle: { backgroundColor: "#f3f4f6" },
-            }}
-        >
-            <Stack.Screen 
-                name="index" 
-                options={{ headerShown: false }} 
-            />
+        <>
+            <Stack
+                screenOptions={{
+                    headerShadowVisible: false,
+                    contentStyle: { backgroundColor: "#f3f4f6" },
+                }}
+            >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
 
-            <Stack.Screen 
-                name="login" 
-                options={{ 
-                    headerShown: false,
-                    animation: 'fade', 
-                }} 
-            />
+                <Stack.Screen
+                    name="login"
+                    options={{
+                        headerShown: false,
+                        animation: "fade",
+                    }}
+                />
 
-            <Stack.Screen
-                name="(tabs)"
-                options={{
-                    header: () => (
-                        <View className="bg-gray-100">
-                            <View
-                                className="flex flex-row items-center justify-between px-6 pb-6 bg-white rounded-b-3xl"
-                                style={{ paddingTop: insets.top }}
-                            >
-                                <Text
-                                    className="font-bold text-primary text-2xl m-0"
-                                    variant="h1"
+                <Stack.Screen
+                    name="(tabs)"
+                    options={{
+                        header: () => (
+                            <View className="bg-gray-100">
+                                <View
+                                    className="flex flex-row items-center justify-between px-6 pb-6 bg-white rounded-b-3xl"
+                                    style={{ paddingTop: insets.top }}
                                 >
-                                    Hope
-                                </Text>
-                                <Boxicon
-                                    name="bxs-user-circle"
-                                    size={38}
-                                    color="#61b346"
-                                />
+                                    <Text
+                                        className="font-bold text-primary text-2xl m-0"
+                                        variant="h1"
+                                    >
+                                        Hope
+                                    </Text>
+                                    <Boxicon
+                                        name="bxs-user-circle"
+                                        size={38}
+                                        color="#61b346"
+                                    />
+                                </View>
                             </View>
-                        </View>
-                    ),
-                }}
-            />
+                        ),
+                    }}
+                />
 
-            <Stack.Screen
-                name="details"
-                options={{
-                    headerTitle: "Detalles",
-                }}
-            />
-        </Stack>
+                <Stack.Screen
+                    name="details"
+                    options={{
+                        headerTitle: "Detalles",
+                    }}
+                />
+
+                <Stack.Screen
+                    name="visit-detail/[id]"
+                    options={{
+                        headerTitle: "Visita",
+                        headerShadowVisible: false,
+                        headerBackTitle: "Atras",
+                    }}
+                />
+            </Stack>
+            <PortalHost />
+        </>
     );
 };
 
