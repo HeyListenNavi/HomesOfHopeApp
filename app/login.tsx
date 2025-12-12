@@ -40,7 +40,10 @@ export default function LoginScreen() {
 
                     <View className="gap-8">
                         <View className="gap-4">
-                            <View style={{ height: 55}} className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3">
+                            <View
+                                style={{ height: 60 }}
+                                className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3"
+                            >
                                 <Boxicon
                                     color="#9ca3af"
                                     size={20}
@@ -57,8 +60,15 @@ export default function LoginScreen() {
                                 />
                             </View>
 
-                            <View style={{ height: 55}} className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3">
-                                <Boxicon color="#9ca3af" size={20} name="bxs-lock"/>
+                            <View
+                                style={{ height: 60 }}
+                                className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3"
+                            >
+                                <Boxicon
+                                    color="#9ca3af"
+                                    size={20}
+                                    name="bxs-lock"
+                                />
                                 <TextInput
                                     placeholder="Contraseña"
                                     placeholderTextColor="#9ca3af"
@@ -74,13 +84,20 @@ export default function LoginScreen() {
                                     }
                                 >
                                     {showPassword ? (
-                                        <Boxicon color="#9ca3af" size={24} name="bxs-eye-closed"/>
+                                        <Boxicon
+                                            color="#9ca3af"
+                                            size={24}
+                                            name="bxs-eye-closed"
+                                        />
                                     ) : (
-                                        <Boxicon color="#9ca3af" size={24} name="bxs-eye"/>
+                                        <Boxicon
+                                            color="#9ca3af"
+                                            size={24}
+                                            name="bxs-eye"
+                                        />
                                     )}
                                 </TouchableOpacity>
                             </View>
-
                         </View>
 
                         <TouchableOpacity
