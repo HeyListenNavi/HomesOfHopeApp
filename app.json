@@ -2,6 +2,7 @@
   "expo": {
     "name": "HomesOfHopeApp",
     "slug": "homes-of-hope-app",
+    "scheme": "hopeapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
