@@ -1,17 +1,15 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": [
-        "*"
-      ]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "nativewind-env.d.ts"
-  ]
+    "$schema": "https://json.schemastore.org/tsconfig.json",
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "ESNext",
+        "baseUrl": ".",
+        "paths": {
+            "~/*": ["*"],
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"]
 }
