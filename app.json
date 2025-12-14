@@ -12,18 +12,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.veronica.homesofhope" 
+      "bundleIdentifier": "com.veronica.homesofhope"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
-      "package": "com.veronica.homesofhope" 
+      "package": "com.veronica.homesofhope"
     },
-    "web": {
-    },
+    "web": {},
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-audio"
     ]
   }
 }
