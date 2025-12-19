@@ -40,7 +40,7 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
     const [noteText, setNoteText] = useState("");
 
     return (
-        <TouchableOpacity className="p-4 rounded-2xl gap-4 bg-white mb-4 shadow-sm">
+        <TouchableOpacity className="p-4 rounded-2xl gap-4 bg-white mb-4 border border-gray-100">
             <View className="flex-row items-center gap-3">
                 <View
                     className={`w-8 h-8 rounded-full items-center justify-center ${
