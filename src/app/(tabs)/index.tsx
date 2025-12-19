@@ -4,11 +4,11 @@ import {
     ScrollView,
     TextInput,
 } from "react-native";
-import Boxicon from "~/components/Boxicons";
-import { Family, FamilyCard } from "~/components/FamilyCard";
-import StatCard from "~/components/StatCard";
-import { Button } from "~/components/ui/button";
-import { Text } from "~/components/ui/text";
+import Boxicon from "@/components/Boxicons";
+import { Family, FamilyCard } from "@/components/FamilyCard";
+import StatCard from "@/components/StatCard";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 const recentFamilies: Family[] = [
     {

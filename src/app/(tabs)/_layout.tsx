@@ -6,8 +6,8 @@ import {
 } from "@react-navigation/material-top-tabs";
 import { withLayoutContext } from "expo-router";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
-import CustomTabBar from "~/components/CustomTabBar";
-import Boxicon from "~/components/Boxicons";
+import CustomTabBar from "@/components/CustomTabBar";
+import Boxicon from "@/components/Boxicons";
 
 const { Navigator } = createMaterialTopTabNavigator();
 

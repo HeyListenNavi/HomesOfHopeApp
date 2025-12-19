@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Image, Alert, FlatList } from "react-native";
-import { Text } from "~/components/ui/text";
-import Boxicon from "~/components/Boxicons";
+import { View, TouchableOpacity, Image, FlatList } from "react-native";
+import { Text } from "@/components/ui/text";
+import Boxicon from "@/components/Boxicons";
 import {
     Dialog,
     DialogClose,
@@ -12,11 +12,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "./ui/dialog";
-import { Textarea } from "./ui/textarea";
-import BrandBoxicon from "./BrandBoxicons";
-import AudioPlayerPreview from "./AudioPlayerPreview";
-import { useVoiceRecorder } from "~/src/hooks/useVoiceRecorder";
-import { useImagePicker } from "~/src/hooks/useImagePicker";
+import { Textarea } from "@/components/ui/textarea";
+import BrandBoxicon from "@/components/BrandBoxicons";
+import AudioPlayerPreview from "@/components/AudioPlayerPreview";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
+import { useImagePicker } from "@/hooks/useImagePicker";
 
 export interface FamilyVisit {
     id: number;

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Animated, Pressable } from 'react-native'
+import { View, Animated, Pressable } from 'react-native'
 import React from 'react'
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -1,8 +1,7 @@
 import React from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
-import { Text } from "~/components/ui/text";
-import Boxicon from "~/components/Boxicons";
-import { VisitCard } from "~/components/VisitCard";
+import { View, ScrollView } from "react-native";
+import { Text } from "@/components/ui/text";
+import { VisitCard } from "@/components/VisitCard";
 
 interface VisitRoute {
     id: string,

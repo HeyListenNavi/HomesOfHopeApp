@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
-import { Text } from "~/components/ui/text";
-import Boxicon from "~/components/Boxicons";
+import { Text } from "@/components/ui/text";
+import Boxicon from "@/components/Boxicons";
 import { useRouter } from "expo-router";
 
 export interface VisitRoute {

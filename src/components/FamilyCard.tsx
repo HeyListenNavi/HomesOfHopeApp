@@ -1,9 +1,9 @@
 import React from "react";
 import { View, TouchableOpacity, Image } from "react-native";
-import { Text } from "~/components/ui/text";
-import { Badge } from "~/components/ui/badge";
-import Boxicon from "~/components/Boxicons";
-import BrandBoxicon from "~/components/BrandBoxicons";
+import { Text } from "@/components/ui/text";
+import { Badge } from "@/components/ui/badge";
+import Boxicon from "@/components/Boxicons";
+import BrandBoxicon from "@/components/BrandBoxicons";
 
 export interface Family {
     id: number;

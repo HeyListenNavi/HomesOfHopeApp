@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import { Stack } from "expo-router";
-import { Text } from "~/components/ui/text";
-import Boxicon from "~/components/Boxicons";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { FamilyVisit, VisitFamilyCard } from "~/components/FamilyVisitCard";
+import { Text } from "@/components/ui/text";
+import Boxicon from "@/components/Boxicons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FamilyVisit, VisitFamilyCard } from "@/components/FamilyVisitCard";
 
 export interface Assignee {
     id: string;

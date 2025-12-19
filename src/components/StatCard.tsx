@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import React from "react";
-import Boxicon from "./Boxicons";
+import Boxicon from "@/components/Boxicons";
 
 interface StatCardProps {
     value: string | number;

@@ -1,8 +1,7 @@
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { View, TouchableOpacity, Alert } from "react-native";
-import { File } from "expo-file-system"; 
+import { View, TouchableOpacity } from "react-native";
 import Boxicon from "./Boxicons"; 
-import { Text } from "~/components/ui/text"; 
+import { Text } from "@/components/ui/text"; 
 
 const AudioPlayerPreview = ({
     uri,
