@@ -154,7 +154,7 @@ const Page = () => {
 
                     <View className="items-center">
                         <Text className="text-gray-400 text-xs">
-                            Fin de la lista de asignación
+                            Fin de la lista de familias
                         </Text>
                     </View>
                 </View>
