@@ -32,13 +32,13 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
                             {visit.title}
                         </Text>
                         <View className="flex-row items-center gap-1">
-                            <Boxicon name="bxs-map" size={16} color="#9ca3af" />
+                            <Boxicon name="bxs-location" size={16} color="#9ca3af" />
                             <Text className="text-gray-500">
                                 {visit.locationName}
                             </Text>
                         </View>
                     </View>
-                    <View className="bg-green-100 px-3 py-1 rounded-full">
+                    <View className="bg-[#61b346]/10 px-3 py-1 rounded-full">
                         <Text className="text-primary font-bold">Hoy</Text>
                     </View>
                 </View>
