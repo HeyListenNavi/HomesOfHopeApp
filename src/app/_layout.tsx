@@ -87,6 +87,15 @@ const Layout = () => {
                         headerBackTitle: "Atras",
                     }}
                 />
+
+                <Stack.Screen
+                    name="interview-detail/[id]"
+                    options={{
+                        headerTitle: "Entrevista",
+                        headerShadowVisible: false,
+                        headerBackTitle: "Atras",
+                    }}
+                />
             </Stack>
             <PortalHost />
         </>
