@@ -8,6 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 import Boxicon from "@/components/Boxicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PortalHost } from "@rn-primitives/portal";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import {
     useFonts,
     Inter_400Regular,
@@ -35,7 +36,7 @@ const Layout = () => {
     if (!fontsLoaded) return null;
 
     return (
-        <>
+        <KeyboardProvider>
             <Stack
                 screenOptions={{
                     headerShadowVisible: false,
@@ -97,7 +98,7 @@ const Layout = () => {
                 />
             </Stack>
             <PortalHost />
-        </>
+        </KeyboardProvider>
     );
 };
 
