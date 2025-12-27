@@ -96,6 +96,16 @@ const Layout = () => {
                         headerBackTitle: "Atras",
                     }}
                 />
+
+                <Stack.Screen
+                    name="new-family-profile/index"
+                    options={{
+                        headerTitle: "Nuevo Perfil",
+                        headerTitleAlign: "center",
+                        headerShadowVisible: false,
+                        headerBackTitle: "Atras",
+                    }}
+                />
             </Stack>
             <PortalHost />
         </KeyboardProvider>

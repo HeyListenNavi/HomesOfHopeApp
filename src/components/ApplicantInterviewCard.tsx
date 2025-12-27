@@ -3,6 +3,7 @@ import { View, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import Boxicon from "@/components/Boxicons";
+import { useRouter } from "expo-router";
 
 export interface Applicant {
     id: string;
@@ -23,8 +24,10 @@ export interface ApplicantProps {
 }
 
 export default function ApplicantInterviewCard({ applicant }: ApplicantProps) {
+    const router = useRouter();
+
     return (
-        <TouchableOpacity className="p-4 rounded-2xl gap-4 bg-white mb-4 border border-gray-100">
+        <View className="p-4 rounded-2xl gap-4 bg-white mb-4 border border-gray-100">
             <View className="flex-row justify-between items-center">
                 <View>
                     <Text className="font-bold text-lg text-primary">
@@ -39,41 +42,37 @@ export default function ApplicantInterviewCard({ applicant }: ApplicantProps) {
                 </Badge>
             </View>
 
-            <View className="flex-row justify-between items-center">
-                <View>
-                    <View className="flex-row gap-6">
-                        {applicant.location && (
-                            <View className="flex-row items-center gap-1">
-                                <Boxicon
-                                    name="bxs-location"
-                                    size={18}
-                                    color="#9ca3af"
-                                />
-                                <Text className="text-gray-400">
-                                    {applicant.location}
-                                </Text>
-                            </View>
-                        )}
+            <View className="flex-row gap-6">
+                {applicant.location && (
+                    <View className="flex-row items-center gap-1">
+                        <Boxicon
+                            name="bxs-location"
+                            size={18}
+                            color="#9ca3af"
+                        />
+                        <Text className="text-gray-400">
+                            {applicant.location}
+                        </Text>
                     </View>
-
-                    <View className="flex-row gap-6">
-                        {applicant.phone && (
-                            <View className="flex-row items-center gap-1">
-                                <Boxicon
-                                    name="bxs-phone"
-                                    size={18}
-                                    color="#9ca3af"
-                                />
-                                <Text className="text-gray-400">
-                                    {applicant.phone}
-                                </Text>
-                            </View>
-                        )}
-                    </View>
-                </View>
-
-                <Boxicon name="bx-chevron-right" size={24} color="#d1d5db" />
+                )}
             </View>
-        </TouchableOpacity>
+
+            <View className="flex-row gap-6">
+                {applicant.phone && (
+                    <View className="flex-row items-center gap-1">
+                        <Boxicon name="bxs-phone" size={18} color="#9ca3af" />
+                        <Text className="text-gray-400">{applicant.phone}</Text>
+                    </View>
+                )}
+            </View>
+
+            <TouchableOpacity
+                className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center"
+                onPress={() => router.push("/new-family-profile")}
+            >
+                <Text className="text-white font-bold">Crear Perfil</Text>
+                <Boxicon name="bxs-chevron-right" size={20} color="white" />
+            </TouchableOpacity>
+        </View>
     );
 }
