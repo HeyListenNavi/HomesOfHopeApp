@@ -8,7 +8,7 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Inter-Regular"],
+                sans: ["Inter-Medium"],
                 bold: ["Inter-Bold"],
             },
             colors: {
