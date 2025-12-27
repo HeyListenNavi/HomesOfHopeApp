@@ -1,29 +1,37 @@
 {
-  "expo": {
-    "name": "HomesOfHopeApp",
-    "slug": "homes-of-hope-app",
-    "scheme": "hopeapp",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.veronica.homesofhope"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.veronica.homesofhope"
-    },
-    "web": {},
-    "plugins": [
-      "expo-router",
-      "expo-audio"
-    ]
-  }
+    "expo": {
+        "name": "HomesOfHopeApp",
+        "slug": "homes-of-hope-app",
+        "scheme": "hopeapp",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.veronica.homesofhope"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "backgroundColor": "#ffffff"
+            },
+            "package": "com.veronica.homesofhope"
+        },
+        "web": {},
+        "plugins": [
+            "expo-router",
+            "expo-audio",
+            [
+                "expo-font",
+                {
+                    "fonts": [
+                        "node_modules/@expo-google-fonts/inter/900Black/Inter_900Black.ttf"
+                    ]
+                }
+            ]
+        ]
+    }
 }
