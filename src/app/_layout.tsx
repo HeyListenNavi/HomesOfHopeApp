@@ -79,13 +79,6 @@ const Layout = () => {
                 />
 
                 <Stack.Screen
-                    name="details"
-                    options={{
-                        headerTitle: "Detalles",
-                    }}
-                />
-
-                <Stack.Screen
                     name="visit-detail/[id]"
                     options={{
                         headerTitle: "Visita",
