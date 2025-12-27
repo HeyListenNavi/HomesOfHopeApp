@@ -18,12 +18,13 @@ import {
 interface DocumentPreviewerProps {
     label?: string;
     description?: string;
-    iconName?: string;
+    needsReview?: boolean;
 }
 
 const DocumentPreviewer = ({
     label = "Documento",
     description = "Descripción del documento",
+    needsReview = false,
 }: DocumentPreviewerProps) => {
     return (
         <Dialog>
@@ -54,22 +55,24 @@ const DocumentPreviewer = ({
                             {label}
                         </Text>
 
-                        <View className="absolute flex-row gap-4 bottom-3 bg-white p-2 rounded-2xl">
-                            <TouchableOpacity>
-                                <Boxicon
-                                    name="bxs-x-circle"
-                                    size={48}
-                                    color="#ef4444"
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Boxicon
-                                    name="bxs-check-circle"
-                                    size={48}
-                                    color="#61b346"
-                                />
-                            </TouchableOpacity>
-                        </View>
+                        {needsReview && (
+                            <View className="absolute flex-row gap-4 bottom-3 bg-white p-2 rounded-2xl">
+                                <TouchableOpacity>
+                                    <Boxicon
+                                        name="bxs-x-circle"
+                                        size={48}
+                                        color="#ef4444"
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity>
+                                    <Boxicon
+                                        name="bxs-check-circle"
+                                        size={48}
+                                        color="#61b346"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </TouchableOpacity>
                 </DialogTrigger>
             </View>
