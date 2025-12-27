@@ -106,6 +106,15 @@ const Layout = () => {
                         headerBackTitle: "Atras",
                     }}
                 />
+
+                <Stack.Screen
+                    name="family-profile/[id]"
+                    options={{
+                        headerTitle: "Perfil",
+                        headerShadowVisible: false,
+                        headerBackTitle: "Atras",
+                    }}
+                />
             </Stack>
             <PortalHost />
         </KeyboardProvider>

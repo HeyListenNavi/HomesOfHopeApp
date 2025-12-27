@@ -17,6 +17,7 @@ import BrandBoxicon from "@/components/BrandBoxicons";
 import AudioPlayerPreview from "@/components/AudioPlayerPreview";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { useImagePicker } from "@/hooks/useImagePicker";
+import { useRouter } from "expo-router";
 
 export interface FamilyVisit {
     id: number;
@@ -35,12 +36,16 @@ interface VisitFamilyCardProps {
 export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
     const isVisited = family.status === "visited";
 
+    const router = useRouter();
     const voiceRecorder = useVoiceRecorder();
     const imagePicker = useImagePicker();
     const [noteText, setNoteText] = useState("");
 
     return (
-        <TouchableOpacity className="p-4 rounded-2xl gap-4 bg-white mb-4 border border-gray-100">
+        <TouchableOpacity
+            className="p-4 rounded-2xl gap-4 bg-white mb-4 border border-gray-100"
+            onPress={() => router.push("/family-profile/123")}
+        >
             <View className="flex-row items-center gap-3">
                 <View
                     className={`w-8 h-8 rounded-full items-center justify-center ${

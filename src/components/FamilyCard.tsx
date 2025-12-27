@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import Boxicon from "@/components/Boxicons";
 import BrandBoxicon from "@/components/BrandBoxicons";
+import { useRouter } from "expo-router";
 
 export interface Family {
     id: number;
@@ -19,8 +20,13 @@ interface FamilyCardProps {
 }
 
 export const FamilyCard = ({ family }: FamilyCardProps) => {
+    const router = useRouter();
+
     return (
-        <TouchableOpacity className="bg-white p-4 rounded-2xl flex-row items-center active:bg-gray-50 gap-4">
+        <TouchableOpacity
+            className="bg-white p-4 rounded-2xl flex-row items-center active:bg-gray-50 gap-4"
+            onPress={() => router.push("/family-profile/123")}
+        >
             <Image
                 source={{ uri: family.image }}
                 className="w-14 h-14 rounded-full bg-gray-200"
