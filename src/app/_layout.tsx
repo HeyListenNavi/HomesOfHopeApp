@@ -3,12 +3,16 @@ import { View } from "react-native";
 import { Stack } from "expo-router";
 import "global.css";
 import { Text } from "@/components/ui/text";
-import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import Boxicon from "@/components/Boxicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PortalHost } from "@rn-primitives/portal";
+import {
+    useFonts,
+    Inter_400Regular,
+    Inter_700Bold,
+} from "@expo-google-fonts/inter";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,6 +22,8 @@ const Layout = () => {
     const [fontsLoaded] = useFonts({
         Boxicons: require("@/assets/fonts/boxicons.ttf"),
         BrandBoxicons: require("@/assets/fonts/boxicons-brands.ttf"),
+        "Inter-Regular": Inter_400Regular,
+        "Inter-Bold": Inter_700Bold,
     });
 
     useEffect(() => {
