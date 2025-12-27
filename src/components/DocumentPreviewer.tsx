@@ -74,7 +74,7 @@ const DocumentPreviewer = ({
                 </DialogTrigger>
             </View>
 
-            <DialogContent className="w-[90vw] max-w-none bg-white rounded-3xl p-6">
+            <DialogContent className="w-[90vw] max-w-none bg-white rounded-3xl px-6 py-8">
                 <DialogHeader className="gap-2">
                     <DialogTitle className="text-xl text-primary font-bold text-center">
                         {label}
