@@ -1,9 +1,5 @@
 import React from "react";
-import {
-    View,
-    ScrollView,
-    TextInput,
-} from "react-native";
+import { View, ScrollView, TextInput } from "react-native";
 import Boxicon from "@/components/Boxicons";
 import { Family, FamilyCard } from "@/components/FamilyCard";
 import StatCard from "@/components/StatCard";
@@ -87,7 +83,10 @@ const Page = () => {
 
                 <View className="gap-4">
                     <View className="flex-row justify-between items-center">
-                        <Text variant="h3" className="text-start text-gray-800">
+                        <Text
+                            variant="h3"
+                            className="text-start font-bold text-gray-800"
+                        >
                             Familias recientes
                         </Text>
                         <Button variant="link">
