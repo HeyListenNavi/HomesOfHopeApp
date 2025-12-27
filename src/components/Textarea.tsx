@@ -1,0 +1,57 @@
+import { View } from "react-native";
+import React from "react";
+import Boxicon, { BoxIconName } from "@/components/Boxicons";
+import { Textarea as ReusableTextarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Text } from "@/components/ui/text";
+
+export interface TextareaProps
+    extends React.ComponentProps<typeof ReusableTextarea> {
+    id?: string;
+    label?: string;
+    iconName?: BoxIconName;
+    prefix?: string;
+}
+
+const Textarea = ({ id, label, iconName, prefix, ...props }: TextareaProps) => {
+    return (
+        <View className="gap-2">
+            <View className="flex-row gap-2 items-center">
+                {iconName && (
+                    <Boxicon name={iconName} color="#9ca3af" size={18} />
+                )}
+                {label && (
+                    <Label
+                        nativeID={id}
+                        id={id}
+                        className="py-0.5 text-gray-500"
+                    >
+                        {label}
+                    </Label>
+                )}
+            </View>
+
+            <View className="min-h-[60px] flex-row items-start bg-gray-100/60 rounded-2xl px-4 py-3">
+                {prefix && (
+                    <Text className="mt-2 ml-2 font-bold text-gray-400">
+                        {prefix}
+                    </Text>
+                )}
+
+                <ReusableTextarea
+                    nativeID={id}
+                    aria-labelledby={id}
+                    id={id}
+                    placeholderTextColor="#9ca3af"
+                    className="flex-1 grow-1 bg-transparent shadow-none border-transparent text-gray-900"
+                    cursorColor="#61b346"
+                    selectionColor="#61b3466f"
+                    selectionHandleColor="#61b346"
+                    {...props}
+                />
+            </View>
+        </View>
+    );
+};
+
+export default Textarea;
