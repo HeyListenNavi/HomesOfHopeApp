@@ -12,7 +12,6 @@ const Page = () => {
 
     const [formData, setFormData] = useState({
         // --- Family ---
-        email: null,
         familyName: null,
         phoneNumber: null,
         phoneNumberExtra: null,
