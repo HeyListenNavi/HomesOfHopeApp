@@ -52,7 +52,7 @@ export const FamilyCard = ({ family }: FamilyCardProps) => {
                 </View>
             </View>
 
-            <TouchableOpacity className="bg-green-50 p-3 rounded-full">
+            <TouchableOpacity className="bg-[#9BD189]/10 p-3 rounded-full">
                 <BrandBoxicon name="bx-whatsapp" size={28} color="#61b346" />
             </TouchableOpacity>
         </TouchableOpacity>

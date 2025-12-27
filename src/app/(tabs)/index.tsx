@@ -56,7 +56,7 @@ const Page = () => {
                             value: "+123",
                             label: "Este tiempo",
                             color: "#61b346",
-                            bgColor: "bg-green-100",
+                            bgColor: "bg-[#9BD189]/10",
                             iconName: "bxs-trending-up",
                         }}
                     />
