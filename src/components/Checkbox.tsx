@@ -1,5 +1,5 @@
-import { TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import { Animated, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import { Checkbox as ReusableCheckbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,16 @@ const Checkbox = ({
     prefix,
     ...props
 }: CheckboxProps) => {
+    const fadeAnim = useRef(new Animated.Value(props.checked ? 1 : 0)).current;
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: props.checked ? 1 : 0,
+            duration: 50,
+            useNativeDriver: true,
+        }).start();
+    }, [props.checked]);
+
     return (
         <View className="gap-2">
             <View className="flex-row gap-2 items-center">
@@ -40,6 +50,33 @@ const Checkbox = ({
             </View>
 
             <View className="relative min-h-[60px] flex-row items-center bg-gray-100/60 rounded-2xl px-4 py-3">
+                <TouchableOpacity className="relative size-7 justify-center items-center">
+                    <Animated.View
+                        className="absolute"
+                        style={{
+                            opacity: fadeAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [1, 0],
+                            }),
+                        }}
+                    >
+                        <Text className="text-gray-300">
+                            <Boxicon name="bx-checkbox" size={28} />
+                        </Text>
+                    </Animated.View>
+
+                    <Animated.View
+                        className="absolute"
+                        style={{
+                            opacity: fadeAnim,
+                        }}
+                    >
+                        <Text className="text-primary">
+                            <Boxicon name="bxs-checkbox-checked" size={28} />
+                        </Text>
+                    </Animated.View>
+                </TouchableOpacity>
+
                 {prefix && (
                     <Text className="ml-2 font-bold text-gray-400">
                         {prefix}
@@ -52,27 +89,6 @@ const Checkbox = ({
                     </Text>
                 )}
 
-                <TouchableOpacity className="w-16 ml-auto bg-gray-200/50 p-1 rounded-lg flex-row items-center">
-                    <Text
-                        className={`w-1/2 py-0.5 rounded-md text-center text-sm font-medium ${
-                            !props.checked
-                                ? "text-green-600 bg-white"
-                                : "text-gray-400"
-                        }`}
-                    >
-                        No
-                    </Text>
-
-                    <Text
-                        className={`w-1/2 py-0.5 rounded-md text-center text-sm font-medium ${
-                            props.checked
-                                ? "text-green-600 bg-white"
-                                : "text-gray-400"
-                        }`}
-                    >
-                        Si
-                    </Text>
-                </TouchableOpacity>
                 <ReusableCheckbox
                     nativeID={id}
                     aria-labelledby={id}
