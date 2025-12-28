@@ -10,11 +10,15 @@ export interface InputProps extends React.ComponentProps<typeof ReusableInput> {
     label?: string;
     iconName?: BoxIconName;
     prefix?: string;
+    className?: string;
+    children?: React.ReactNode;
 }
 
-const Input = ({ id, label, iconName, prefix, ...props }: InputProps) => {
+const Input = ({ id, label, iconName, prefix, className, children, ...props }: InputProps) => {
     return (
-        <View className="gap-2">
+        <View className={`gap-2 ${
+            className
+        }`}>
             <View className="flex-row gap-2 items-center">
                 {iconName && (
                     <Boxicon name={iconName} color="#9ca3af" size={18} />
@@ -24,6 +28,7 @@ const Input = ({ id, label, iconName, prefix, ...props }: InputProps) => {
                         {label}
                     </Label>
                 )}
+                {children}
             </View>
 
             <View className="min-h-[60px] flex-row items-center bg-gray-100/60 rounded-2xl px-4 py-3">
