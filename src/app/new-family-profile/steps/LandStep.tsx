@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { TextInputProps, View } from "react-native";
 import StepContainer from "./StepContainer";
 import ToggleSwitch from "@/components/ToggleSwitch";
+import CurrencyInput from "react-native-currency-input";
 
 const LandStep = ({ data, onChange }: any) => (
     <StepContainer>
@@ -52,74 +53,112 @@ const LandStep = ({ data, onChange }: any) => (
                         }
                     />
                 )}
-                <Input
-                    iconName="bxs-dollar"
-                    label="Costo del terreno"
-                    placeholder="Costo total"
-                    id="landPrice"
-                    keyboardType="number-pad"
-                    value={data.landPrice ?? ""}
-                    onChangeText={(t: string) => onChange("landPrice", t)}
-                    children={
-                        <ToggleSwitch
-                            leftLabel="MXN"
-                            leftValue="mxn"
-                            rightLabel="USD"
-                            rightValue="usd"
-                            value={data.landPriceCurrency ?? "mxn"}
-                            onValueChange={(t: string) =>
-                                onChange("landPriceCurrency", t)
+                <CurrencyInput
+                    value={data.landPrice}
+                    onChangeValue={(t: number) => onChange("landPrice", t)}
+                    prefix="$"
+                    delimiter=","
+                    precision={0}
+                    minValue={0}
+                    renderTextInput={(props: TextInputProps) => (
+                        <Input
+                            iconName="bxs-dollar"
+                            label="Costo del terreno"
+                            placeholder="Costo total"
+                            id="landPrice"
+                            keyboardType="number-pad"
+                            maxLength={15}
+                            {...props}
+                            children={
+                                <ToggleSwitch
+                                    leftLabel="MXN"
+                                    leftValue="mxn"
+                                    rightLabel="USD"
+                                    rightValue="usd"
+                                    value={data.landPriceCurrency ?? "mxn"}
+                                    onValueChange={(t: string) =>
+                                        onChange("landPriceCurrency", t)
+                                    }
+                                    className="ml-auto"
+                                />
                             }
-                            className="ml-auto"
                         />
-                    }
+                    )}
                 />
-                <Input
-                    iconName="bxs-dollar"
-                    label="Enganche del terreno"
-                    placeholder="Monto del enganche"
-                    id="landDownPayment"
-                    keyboardType="number-pad"
-                    value={data.landDownPayment ?? ""}
-                    onChangeText={(t: string) => onChange("landDownPayment", t)}
-                    children={
-                        <ToggleSwitch
-                            leftLabel="MXN"
-                            leftValue="mxn"
-                            rightLabel="USD"
-                            rightValue="usd"
-                            value={data.landDownPaymentCurrency ?? "mxn"}
-                            onValueChange={(t: string) =>
-                                onChange("landDownPaymentCurrency", t)
+                <CurrencyInput
+                    value={data.landDownPayment}
+                    onChangeValue={(t: number) =>
+                        onChange("landDownPayment", t)
+                    }
+                    prefix="$"
+                    delimiter=","
+                    precision={0}
+                    minValue={0}
+                    renderTextInput={(props: TextInputProps) => (
+                        <Input
+                            iconName="bxs-dollar"
+                            label="Enganche del terreno"
+                            placeholder="Monto del enganche"
+                            id="landDownPayment"
+                            keyboardType="number-pad"
+                            maxLength={15}
+                            {...props}
+                            children={
+                                <ToggleSwitch
+                                    leftLabel="MXN"
+                                    leftValue="mxn"
+                                    rightLabel="USD"
+                                    rightValue="usd"
+                                    value={
+                                        data.landDownPaymentCurrency ?? "mxn"
+                                    }
+                                    onValueChange={(t: string) =>
+                                        onChange("landDownPaymentCurrency", t)
+                                    }
+                                    className="ml-auto"
+                                />
                             }
-                            className="ml-auto"
                         />
-                    }
+                    )}
                 />
-                <Input
-                    iconName="bxs-dollar"
-                    label="Mensualidad del terreno"
-                    placeholder="Monto que pagan al mes"
-                    id="landMonthlyPayment"
-                    keyboardType="number-pad"
-                    value={data.landMonthlyPayment ?? ""}
-                    onChangeText={(t: string) =>
+                <CurrencyInput
+                    value={data.landMonthlyPayment}
+                    onChangeValue={(t: number) =>
                         onChange("landMonthlyPayment", t)
                     }
-                    className="flex-1"
-                    children={
-                        <ToggleSwitch
-                            leftLabel="MXN"
-                            leftValue="mxn"
-                            rightLabel="USD"
-                            rightValue="usd"
-                            value={data.landMonthlyPaymentCurrency ?? "mxn"}
-                            onValueChange={(t: string) =>
-                                onChange("landMonthlyPaymentCurrency", t)
+                    prefix="$"
+                    delimiter=","
+                    precision={0}
+                    minValue={0}
+                    renderTextInput={(props: TextInputProps) => (
+                        <Input
+                            iconName="bxs-dollar"
+                            label="Mensualidad del terreno"
+                            placeholder="Monto que pagan al mes"
+                            id="landMonthlyPayment"
+                            keyboardType="number-pad"
+                            maxLength={15}
+                            {...props}
+                            children={
+                                <ToggleSwitch
+                                    leftLabel="MXN"
+                                    leftValue="mxn"
+                                    rightLabel="USD"
+                                    rightValue="usd"
+                                    value={
+                                        data.landMonthlyPaymentCurrency ?? "mxn"
+                                    }
+                                    onValueChange={(t: string) =>
+                                        onChange(
+                                            "landMonthlyPaymentCurrency",
+                                            t
+                                        )
+                                    }
+                                    className="ml-auto"
+                                />
                             }
-                            className="ml-auto"
                         />
-                    }
+                    )}
                 />
                 <Input
                     iconName="bxs-calendar-check"

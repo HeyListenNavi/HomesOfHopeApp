@@ -6,6 +6,7 @@ import { Text } from "@/components/ui/text";
 import { View } from "react-native";
 import ToggleSwitch from "@/components/ToggleSwitch";
 import StepContainer from "./StepContainer";
+import CurrencyInput from "react-native-currency-input";
 
 const CurrentHouseStep = ({ data, onChange }: any) => {
     if (data.livesInLand) {
@@ -89,34 +90,45 @@ const CurrentHouseStep = ({ data, onChange }: any) => {
 
                     {data.housingType === "rentada" && (
                         <>
-                            <Input
-                                iconName="bxs-dollar-circle"
-                                label="Costo de renta"
-                                placeholder="¿Cuánto pagan al mes?"
-                                id="rentCost"
-                                value={data.rentCost ?? ""}
-                                onChangeText={(t: string) =>
+                            <CurrencyInput
+                                value={data.rentCost}
+                                onChangeValue={(t: number) =>
                                     onChange("rentCost", t)
                                 }
-                                children={
-                                    <ToggleSwitch
-                                        leftLabel="MXN"
-                                        leftValue="mxn"
-                                        rightLabel="USD"
-                                        rightValue="usd"
-                                        value={
-                                            data.rentCostCurrency ??
-                                            "mxn"
+                                prefix="$"
+                                delimiter=","
+                                precision={0}
+                                minValue={0}
+                                renderTextInput={(textInputProps) => (
+                                    <Input
+                                        iconName="bxs-dollar-circle"
+                                        label="Costo de renta"
+                                        placeholder="¿Cuánto pagan al mes?"
+                                        id="rentCost"
+                                        keyboardType="number-pad"
+                                        maxLength={15}
+                                        {...textInputProps}
+                                        children={
+                                            <ToggleSwitch
+                                                leftLabel="MXN"
+                                                leftValue="mxn"
+                                                rightLabel="USD"
+                                                rightValue="usd"
+                                                value={
+                                                    data.rentCostCurrency ??
+                                                    "mxn"
+                                                }
+                                                onValueChange={(t: string) =>
+                                                    onChange(
+                                                        "rentCostCurrency",
+                                                        t
+                                                    )
+                                                }
+                                                className="ml-auto"
+                                            />
                                         }
-                                        onValueChange={(t: string) =>
-                                            onChange(
-                                                "rentCostCurrency",
-                                                t
-                                            )
-                                        }
-                                        className="ml-auto"
                                     />
-                                }
+                                )}
                             />
                             <Checkbox
                                 iconName="bxs-receipt"
