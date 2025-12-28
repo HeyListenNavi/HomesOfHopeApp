@@ -2,7 +2,7 @@ import Boxicon from "@/components/Boxicons";
 import Input from "@/components/Input";
 import { Text } from "@/components/ui/text";
 import { View, TouchableOpacity } from "react-native";
-import { StepContainer } from "./StepContainer";
+import StepContainer from "./StepContainer";
 
 const ChildrenStep = ({ data, onChange }: any) => (
     <StepContainer>

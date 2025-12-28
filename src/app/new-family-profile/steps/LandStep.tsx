@@ -2,8 +2,8 @@ import Checkbox from "@/components/Checkbox";
 import Input from "@/components/Input";
 import ToggleGroup from "@/components/ToggleGroup";
 import { Text } from "@/components/ui/text";
-import { View } from "react-native";
-import { StepContainer } from "./StepContainer";
+import { TextInputProps, View } from "react-native";
+import StepContainer from "./StepContainer";
 import ToggleSwitch from "@/components/ToggleSwitch";
 
 const LandStep = ({ data, onChange }: any) => (

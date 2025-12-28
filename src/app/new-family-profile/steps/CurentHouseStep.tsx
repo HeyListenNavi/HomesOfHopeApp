@@ -4,8 +4,8 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
-import { StepContainer } from "./StepContainer";
 import ToggleSwitch from "@/components/ToggleSwitch";
+import StepContainer from "./StepContainer";
 
 const CurrentHouseStep = ({ data, onChange }: any) => {
     if (data.livesInLand) {

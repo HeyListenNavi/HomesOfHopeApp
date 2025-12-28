@@ -2,7 +2,7 @@ import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
-import { StepContainer } from "./StepContainer";
+import StepContainer from "./StepContainer";
 
 const HouseStateStep = ({ data, onChange }: any) => (
     <StepContainer>

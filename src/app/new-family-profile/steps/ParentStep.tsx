@@ -5,7 +5,7 @@ import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
 import { Text } from "@/components/ui/text";
 import { View, TouchableOpacity } from "react-native";
-import { StepContainer } from "./StepContainer";
+import StepContainer from "./StepContainer";
 
 const ParentStep = ({ data, onChange }: any) => (
     <StepContainer>

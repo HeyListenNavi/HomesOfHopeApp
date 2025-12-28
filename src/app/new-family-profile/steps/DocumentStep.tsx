@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
-import { StepContainer } from "./StepContainer";
 import DocumentPreviewer from "@/components/DocumentPreviewer";
+import StepContainer from "./StepContainer";
 
 const DocumentStep = ({ data, onChange }: any) => {
     return (
