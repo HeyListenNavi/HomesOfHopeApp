@@ -567,7 +567,6 @@ const Page = () => {
                 </SectionCard>
             )}
 
-            {/* 6. House State */}
             <SectionCard title="Estado de la Casa" icon="bxs-home-heart">
                 <InfoRow
                     label="Techo"
