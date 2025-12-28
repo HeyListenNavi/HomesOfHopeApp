@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text";
 import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import DocumentPreviewer from "@/components/DocumentPreviewer";
 import { Badge } from "@/components/ui/badge";
+import { getPlusCode } from "@/lib/utils";
 
 const MOCK_DATA = {
     familyName: "Familia Hernández Ruiz",
@@ -39,12 +40,15 @@ const MOCK_DATA = {
     livesInLand: false,
     timeLivingLand: null,
     landPrice: "20,000",
+    landPriceCurrency: "mxn",
     landDownPayment: "5,000",
+    landDownPaymentCurrency: "usd",
     landMonthlyPayment: "1,000",
+    landMonthlyPaymentCurrency: "mxn",
     landLastPayment: "01/10/2023",
     landPaymentsUptodate: true,
     landServices: ["luz", "agua", "fosa"],
-    landGps: "32.5149° N, 117.0382° W",
+    landGps: "32.461755° N, -117.109904° W",
     landOwner: "Juan Pérez",
     landNeedsMufa: false,
     landMeasurements: "10x20 metros",
@@ -58,6 +62,7 @@ const MOCK_DATA = {
     landlordName: "Maria Gonzalez",
     timeInCurrentHousing: "2 años",
     rentCost: "3,500",
+    rentCostCurrency: "usd",
     hasRentReceipts: true,
 
     // House State
@@ -178,14 +183,7 @@ const Page = () => {
                             >
                                 {data.familyName}
                             </Text>
-                            <TouchableOpacity
-                                onPress={() =>
-                                    Linking.openURL(
-                                        `whatsapp://send?phone=${data.phoneNumberExtra}`
-                                    )
-                                }
-                                className="p-1"
-                            >
+                            <TouchableOpacity className="p-1">
                                 <Boxicon
                                     name="bxs-share"
                                     size={20}
@@ -260,7 +258,7 @@ const Page = () => {
                     <View className="flex-1">
                         <InfoRow
                             label="Religión"
-                            value={data.religion}
+                            value={`${data.religion}, ${data.timeReligion}`}
                             icon="bxs-church"
                             description={data.churchAttendance}
                         />
@@ -385,15 +383,51 @@ const Page = () => {
                         />
                     </View>
                     <View className="flex-1">
-                        <InfoRow label="GPS" value={data.landGps} />
+                        <InfoRow
+                            label="GPS"
+                            value={getPlusCode(data.landGps)}
+                            description={data.landGps}
+                        />
                     </View>
                 </View>
 
-                <InfoRow
-                    label="Nombre del Dueño"
-                    value={data.landOwner}
-                    icon="bxs-file-detail"
-                />
+                <View className="flex-row gap-1">
+                    <View className="flex-1">
+                        <InfoRow
+                            label="Nombre del Dueño"
+                            value={data.landOwner}
+                            icon="bxs-file-detail"
+                        />
+                    </View>
+                    <View className="flex-1 gap-0.5">
+                        <Text className="text-gray-400 text-sm uppercase">
+                            Donde Vive
+                        </Text>
+                        <View className="flex-row items-center gap-1">
+                            {data.livesInLand === true ? (
+                                <>
+                                    <Text className="text-primary">
+                                        <Boxicon
+                                            name="bxs-check-circle"
+                                            size={18}
+                                        />
+                                    </Text>
+                                    <Text>Vive en el Terreno</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text className="text-red-500">
+                                        <Boxicon
+                                            name="bxs-x-circle"
+                                            size={18}
+                                        />
+                                    </Text>
+                                    <Text>No Vive en el Terreno</Text>
+                                </>
+                            )}
+                        </View>
+                    </View>
+                </View>
 
                 <View className="h-[1px] bg-gray-100 my-2" />
 
@@ -416,14 +450,14 @@ const Page = () => {
                         <InfoRow
                             label="Costo Total"
                             value={`$${data.landPrice}`}
-                            icon="bxs-dollar-circle"
+                            description={data.landPriceCurrency.toUpperCase()}
                         />
                     </View>
                     <View className="flex-1">
                         <InfoRow
                             label="Mensualidad"
                             value={`$${data.landMonthlyPayment}`}
-                            icon="bxs-wallet"
+                            description={data.landMonthlyPaymentCurrency.toUpperCase()}
                         />
                     </View>
                 </View>
@@ -467,10 +501,20 @@ const Page = () => {
                 </View>
 
                 <InfoRow
+                    label="Enganche"
+                    value={`$${data.landDownPayment}`}
+                    description={data.landDownPaymentCurrency.toUpperCase()}
+                />
+                <InfoRow
                     label="Medidas"
                     value={`${data.landMeasurements} (${data.landArea})`}
                     icon="bxs-ruler"
                 />
+
+                <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                    <Boxicon name="bxs-location" size={16} color="#ffffff" />
+                    <Text className="text-white font-bold">Ver Mapa</Text>
+                </TouchableOpacity>
             </SectionCard>
 
             {!data.livesInLand ? (
@@ -486,8 +530,8 @@ const Page = () => {
                         <View className="flex-1">
                             <InfoRow
                                 label="GPS"
-                                value={data.currentGps}
-                                icon="bxs-pin"
+                                value={getPlusCode(data.currentGps)}
+                                description={data.currentGps}
                             />
                         </View>
                     </View>
@@ -497,16 +541,16 @@ const Page = () => {
                     <View className="flex-row gap-1">
                         <View className="flex-1">
                             <InfoRow
-                                label="Tipo"
-                                value={data.housingType}
-                                icon="bxs-building"
+                                label="Dueño"
+                                value={data.landlordName}
+                                icon="bxs-user"
                             />
                         </View>
                         <View className="flex-1">
                             <InfoRow
-                                label="Dueño"
-                                value={data.landlordName}
-                                icon="bxs-user"
+                                label="Tipo"
+                                value={data.housingType}
+                                icon="bxs-building"
                             />
                         </View>
                     </View>
@@ -520,7 +564,7 @@ const Page = () => {
                                 value={
                                     data.rentCost ? `$${data.rentCost}` : "N/A"
                                 }
-                                icon="bxs-dollar-circle"
+                                description={data.rentCostCurrency.toUpperCase()}
                             />
                         </View>
                         <View className="flex-1 gap-0.5">
@@ -558,6 +602,15 @@ const Page = () => {
                         value={data.timeInCurrentHousing}
                         icon="bxs-clock"
                     />
+
+                    <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                        <Boxicon
+                            name="bxs-location"
+                            size={16}
+                            color="#ffffff"
+                        />
+                        <Text className="text-white font-bold">Ver Mapa</Text>
+                    </TouchableOpacity>
                 </SectionCard>
             ) : (
                 <SectionCard title="Vivienda Actual" icon="bxs-home">
