@@ -4,6 +4,7 @@ import ToggleGroup from "@/components/ToggleGroup";
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
 import { StepContainer } from "./StepContainer";
+import ToggleSwitch from "@/components/ToggleSwitch";
 
 const LandStep = ({ data, onChange }: any) => (
     <StepContainer>
@@ -59,6 +60,19 @@ const LandStep = ({ data, onChange }: any) => (
                     keyboardType="number-pad"
                     value={data.landPrice ?? ""}
                     onChangeText={(t: string) => onChange("landPrice", t)}
+                    children={
+                        <ToggleSwitch
+                            leftLabel="MXN"
+                            leftValue="mxn"
+                            rightLabel="USD"
+                            rightValue="usd"
+                            value={data.landPriceCurrency ?? "mxn"}
+                            onValueChange={(t: string) =>
+                                onChange("landPriceCurrency", t)
+                            }
+                            className="ml-auto"
+                        />
+                    }
                 />
                 <Input
                     iconName="bxs-dollar"
@@ -68,6 +82,19 @@ const LandStep = ({ data, onChange }: any) => (
                     keyboardType="number-pad"
                     value={data.landDownPayment ?? ""}
                     onChangeText={(t: string) => onChange("landDownPayment", t)}
+                    children={
+                        <ToggleSwitch
+                            leftLabel="MXN"
+                            leftValue="mxn"
+                            rightLabel="USD"
+                            rightValue="usd"
+                            value={data.landDownPaymentCurrency ?? "mxn"}
+                            onValueChange={(t: string) =>
+                                onChange("landDownPaymentCurrency", t)
+                            }
+                            className="ml-auto"
+                        />
+                    }
                 />
                 <Input
                     iconName="bxs-dollar"
@@ -78,6 +105,20 @@ const LandStep = ({ data, onChange }: any) => (
                     value={data.landMonthlyPayment ?? ""}
                     onChangeText={(t: string) =>
                         onChange("landMonthlyPayment", t)
+                    }
+                    className="flex-1"
+                    children={
+                        <ToggleSwitch
+                            leftLabel="MXN"
+                            leftValue="mxn"
+                            rightLabel="USD"
+                            rightValue="usd"
+                            value={data.landMonthlyPaymentCurrency ?? "mxn"}
+                            onValueChange={(t: string) =>
+                                onChange("landMonthlyPaymentCurrency", t)
+                            }
+                            className="ml-auto"
+                        />
                     }
                 />
                 <Input

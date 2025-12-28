@@ -45,11 +45,14 @@ const Page = () => {
         livesInLand: false,
         timeLivingLand: null,
         landPrice: null,
+        landPriceCurrency: null,
         landServices: null,
         landGps: null,
         landOwner: null,
         landDownPayment: null,
+        landDownPaymentCurrency: null,
         landMonthlyPayment: null,
+        landMonthlyPaymentCurrency: null,
         landLastPayment: null,
         landPaymentsUptodate: null,
         landNeedsMufa: null,
@@ -64,6 +67,7 @@ const Page = () => {
         landlordName: null,
         timeInCurrentHousing: null,
         rentCost: null,
+        rentCostCurrency: null,
         hasRentReceipts: false,
 
         // --- House state ---

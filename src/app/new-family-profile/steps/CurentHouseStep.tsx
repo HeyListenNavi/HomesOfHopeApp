@@ -5,6 +5,7 @@ import Select from "@/components/Select";
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
 import { StepContainer } from "./StepContainer";
+import ToggleSwitch from "@/components/ToggleSwitch";
 
 const CurrentHouseStep = ({ data, onChange }: any) => {
     if (data.livesInLand) {
@@ -96,6 +97,25 @@ const CurrentHouseStep = ({ data, onChange }: any) => {
                                 value={data.rentCost ?? ""}
                                 onChangeText={(t: string) =>
                                     onChange("rentCost", t)
+                                }
+                                children={
+                                    <ToggleSwitch
+                                        leftLabel="MXN"
+                                        leftValue="mxn"
+                                        rightLabel="USD"
+                                        rightValue="usd"
+                                        value={
+                                            data.rentCostCurrency ??
+                                            "mxn"
+                                        }
+                                        onValueChange={(t: string) =>
+                                            onChange(
+                                                "rentCostCurrency",
+                                                t
+                                            )
+                                        }
+                                        className="ml-auto"
+                                    />
                                 }
                             />
                             <Checkbox
