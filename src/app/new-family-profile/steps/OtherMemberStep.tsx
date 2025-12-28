@@ -6,7 +6,7 @@ import StepContainer from "./StepContainer";
 const OtherMemberStep = ({ data, onChange }: any) => (
     <StepContainer>
         <View className="bg-white gap-4 p-6 rounded-2xl">
-            <Text variant="h3" className="text-primary">
+            <Text variant="h3" className="text-primary font-bold">
                 Otras personas
             </Text>
             <View className="px-1 gap-4">
