@@ -5,6 +5,13 @@ import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import DocumentPreviewer from "@/components/DocumentPreviewer";
 import { Badge } from "@/components/ui/badge";
 import { getPlusCode } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "expo-router";
 
 const MOCK_DATA = {
     familyName: "Familia Hernández Ruiz",
@@ -159,6 +166,7 @@ const ServicesList = ({ services }: { services: string[] }) => {
 
 const Page = () => {
     const data = MOCK_DATA;
+    const router = useRouter();
 
     return (
         <ScrollView
@@ -182,13 +190,44 @@ const Page = () => {
                             >
                                 {data.familyName}
                             </Text>
-                            <TouchableOpacity className="p-1">
-                                <Boxicon
-                                    name="bxs-share"
-                                    size={20}
-                                    color="#9ca3af"
-                                />
-                            </TouchableOpacity>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <TouchableOpacity className="p-1">
+                                        <Boxicon
+                                            name="bxs-dots-vertical-rounded"
+                                            size={28}
+                                            color="#9ca3af"
+                                        />
+                                    </TouchableOpacity>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="bg-white rounded-2xl border-transparent shadow-lg shadow-black/40"
+                                >
+                                    <DropdownMenuItem className="flex-row gap-1 items-center p-3 rounded-lg">
+                                        <Text className="text-gray-600">
+                                            <Boxicon
+                                                name="bxs-share"
+                                                size={20}
+                                            />
+                                        </Text>
+                                        <Text className="text-gray-600 text-base">
+                                            Compartir
+                                        </Text>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onPress={() => router.push("/new-family-profile/123")} className="flex-row gap-1 items-center p-3 rounded-lg">
+                                        <Text className="text-gray-600">
+                                            <Boxicon
+                                                name="bxs-edit"
+                                                size={20}
+                                            />
+                                        </Text>
+                                        <Text className="text-gray-600 text-base">
+                                            Editar
+                                        </Text>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </View>
                         <View className="flex-row gap-2">
                             <View className="flex-row items-center gap-1">
@@ -348,10 +387,7 @@ const Page = () => {
                         data.hasAddiction ? data.addictionProblems : "Ninguna"
                     }
                 />
-                <InfoRow
-                    label="Referencia"
-                    value={data.referralSource}
-                />
+                <InfoRow label="Referencia" value={data.referralSource} />
             </SectionCard>
 
             <SectionCard title="Hijos" icon="bxs-child">
@@ -527,16 +563,10 @@ const Page = () => {
 
                     <View className="flex-row gap-1">
                         <View className="flex-1">
-                            <InfoRow
-                                label="Dueño"
-                                value={data.landlordName}
-                            />
+                            <InfoRow label="Dueño" value={data.landlordName} />
                         </View>
                         <View className="flex-1">
-                            <InfoRow
-                                label="Tipo"
-                                value={data.housingType}
-                            />
+                            <InfoRow label="Tipo" value={data.housingType} />
                         </View>
                     </View>
 
@@ -605,35 +635,14 @@ const Page = () => {
             )}
 
             <SectionCard title="Estado de la Casa" icon="bxs-home-heart">
-                <InfoRow
-                    label="Techo"
-                    value={data.roofMaterial}
-                />
-                <InfoRow
-                    label="Piso"
-                    value={data.floorMaterial}
-                />
-                <InfoRow
-                    label="Paredes"
-                    value={data.wallMaterial}
-                />
+                <InfoRow label="Techo" value={data.roofMaterial} />
+                <InfoRow label="Piso" value={data.floorMaterial} />
+                <InfoRow label="Paredes" value={data.wallMaterial} />
                 <View className="h-[1px] bg-gray-200/70 my-1" />
-                <InfoRow
-                    label="Cuartos"
-                    value={data.numBedrooms}
-                />
-                <InfoRow
-                    label="Condición"
-                    value={data.roomCondition}
-                />
-                <InfoRow
-                    label="Baño"
-                    value={data.bathroomDetails}
-                />
-                <InfoRow
-                    label="Muebles"
-                    value={data.furnitureDetails}
-                />
+                <InfoRow label="Cuartos" value={data.numBedrooms} />
+                <InfoRow label="Condición" value={data.roomCondition} />
+                <InfoRow label="Baño" value={data.bathroomDetails} />
+                <InfoRow label="Muebles" value={data.furnitureDetails} />
             </SectionCard>
 
             <SectionCard title="Documentos" icon="bxs-file-detail">
