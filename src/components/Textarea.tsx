@@ -11,9 +11,10 @@ export interface TextareaProps
     label?: string;
     iconName?: BoxIconName;
     prefix?: string;
+    children?: React.ReactNode;
 }
 
-const Textarea = ({ id, label, iconName, prefix, ...props }: TextareaProps) => {
+const Textarea = ({ id, label, iconName, prefix, children, ...props }: TextareaProps) => {
     return (
         <View className="gap-2">
             <View className="flex-row gap-2 items-center">
@@ -29,6 +30,7 @@ const Textarea = ({ id, label, iconName, prefix, ...props }: TextareaProps) => {
                         {label}
                     </Label>
                 )}
+                {children}
             </View>
 
             <View className="min-h-[60px] flex-row items-start bg-gray-100/60 rounded-2xl px-4 py-3">

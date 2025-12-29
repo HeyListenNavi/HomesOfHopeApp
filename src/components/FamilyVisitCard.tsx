@@ -12,7 +12,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "./ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import Textarea from "./Textarea";
+("@/components/Textarea");
 import BrandBoxicon from "@/components/BrandBoxicons";
 import AudioPlayerPreview from "@/components/AudioPlayerPreview";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
@@ -89,18 +90,10 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                         </TouchableOpacity>
                     </DialogTrigger>
 
-                    <DialogContent className="max-w-sm bg-white rounded-3xl px-6 py-8">
+                    <DialogContent className="w-[90vw] max-w-none bg-white rounded-3xl px-6 py-8">
                         <DialogHeader className="items-center gap-3">
-                            <View className="h-12 w-12 rounded-full bg-primary items-center justify-center">
-                                <Boxicon
-                                    name="bx-check"
-                                    size={28}
-                                    color="#ffffff"
-                                />
-                            </View>
-
                             <DialogTitle className="text-2xl font-bold text-gray-900 text-center">
-                                Confirmar visita
+                                Confirmar Visita
                             </DialogTitle>
 
                             <DialogDescription className="text-gray-500 text-center text-base">
@@ -110,29 +103,23 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                         </DialogHeader>
 
                         <View className="py-4 gap-3">
-                            <View className="flex-row justify-between items-center ml-1">
-                                <Text className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-                                    Notas y Evidencia
-                                </Text>
-                                <Text className="text-sm text-gray-300">
-                                    {imagePicker.length} fotos •{" "}
-                                    {voiceRecorder.recordedUri
-                                        ? "1 audio"
-                                        : "Sin audio"}
-                                </Text>
-                            </View>
-
-                            <View className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden">
+                            <View>
                                 <Textarea
                                     value={noteText}
                                     onChangeText={setNoteText}
+                                    label="Notas y Evidencia"
+                                    children={
+                                        <Text className="ml-auto text-sm text-gray-300">
+                                            {imagePicker.length} fotos •{" "}
+                                            {voiceRecorder.recordedUri
+                                                ? "1 audio"
+                                                : "Sin audio"}
+                                        </Text>
+                                    }
                                     placeholder="Escribe tus observaciones aquí..."
-                                    className="min-h-[80px] p-3 text-gray-800 leading-5 text-base"
-                                    placeholderTextColor="#9ca3af"
-                                    textAlignVertical="top"
                                 />
 
-                                <View className="bg-gray-100/80 px-3 py-2 flex-row gap-2 border-t border-gray-200/50">
+                                <View className="px-3 py-2 flex-row gap-2">
                                     <TouchableOpacity
                                         onPress={imagePicker.pickImages}
                                         className="flex-row items-center gap-1 bg-white px-3 py-2 rounded-lg"
@@ -263,19 +250,18 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                             )}
                         </View>
 
-                        <DialogFooter className="flex-col gap-3 sm:flex-row mt-2">
+                        <DialogFooter className="flex-row gap-2 justify-center">
                             <DialogClose asChild>
-                                <TouchableOpacity className="bg-primary p-4 rounded-xl items-center justify-center">
-                                    <Text className="text-white font-bold">
-                                        Marcar como Visitada
+                                <TouchableOpacity className="p-4 rounded-xl bg-transparent">
+                                    <Text className="text-gray-500 font-semibold">
+                                        Cancelar
                                     </Text>
                                 </TouchableOpacity>
                             </DialogClose>
-
                             <DialogClose asChild>
-                                <TouchableOpacity className="p-4 rounded-xl items-center justify-center bg-transparent">
-                                    <Text className="text-gray-500 font-semibold">
-                                        Cancelar
+                                <TouchableOpacity className="bg-primary p-4 rounded-xl">
+                                    <Text className="text-white font-bold">
+                                        Marcar como Visitada
                                     </Text>
                                 </TouchableOpacity>
                             </DialogClose>
