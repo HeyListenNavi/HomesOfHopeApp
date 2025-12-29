@@ -96,7 +96,6 @@ const SectionCard = ({
 const InfoRow = ({
     label,
     value,
-    icon,
     description,
 }: {
     label: string;
@@ -259,7 +258,6 @@ const Page = () => {
                         <InfoRow
                             label="Religión"
                             value={`${data.religion}, ${data.timeReligion}`}
-                            icon="bxs-church"
                             description={data.churchAttendance}
                         />
                     </View>
@@ -273,7 +271,6 @@ const Page = () => {
                             <InfoRow
                                 label="Lengua Indígena"
                                 value={data.nativeDialect}
-                                icon="bxs-quote-left"
                             />
                         )}
                     </View>
@@ -281,7 +278,6 @@ const Page = () => {
                         <InfoRow
                             label="Visa EEUU"
                             value={data.hasVisa ? "Tiene Visa" : "No tiene"}
-                            icon="bxs-user-id-card"
                         />
                     </View>
                 </View>
@@ -291,7 +287,6 @@ const Page = () => {
                         <InfoRow
                             label="Familia en EEUU"
                             value={data.familyInUsa ? "Si" : "No"}
-                            icon="bxs-info-circle"
                         />
                     </View>
                 </View>
@@ -352,12 +347,10 @@ const Page = () => {
                     value={
                         data.hasAddiction ? data.addictionProblems : "Ninguna"
                     }
-                    icon="bxs-capsule"
                 />
                 <InfoRow
                     label="Referencia"
                     value={data.referralSource}
-                    icon="bxs-megaphone"
                 />
             </SectionCard>
 
@@ -365,12 +358,10 @@ const Page = () => {
                 <InfoRow
                     label="Necesidades Especiales"
                     value={data.hasSpecialNeeds || "Ninguna registrada"}
-                    icon="bxs-info-circle"
                 />
                 <InfoRow
                     label="Trabajo Infantil"
                     value={data.childrenWorking || "No"}
-                    icon="bxs-info-circle"
                 />
             </SectionCard>
 
@@ -396,7 +387,6 @@ const Page = () => {
                         <InfoRow
                             label="Nombre del Dueño"
                             value={data.landOwner}
-                            icon="bxs-file-detail"
                         />
                     </View>
                     <View className="flex-1 gap-0.5">
@@ -467,7 +457,6 @@ const Page = () => {
                         <InfoRow
                             label="Último Pago"
                             value={data.landLastPayment}
-                            icon="bxs-calendar"
                         />
                     </View>
                     <View className="flex-1 gap-0.5">
@@ -508,7 +497,6 @@ const Page = () => {
                 <InfoRow
                     label="Medidas"
                     value={`${data.landMeasurements} (${data.landArea})`}
-                    icon="bxs-ruler"
                 />
 
                 <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
@@ -524,7 +512,6 @@ const Page = () => {
                             <InfoRow
                                 label="Ubicación"
                                 value={`${data.currentCity}, ${data.currentNeighborhood}`}
-                                icon="bxs-map"
                             />
                         </View>
                         <View className="flex-1">
@@ -543,14 +530,12 @@ const Page = () => {
                             <InfoRow
                                 label="Dueño"
                                 value={data.landlordName}
-                                icon="bxs-user"
                             />
                         </View>
                         <View className="flex-1">
                             <InfoRow
                                 label="Tipo"
                                 value={data.housingType}
-                                icon="bxs-building"
                             />
                         </View>
                     </View>
@@ -600,7 +585,6 @@ const Page = () => {
                     <InfoRow
                         label="Tiempo Viviendo"
                         value={data.timeInCurrentHousing}
-                        icon="bxs-clock"
                     />
 
                     <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
@@ -624,38 +608,31 @@ const Page = () => {
                 <InfoRow
                     label="Techo"
                     value={data.roofMaterial}
-                    icon="bxs-home-circle"
                 />
                 <InfoRow
                     label="Piso"
                     value={data.floorMaterial}
-                    icon="bxs-layers"
                 />
                 <InfoRow
                     label="Paredes"
                     value={data.wallMaterial}
-                    icon="bxs-square"
                 />
                 <View className="h-[1px] bg-gray-200/70 my-1" />
                 <InfoRow
                     label="Cuartos"
                     value={data.numBedrooms}
-                    icon="bxs-door-open"
                 />
                 <InfoRow
                     label="Condición"
                     value={data.roomCondition}
-                    icon="bxs-bed"
                 />
                 <InfoRow
                     label="Baño"
                     value={data.bathroomDetails}
-                    icon="bxs-bath"
                 />
                 <InfoRow
                     label="Muebles"
                     value={data.furnitureDetails}
-                    icon="bxs-cabinet"
                 />
             </SectionCard>
 
