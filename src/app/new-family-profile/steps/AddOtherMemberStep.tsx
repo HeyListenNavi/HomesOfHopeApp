@@ -28,7 +28,10 @@ const AddOtherMemberStep = ({ onSave, initialValues }: AddOtherMemberProps) => {
 
     return (
         <View className="p-6 gap-4">
-            <Text className="text-lg font-bold text-gray-800 mb-2">
+            <Text
+                variant="h3"
+                className="text-primary font-bold text-center mb-2"
+            >
                 {isEditing ? "Editar Persona" : "Nueva Persona"}
             </Text>
 
