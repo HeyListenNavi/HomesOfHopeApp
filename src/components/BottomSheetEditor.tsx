@@ -14,7 +14,7 @@ interface ReusableBottomSheetEditorProps {
 const ReusableBottomSheetEditor = forwardRef<
     BottomSheetModal,
     ReusableBottomSheetEditorProps
->(function ReusableBottomSheetEditor({ children }, ref) {
+>(function BottomSheetEditor({ children }, ref) {
     const snapPoints = useMemo(() => ["75%", "90%"], []);
     const { top, bottom } = useSafeAreaInsets();
 
