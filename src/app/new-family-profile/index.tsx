@@ -7,6 +7,7 @@ import { Text } from "@/components/ui/text";
 import { Parent } from "./steps/AddParentStep";
 import { OtherMember } from "./steps/AddOtherMemberStep";
 import { Child } from "./steps/AddChildStep";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface ProfileState {
     // --- Family ---
@@ -162,6 +163,7 @@ const Page = () => {
     const { AnimatedPagerView, ref, activePage, setPage, onPageSelected } =
         usePagerView();
     const scrollViewRef = useRef<ScrollView>(null);
+    const { bottom } = useSafeAreaInsets();
 
     const [formData, setFormData] = useState<ProfileState>(initialProfileState);
 
@@ -261,6 +263,14 @@ const Page = () => {
                     );
                 })}
             </AnimatedPagerView>
+
+            <View className="px-6 bg-white" style={{ paddingBottom: bottom + 8 }}>
+                <TouchableOpacity className="bg-primary p-4 rounded-xl">
+                    <Text className="text-white text-center font-bold">
+                        Crear Perfil
+                    </Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
