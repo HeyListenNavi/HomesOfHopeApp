@@ -4,6 +4,7 @@ import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import { Input as ReusableInput } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Text } from "@/components/ui/text";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 export interface InputProps extends React.ComponentProps<typeof ReusableInput> {
     id?: string;
@@ -12,13 +13,25 @@ export interface InputProps extends React.ComponentProps<typeof ReusableInput> {
     prefix?: string;
     className?: string;
     children?: React.ReactNode;
+    inSheet?: boolean;
 }
 
-const Input = ({ id, label, iconName, prefix, className, children, ...props }: InputProps) => {
+const Input = ({
+    id,
+    label,
+    iconName,
+    prefix,
+    className,
+    children,
+    inSheet,
+    ...props
+}: InputProps) => {
+    const InputComponent = (
+        inSheet ? BottomSheetTextInput : ReusableInput
+    ) as any;
+
     return (
-        <View className={`gap-2 ${
-            className
-        }`}>
+        <View className={`gap-2 ${className}`}>
             <View className="flex-row gap-2 items-center">
                 {iconName && (
                     <Boxicon name={iconName} color="#9ca3af" size={18} />
@@ -38,7 +51,7 @@ const Input = ({ id, label, iconName, prefix, className, children, ...props }: I
                     </Text>
                 )}
 
-                <ReusableInput
+                <InputComponent
                     nativeID={id}
                     aria-labelledby={id}
                     id={id}
@@ -46,6 +59,7 @@ const Input = ({ id, label, iconName, prefix, className, children, ...props }: I
                     cursorColor="#61b346"
                     selectionColor="#61b3466f"
                     selectionHandleColor="#61b346"
+                    placeholderTextColor="#9ca3af"
                     {...props}
                 />
             </View>
