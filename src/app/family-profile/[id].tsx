@@ -192,7 +192,7 @@ const Page = () => {
                                         `whatsapp://send?phone=${data.phoneNumberExtra}`
                                     )
                                 }
-                                className="bg-gray-100 px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center"
+                                className="bg-gray-100 px-5 py-5 gap-1 rounded-2xl flex-row justify-center items-center"
                             >
                                 <Boxicon
                                     name="bxs-phone"

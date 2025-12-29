@@ -122,7 +122,7 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                             <ScrollView
                                 keyboardShouldPersistTaps="handled"
                                 showsVerticalScrollIndicator={false}
-                                contentContainerClassName="px-4 py-6"
+                                contentContainerClassName="px-4 py-4"
                             >
                                 <DialogHeader className="items-center gap-3">
                                     <DialogTitle className="text-2xl font-bold text-gray-900 text-center">
@@ -153,10 +153,10 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                             placeholder="Escribe tus observaciones aquí..."
                                         />
 
-                                        <View className="px-3 py-2 flex-row gap-2">
+                                        <View className="py-2 flex-row gap-2">
                                             <TouchableOpacity
                                                 onPress={imagePicker.pickImages}
-                                                className="flex-row items-center gap-1 bg-white px-3 py-2 rounded-lg"
+                                                className="flex-row items-center gap-1 bg-gray-100/60 px-3 py-2 rounded-lg"
                                             >
                                                 <Boxicon
                                                     name="bxs-camera"
@@ -178,7 +178,7 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                                     className={`flex-row items-center gap-2 px-3 py-2 rounded-lg ${
                                                         voiceRecorder.isRecording
                                                             ? "bg-red-50 border border-red-100"
-                                                            : "bg-white"
+                                                            : "bg-gray-100/60"
                                                     }`}
                                                 >
                                                     <Boxicon
@@ -293,7 +293,7 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                     )}
                                 </View>
 
-                                <DialogFooter className="flex-row gap-2 justify-center">
+                                <DialogFooter className="flex-row gap-2 justify-center mt-4">
                                     <DialogClose asChild>
                                         <TouchableOpacity className="p-4 rounded-xl bg-transparent">
                                             <Text className="text-gray-500 font-semibold">
