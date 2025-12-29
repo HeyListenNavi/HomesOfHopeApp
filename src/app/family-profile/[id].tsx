@@ -12,6 +12,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "expo-router";
+import DetailSectionCard from "@/components/DetailSectionCard";
+import InfoRow from "@/components/InfoRow";
+import ServicesList from "@/components/ServicesList";
 
 const MOCK_DATA = {
     familyName: "Familia Hernández Ruiz",
@@ -80,88 +83,6 @@ const MOCK_DATA = {
     roomCondition: "Mal estado, goteras",
     bathroomDetails: "Letrina exterior",
     furnitureDetails: "2 camas, 1 mesa",
-};
-
-const SectionCard = ({
-    title,
-    children,
-    icon,
-}: {
-    title: string;
-    children: React.ReactNode;
-    icon?: BoxIconName;
-}) => (
-    <View className="bg-white p-6 rounded-2xl gap-4">
-        <View className="flex-row items-center gap-2">
-            {icon && <Boxicon name={icon} size={20} color="#61b346" />}
-            <Text className="text-gray-800 font-bold text-lg">{title}</Text>
-        </View>
-        <View className="gap-3">{children}</View>
-    </View>
-);
-
-const InfoRow = ({
-    label,
-    value,
-    description,
-}: {
-    label: string;
-    value?: string | null | boolean;
-    icon?: BoxIconName;
-    description?: string;
-}) => {
-    return (
-        <View className="flex-row gap-3 items-start">
-            <View className="gap-0.5">
-                <Text className="text-gray-400 text-sm uppercase">{label}</Text>
-                <View>
-                    <Text className="text-gray-600 font-bold">{value}</Text>
-                    {description && (
-                        <Text className="text-gray-400 text-sm">
-                            {description}
-                        </Text>
-                    )}
-                </View>
-            </View>
-        </View>
-    );
-};
-
-const ServicesList = ({ services }: { services: string[] }) => {
-    if (!services || services.length === 0)
-        return (
-            <Text className="text-gray-400 italic">
-                Sin servicios registrados
-            </Text>
-        );
-
-    const serviceLabels: Record<string, string> = {
-        bano: "Baño",
-        luz: "Luz",
-        agua: "Agua",
-        drenaje: "Drenaje",
-        fosa: "Fosa",
-    };
-
-    return (
-        <View className="flex-row flex-wrap gap-2">
-            {services.map((s) => (
-                <View
-                    key={s}
-                    className="bg-[#9BD189]/10 px-3 py-1 rounded-full flex-row items-center gap-1"
-                >
-                    <Boxicon
-                        name="bxs-check-circle"
-                        size={12}
-                        color="#61b346"
-                    />
-                    <Text className="text-gray-600 font-medium capitalize">
-                        {serviceLabels[s] || s}
-                    </Text>
-                </View>
-            ))}
-        </View>
-    );
 };
 
 const Page = () => {
@@ -284,7 +205,7 @@ const Page = () => {
                 </View>
             </View>
 
-            <SectionCard title="Padres y Tutores" icon="bxs-man-woman">
+            <DetailSectionCard title="Padres y Tutores" icon="bxs-man-woman">
                 <View className="flex-row gap-1">
                     <View className="flex-1">
                         <InfoRow
@@ -388,9 +309,9 @@ const Page = () => {
                     }
                 />
                 <InfoRow label="Referencia" value={data.referralSource} />
-            </SectionCard>
+            </DetailSectionCard>
 
-            <SectionCard title="Hijos" icon="bxs-child">
+            <DetailSectionCard title="Hijos" icon="bxs-child">
                 <InfoRow
                     label="Necesidades Especiales"
                     value={data.hasSpecialNeeds || "Ninguna registrada"}
@@ -399,9 +320,9 @@ const Page = () => {
                     label="Trabajo Infantil"
                     value={data.childrenWorking || "No"}
                 />
-            </SectionCard>
+            </DetailSectionCard>
 
-            <SectionCard title="Terreno" icon="bxs-location">
+            <DetailSectionCard title="Terreno" icon="bxs-location">
                 <View className="flex-row gap-1">
                     <View className="flex-1">
                         <InfoRow
@@ -539,10 +460,10 @@ const Page = () => {
                     <Boxicon name="bxs-location" size={16} color="#ffffff" />
                     <Text className="text-white font-bold">Ver Mapa</Text>
                 </TouchableOpacity>
-            </SectionCard>
+            </DetailSectionCard>
 
             {!data.livesInLand ? (
-                <SectionCard title="Vivienda Actual" icon="bxs-home-alt">
+                <DetailSectionCard title="Vivienda Actual" icon="bxs-home-alt">
                     <View className="flex-row gap-1">
                         <View className="flex-1">
                             <InfoRow
@@ -625,16 +546,16 @@ const Page = () => {
                         />
                         <Text className="text-white font-bold">Ver Mapa</Text>
                     </TouchableOpacity>
-                </SectionCard>
+                </DetailSectionCard>
             ) : (
-                <SectionCard title="Vivienda Actual" icon="bxs-home">
+                <DetailSectionCard title="Vivienda Actual" icon="bxs-home">
                     <Text className="text-gray-500 italic">
                         Viven actualmente en el terreno.
                     </Text>
-                </SectionCard>
+                </DetailSectionCard>
             )}
 
-            <SectionCard title="Estado de la Casa" icon="bxs-home-heart">
+            <DetailSectionCard title="Estado de la Casa" icon="bxs-home-heart">
                 <InfoRow label="Techo" value={data.roofMaterial} />
                 <InfoRow label="Piso" value={data.floorMaterial} />
                 <InfoRow label="Paredes" value={data.wallMaterial} />
@@ -643,9 +564,9 @@ const Page = () => {
                 <InfoRow label="Condición" value={data.roomCondition} />
                 <InfoRow label="Baño" value={data.bathroomDetails} />
                 <InfoRow label="Muebles" value={data.furnitureDetails} />
-            </SectionCard>
+            </DetailSectionCard>
 
-            <SectionCard title="Documentos" icon="bxs-file-detail">
+            <DetailSectionCard title="Documentos" icon="bxs-file-detail">
                 <View className="gap-4">
                     <DocumentPreviewer
                         label="INE"
@@ -660,7 +581,7 @@ const Page = () => {
                         description="Carta de posesión o título"
                     />
                 </View>
-            </SectionCard>
+            </DetailSectionCard>
         </ScrollView>
     );
 };
