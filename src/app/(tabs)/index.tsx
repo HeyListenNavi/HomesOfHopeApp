@@ -5,6 +5,7 @@ import { Family, FamilyCard } from "@/components/FamilyCard";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const recentFamilies: Family[] = [
     {
@@ -35,8 +36,11 @@ const recentFamilies: Family[] = [
 
 const Page = () => {
     return (
-        <ScrollView className="flex-1 bg-gray-100">
-            <View className="p-6 gap-6">
+        <KeyboardAwareScrollView
+            className="flex-1 bg-gray-100"
+            contentContainerClassName="p-6 gap-6"
+            showsVerticalScrollIndicator={false}
+        >
                 <View className="gap-4">
                     <Text
                         variant="h3"
@@ -109,8 +113,7 @@ const Page = () => {
                         ))}
                     </View>
                 </View>
-            </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 

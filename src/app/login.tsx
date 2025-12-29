@@ -3,14 +3,13 @@ import {
     View,
     TextInput,
     TouchableOpacity,
-    KeyboardAvoidingView,
-    Platform,
     TouchableWithoutFeedback,
     Keyboard,
 } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useRouter } from "expo-router";
 import Boxicon from "@/components/Boxicons";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -25,9 +24,9 @@ export default function LoginScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-            className="flex-1 bg-white"
+        <KeyboardAwareScrollView
+            contentContainerClassName="flex-1 bg-white"
+            showsVerticalScrollIndicator={false}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View className="flex-1 justify-center px-8 gap-12">
@@ -125,6 +124,6 @@ export default function LoginScreen() {
                     </View>
                 </View>
             </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
     );
 }
