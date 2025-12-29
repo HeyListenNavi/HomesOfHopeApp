@@ -2,8 +2,10 @@ import { View, ScrollView, TextInput, TouchableOpacity } from "react-native";
 import React from "react";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
-import { Staff, StaffCard } from "@/components/StaffCard";
+import { StaffCard } from "@/components/StaffCard";
 import StatCard from "@/components/StatCard";
+import { Staff } from "../staff-profile/[id]";
+import { useRouter } from "expo-router";
 
 const recentStaff: Staff[] = [
     {
@@ -32,6 +34,8 @@ const recentStaff: Staff[] = [
 ];
 
 const Page = () => {
+    const router = useRouter();
+
     return (
         <ScrollView
             className="flex-1 bg-gray-100"
@@ -43,7 +47,7 @@ const Page = () => {
                         Equipo
                     </Text>
 
-                    <TouchableOpacity className="flex-row gap-2 bg-primary py-2 px-4 rounded-xl">
+                    <TouchableOpacity className="flex-row gap-2 bg-primary py-2 px-4 rounded-xl" onPress={() => router.push("/new-staff-profile/123")}>
                         <Text className="text-white">
                             <Boxicon name="bxs-plus" size={18} />
                         </Text>

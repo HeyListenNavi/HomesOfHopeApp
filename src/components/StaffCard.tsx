@@ -6,15 +6,7 @@ import Boxicon from "@/components/Boxicons";
 import BrandBoxicon from "@/components/BrandBoxicons";
 import { useRouter } from "expo-router";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-
-export interface Staff {
-    id: string;
-    name: string;
-    role: string;
-    phoneNumber: string;
-    email: string;
-    photoUrl?: string | null;
-}
+import { Staff } from "@/app/staff-profile/[id]";
 
 interface StaffCardProps {
     staff: Staff;

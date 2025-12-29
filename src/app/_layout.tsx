@@ -128,6 +128,16 @@ const Layout = () => {
                         />
 
                         <Stack.Screen
+                            name="new-staff-profile/[id]"
+                            options={{
+                                headerTitle: "Nuevo Staff",
+                                headerTitleAlign: "center",
+                                headerShadowVisible: false,
+                                headerBackTitle: "Atras",
+                            }}
+                        />
+
+                        <Stack.Screen
                             name="staff-profile/[id]"
                             options={{
                                 headerTitle: "Staff",
