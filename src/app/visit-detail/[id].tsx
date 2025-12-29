@@ -84,7 +84,7 @@ const Page = () => {
                         <Text className="text-gray-400">
                             Detalles de la visita
                         </Text>
-                        <Text variant="h2" className="border-b-0">
+                        <Text variant="h2" className="border-b-0 font-bold">
                             {visit.routeTitle}
                         </Text>
 
@@ -129,17 +129,17 @@ const Page = () => {
                         </Text>
                     </View>
 
-                    <TouchableOpacity className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center">
+                    <TouchableOpacity className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center gap-2">
                         <Text className="text-white font-bold">
                             Iniciar Visita
                         </Text>
-                        <Boxicon name="bxs-play" size={20} color="white" />
+                        <Boxicon name="bxs-play-circle" size={20} color="white" />
                     </TouchableOpacity>
                 </View>
 
                 <View className="gap-3">
                     <View>
-                        <Text variant="h3">Familias</Text>
+                        <Text variant="h3" className="font-bold">Familias</Text>
                     </View>
 
                     <View className="gap-2">
