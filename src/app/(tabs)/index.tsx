@@ -95,69 +95,90 @@ const Page = () => {
 
                 <View className="flex-row flex-wrap px-4 py-6 gap-4 justify-center bg-white rounded-2xl">
                     <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-1 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary/80 p-6 rounded-2xl">
+                        <TouchableOpacity
+                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                            onPress={() =>
+                                router.push("/new-family-profile/123")
+                            }
+                        >
+                            <Text className="text-white bg-primary p-6 rounded-2xl">
                                 <Boxicon name="bxs-user-plus" size={24} />
                             </Text>
-                            <Text className="text-gray-400 font-medium text-xs text-center">
-                                Crear Perfil
+                            <Text className="text-gray-500 font-medium text-xs text-center">
+                                Crear Familia
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-1 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary/80 p-6 rounded-2xl">
+                        <TouchableOpacity
+                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                            onPress={() =>
+                                router.push("/new-staff-profile/123")
+                            }
+                        >
+                            <Text className="text-white bg-primary p-6 rounded-2xl">
                                 <Boxicon name="bxs-user-id-card" size={24} />
                             </Text>
-                            <Text className="text-gray-400 font-medium text-xs text-center">
+                            <Text className="text-gray-500 font-medium text-xs text-center">
                                 Crear Staff
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-1 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary/80 p-6 rounded-2xl">
+                        <TouchableOpacity className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]">
+                            <Text className="text-white bg-primary p-6 rounded-2xl">
                                 <Boxicon name="bxs-dashboard" size={24} />
                             </Text>
-                            <Text className="text-gray-400 font-medium text-xs text-center">
+                            <Text className="text-gray-500 font-medium text-xs text-center">
                                 Abrir Panel
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-1 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary/80 p-6 rounded-2xl">
+                        <TouchableOpacity
+                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                            onPress={() => router.push("/interview-detail/123")}
+                        >
+                            <Text className="text-white bg-primary p-6 rounded-2xl">
                                 <Boxicon name="bxs-calendar-check" size={24} />
                             </Text>
-                            <Text className="text-gray-400 font-medium text-xs text-center">
+                            <Text className="text-gray-500 font-medium text-xs text-center">
                                 Entrevista de Hoy
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-1 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary/80 p-6 rounded-2xl">
+                        <TouchableOpacity
+                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                            onPress={() => router.push("/(tabs)/visits")}
+                        >
+                            <Text className="text-white bg-primary p-6 rounded-2xl">
                                 <Boxicon name="bxs-group" size={24} />
                             </Text>
-                            <Text className="text-gray-400 font-medium text-xs text-center">
+                            <Text className="text-gray-500 font-medium text-xs text-center">
                                 Ver Visitas
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-1 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary/80 p-6 rounded-2xl">
+                        <TouchableOpacity
+                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                            onPress={() =>
+                                router.push("/(tabs)/interviews")
+                            }
+                        >
+                            <Text className="text-white bg-primary p-6 rounded-2xl">
                                 <Boxicon
                                     name="bxs-message-circle-dots-2"
                                     size={24}
                                 />
                             </Text>
-                            <Text className="text-gray-400 font-medium text-xs text-center">
+                            <Text className="text-gray-500 font-medium text-xs text-center">
                                 Ver Entrevistas
                             </Text>
                         </TouchableOpacity>
