@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import "global.css";
 import { Text } from "@/components/ui/text";
 import { useEffect } from "react";
@@ -37,6 +37,8 @@ const Layout = () => {
 
     if (!fontsLoaded) return null;
 
+    const router = useRouter();
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <KeyboardProvider>
@@ -61,6 +63,15 @@ const Layout = () => {
                         />
 
                         <Stack.Screen
+                            name="profile"
+                            options={{
+                                headerTitle: "Perfil",
+                                headerShadowVisible: false,
+                                headerBackTitle: "Inicio",
+                            }}
+                        />
+
+                        <Stack.Screen
                             name="(tabs)"
                             options={{
                                 header: () => (
@@ -77,7 +88,7 @@ const Layout = () => {
                                             >
                                                 Hope
                                             </Text>
-                                            <TouchableOpacity>
+                                            <TouchableOpacity onPress={() => router.push("/profile")}>
                                                 <Boxicon
                                                     name="bxs-user-circle"
                                                     size={38}
