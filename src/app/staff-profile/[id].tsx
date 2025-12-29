@@ -102,7 +102,9 @@ const Page = () => {
                             className="bg-white rounded-2xl border-transparent shadow-lg shadow-black/40"
                         >
                             <DropdownMenuItem
-                                onPress={() => router.push("/new-staff-profile/123")}
+                                onPress={() =>
+                                    router.push("/new-staff-profile/123")
+                                }
                                 className="flex-row gap-2 p-3"
                             >
                                 <Boxicon name="bxs-edit" size={18} />
@@ -121,7 +123,6 @@ const Page = () => {
                     </DropdownMenu>
                 </View>
 
-                {/* Contact buttons */}
                 <View className="flex-row gap-2">
                     <TouchableOpacity
                         onPress={() =>
@@ -148,14 +149,12 @@ const Page = () => {
                 </View>
             </View>
 
-            {/* ---------- GENERAL INFO ---------- */}
             <DetailSectionCard title="Información General" icon="bxs-user">
                 <InfoRow label="Correo" value={staff.email} />
                 <InfoRow label="Teléfono" value={staff.phoneNumber} />
                 <InfoRow label="Fecha de Ingreso" value={staff.joinedAt} />
             </DetailSectionCard>
 
-            {/* ---------- STATS ---------- */}
             <DetailSectionCard title="Actividad" icon="bxs-bar-chart-big">
                 <View className="flex-row gap-4">
                     <View className="flex-1 bg-gray-100 p-4 rounded-xl gap-1">
