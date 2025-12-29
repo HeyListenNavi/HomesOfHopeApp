@@ -69,9 +69,9 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
                     />
                 </View>
 
-                <TouchableOpacity className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center">
+                <TouchableOpacity className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center gap-2">
                     <Text className="text-white font-bold">Iniciar Visita</Text>
-                    <Boxicon name="bxs-play" size={20} color="white" />
+                    <Boxicon name="bxs-play-circle" size={20} color="white" />
                 </TouchableOpacity>
             </TouchableOpacity>
         );
