@@ -10,7 +10,6 @@ export interface Family {
     id: number;
     name: string;
     location: string;
-    image: string;
     lastAttended: string;
     status: string;
 }
@@ -27,11 +26,6 @@ export const FamilyCard = ({ family }: FamilyCardProps) => {
             className="bg-white p-4 rounded-2xl flex-row items-center active:bg-gray-50 gap-4"
             onPress={() => router.push("/family-profile/123")}
         >
-            <Image
-                source={{ uri: family.image }}
-                className="w-14 h-14 rounded-full bg-gray-200"
-            />
-
             <View className="flex-1 gap-1">
                 <Text
                     className="font-bold text-lg text-gray-800 leading-tight"
