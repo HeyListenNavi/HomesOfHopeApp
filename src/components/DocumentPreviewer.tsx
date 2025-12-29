@@ -14,6 +14,7 @@ import {
     DialogTrigger,
     DialogClose,
 } from "@/components/ui/dialog";
+import Textarea from "./Textarea";
 
 interface DocumentPreviewerProps {
     label?: string;
@@ -28,7 +29,7 @@ const DocumentPreviewer = ({
 }: DocumentPreviewerProps) => {
     return (
         <Dialog>
-            <View className="gap-2">
+            <View className="gap-3">
                 <View>
                     <View className="flex-row gap-2 items-center">
                         <Boxicon name="bxs-file" color="#9ca3af" size={18} />
@@ -45,7 +46,7 @@ const DocumentPreviewer = ({
                 </View>
 
                 <DialogTrigger asChild>
-                    <TouchableOpacity className="relative bg-white items-center justify-center h-96 p-4 rounded-2xl border-2 border-gray-300 border-dashed">
+                    <TouchableOpacity className="bg-white items-center justify-center h-96 p-4 rounded-2xl border-2 border-gray-300 border-dashed">
                         <Boxicon
                             name="bxs-arrow-out-up-square-half"
                             size={48}
@@ -54,27 +55,109 @@ const DocumentPreviewer = ({
                         <Text className="text-primary text-center text-2xl font-bold mt-2">
                             {label}
                         </Text>
-
-                        {needsReview && (
-                            <View className="absolute flex-row gap-4 bottom-3 bg-white p-2 rounded-2xl">
-                                <TouchableOpacity>
-                                    <Boxicon
-                                        name="bxs-x-circle"
-                                        size={48}
-                                        color="#ef4444"
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity>
-                                    <Boxicon
-                                        name="bxs-check-circle"
-                                        size={48}
-                                        color="#61b346"
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        )}
                     </TouchableOpacity>
                 </DialogTrigger>
+
+                {needsReview && (
+                    <View className="flex-row gap-2 bg-white rounded-2xl">
+                        <View className="flex-1 flex-row gap-2">
+                            <TouchableOpacity className="flex-1 bg-gray-100 px-2 py-4 rounded-2xl flex-row justify-center gap-2">
+                                <Text className="text-gray-500">
+                                    <Boxicon name="bxs-camera" size={24} />
+                                </Text>
+                            </TouchableOpacity>
+                            <Dialog className="flex-1">
+                                <DialogTrigger asChild>
+                                    <TouchableOpacity className="bg-red-50 px-2 py-4 rounded-2xl flex-row justify-center gap-2">
+                                        <Text className="text-red-500">
+                                            <Boxicon
+                                                name="bxs-x-circle"
+                                                size={24}
+                                            />
+                                        </Text>
+                                    </TouchableOpacity>
+                                </DialogTrigger>
+
+                                <DialogContent className="w-[90vw] max-w-none bg-white rounded-3xl px-6 py-8">
+                                    <DialogTitle className="text-2xl font-bold text-gray-900 text-center">
+                                        Rechazar documento
+                                    </DialogTitle>
+
+                                    <DialogDescription className="text-gray-500 text-center text-base">
+                                        ¿Deseas Rechazar este documento?
+                                    </DialogDescription>
+
+                                    <Textarea
+                                        label="Razon"
+                                        iconName="bxs-x-circle"
+                                        placeholder="Escribe aqui la razon..."
+                                        value={"reaon"}
+                                        onChangeText={() => {}}
+                                    />
+
+                                    <DialogFooter className="flex-row justify-center gap-2">
+                                        <DialogClose asChild>
+                                            <TouchableOpacity className="p-4 rounded-xl items-center justify-center bg-transparent">
+                                                <Text className="text-gray-500 font-semibold">
+                                                    Cancelar
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </DialogClose>
+                                        <DialogClose asChild>
+                                            <TouchableOpacity className="bg-red-500 p-4 rounded-xl items-center justify-center">
+                                                <Text className="text-white font-bold">
+                                                    Rechazar
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </DialogClose>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </View>
+                        <Dialog className="flex-1">
+                            <DialogTrigger asChild>
+                                <TouchableOpacity className="bg-primary px-2 py-4 rounded-2xl flex-row items-center justify-center gap-2">
+                                    <Text className="text-white">
+                                        <Boxicon
+                                            name="bxs-check-circle"
+                                            size={24}
+                                        />
+                                    </Text>
+                                    <Text className="text-white font-bold">
+                                        Aprobar
+                                    </Text>
+                                </TouchableOpacity>
+                            </DialogTrigger>
+
+                            <DialogContent className="w-[90vw] max-w-none bg-white rounded-3xl px-6 py-8">
+                                <DialogTitle className="text-2xl font-bold text-gray-900 text-center">
+                                    Aprobar documento
+                                </DialogTitle>
+
+                                <DialogDescription className="text-gray-500 text-center text-base">
+                                    ¿Deseas aprobar este documento?
+                                </DialogDescription>
+
+                                <DialogFooter className="flex-row gap-2 justify-center">
+                                    <DialogClose asChild>
+                                        <TouchableOpacity className="p-4 rounded-xl bg-transparent">
+                                            <Text className="text-gray-500 font-semibold">
+                                                Cancelar
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </DialogClose>
+                                    <DialogClose asChild>
+                                        <TouchableOpacity className="bg-primary p-4 rounded-xl">
+                                            <Text className="text-white font-bold">
+                                                Aprobar
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </DialogClose>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </View>
+                )}
             </View>
 
             <DialogContent className="w-[90vw] max-w-none bg-white rounded-3xl px-6 py-8">
@@ -96,14 +179,11 @@ const DocumentPreviewer = ({
 
                 <DialogFooter className="flex-row justify-center gap-2">
                     <DialogClose asChild>
-                        <Button
-                            className="bg-gray-100 rounded-xl px-6"
-                            variant="secondary"
-                        >
-                            <Text className="text-gray-600 font-bold">
+                        <TouchableOpacity className="p-4 rounded-xl bg-gray-100">
+                            <Text className="text-gray-500 font-semibold">
                                 Cerrar
                             </Text>
-                        </Button>
+                        </TouchableOpacity>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
