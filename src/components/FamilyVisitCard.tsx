@@ -130,8 +130,9 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                     </DialogTitle>
 
                                     <DialogDescription className="text-gray-500 text-center text-base">
-                                ¿Deseas marcar a esta familia como visitada?
-                                Esto actualizará el progreso de tu ruta.
+                                        ¿Deseas marcar a esta familia como
+                                        visitada? Esto actualizará el progreso
+                                        de tu ruta.
                                     </DialogDescription>
                                 </DialogHeader>
 
@@ -200,7 +201,9 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                                                 Grabando
                                                             </Text>
                                                             <Text className="text-sm font-mono font-bold text-red-600 min-w-[24px]">
-                                                        {voiceRecorder.duration}
+                                                                {
+                                                                    voiceRecorder.duration
+                                                                }
                                                                 s
                                                             </Text>
                                                         </View>
@@ -228,7 +231,9 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                     {voiceRecorder.recordedUri && (
                                         <AudioPlayerPreview
                                             uri={voiceRecorder.recordedUri}
-                                    onClear={voiceRecorder.discardRecording}
+                                            onClear={
+                                                voiceRecorder.discardRecording
+                                            }
                                         />
                                     )}
 
@@ -239,13 +244,18 @@ export const VisitFamilyCard = ({ family, index }: VisitFamilyCardProps) => {
                                             keyExtractor={(item, index) =>
                                                 index.toString()
                                             }
-                                    showsHorizontalScrollIndicator={false}
+                                            showsHorizontalScrollIndicator={
+                                                false
+                                            }
                                             className="mt-1 max-h-24 grow-0"
                                             contentContainerClassName="pr-4 pl-1 py-1"
                                             ItemSeparatorComponent={() => (
                                                 <View className="w-2" />
                                             )}
-                                    renderItem={({ item: uri, index }) => (
+                                            renderItem={({
+                                                item: uri,
+                                                index,
+                                            }) => (
                                                 <View
                                                     className="w-20 h-20 relative"
                                                     onStartShouldSetResponder={() =>
