@@ -3,11 +3,11 @@ import Checkbox from "@/components/Checkbox";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { Text } from "@/components/ui/text";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, TextInputProps, TouchableOpacity } from "react-native";
 import CurrencyInput from "react-native-currency-input";
 
-const initialParentState: ParentState = {
+const initialParentState: Parent = {
     name: null,
     relation: null,
     age: null,
@@ -20,7 +20,7 @@ const initialParentState: ParentState = {
     gestationMonths: null,
 };
 
-export interface ParentState {
+export interface Parent {
     name: string | null;
     relation: string | null;
     age: string | null;
@@ -34,13 +34,23 @@ export interface ParentState {
 }
 
 interface AddParentProps {
-    onSave: (parent: ParentState) => void;
+    onSave: (parent: Parent) => void;
+    initialValues?: Parent;
 }
 
-const AddParentStep = ({ onSave }: AddParentProps) => {
-    const [form, setForm] = useState<ParentState>(initialParentState);
+const AddParentStep = ({ onSave, initialValues }: AddParentProps) => {
+    const [form, setForm] = useState<Parent>(initialParentState);
+    const isEditing = !!initialValues;
 
-    const handleChange = (key: keyof ParentState, value: any) => {
+    useEffect(() => {
+        if (initialValues) {
+            setForm(initialValues);
+        } else {
+            setForm(initialParentState);
+        }
+    }, [initialValues]);
+
+    const handleChange = (key: keyof Parent, value: any) => {
         console.log({ [key]: value });
         setForm((prev) => ({ ...prev, [key]: value }));
     };
@@ -56,7 +66,7 @@ const AddParentStep = ({ onSave }: AddParentProps) => {
                 variant="h3"
                 className="text-primary font-bold text-center mb-2"
             >
-                Nuevo Padre / Tutor
+                {isEditing ? `Editar ${form.relation}` : "Nuevo Padre / Tutor"}
             </Text>
 
             <Input

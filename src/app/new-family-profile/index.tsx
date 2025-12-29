@@ -4,7 +4,8 @@ import { ScrollView, View, TouchableOpacity } from "react-native";
 import { usePagerView } from "react-native-pager-view";
 import { RESET_MAP, STEPS } from "./constants";
 import { Text } from "@/components/ui/text";
-import { ParentState } from "./steps/AddParentStep";
+import { Parent } from "./steps/AddParentStep";
+import { OtherMember } from "./steps/OtherMemberStep";
 
 export interface ProfileState {
     // --- Family ---
@@ -14,7 +15,7 @@ export interface ProfileState {
     date: Date | string | null;
 
     // --- Parents ---
-    parents: ParentState[];
+    parents: Parent[];
     civilState: string | null;
     timeCivilState: string | null;
     religion: string | null;
@@ -38,7 +39,7 @@ export interface ProfileState {
     childrenWorking: boolean | null;
 
     // --- Others ---
-    others: any[];
+    others: OtherMember[];
 
     // --- Land ---
     landCity: string | null;

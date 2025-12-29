@@ -14,8 +14,8 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AddParentStep, { ParentState } from "./AddParentStep";
-import { ProfileState } from "../index";
+import AddParentStep, { Parent } from "./AddParentStep";
+import { ProfileState } from "..";
 
 interface ParentStepProps {
     data: ProfileState;
@@ -30,14 +30,14 @@ const ParentStep = ({ data, onChange }: ParentStepProps) => {
     const snapPoints = useMemo(() => ["75%", "90%"], []);
     const { top } = useSafeAreaInsets();
 
-    const handleAddParent = (newParent: ParentState) => {
-        const currentParents = (data.parents || []) as ParentState[];
+    const handleAddParent = (newParent: Parent) => {
+        const currentParents = (data.parents || []) as Parent[];
         onChange("parents", [...currentParents, newParent]);
         bottomSheetRef.current?.close();
     };
 
     const handleRemoveParent = (indexToRemove: number) => {
-        const currentParents = (data.parents || []) as ParentState[];
+        const currentParents = (data.parents || []) as Parent[];
         const updatedParents = currentParents.filter(
             (_, id: number) => id !== indexToRemove
         );
@@ -70,7 +70,7 @@ const ParentStep = ({ data, onChange }: ParentStepProps) => {
                         </View>
                     ) : (
                         data.parents.map(
-                            (parent: ParentState, index: number) => (
+                            (parent: Parent, index: number) => (
                                 <View
                                     key={index}
                                     className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex-row justify-between items-center"
