@@ -44,7 +44,7 @@ const Page = () => {
                         <Text className="text-gray-400">
                             Detalles de la entrevista
                         </Text>
-                        <Text variant="h2" className="border-b-0">
+                        <Text variant="h2" className="font-bold border-b-0">
                             {interview.title}
                         </Text>
                         <View className="flex-row items-center gap-2">
@@ -78,7 +78,7 @@ const Page = () => {
 
                 <View className="gap-3">
                     <View>
-                        <Text variant="h3">Aplicantes</Text>
+                        <Text variant="h3" className="font-bold">Aplicantes</Text>
                     </View>
 
                     <View className="gap-2">

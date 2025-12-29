@@ -68,7 +68,7 @@ export default function ApplicantInterviewCard({ applicant }: ApplicantProps) {
 
             <TouchableOpacity
                 className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center"
-                onPress={() => router.push("/new-family-profile")}
+                onPress={() => router.push("/new-family-profile/123")}
             >
                 <Text className="text-white font-bold">Crear Perfil</Text>
                 <Boxicon name="bxs-chevron-right" size={20} color="white" />

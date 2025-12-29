@@ -2,12 +2,20 @@ import Boxicon from "@/components/Boxicons";
 import React, { useRef, useState, useEffect } from "react";
 import { ScrollView, View, TouchableOpacity } from "react-native";
 import { usePagerView } from "react-native-pager-view";
-import { RESET_MAP, STEPS } from "./constants";
 import { Text } from "@/components/ui/text";
 import { Parent } from "./steps/AddParentStep";
 import { OtherMember } from "./steps/AddOtherMemberStep";
 import { Child } from "./steps/AddChildStep";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BoxIconName } from "@/components/Boxicons";
+import FamilyStep from "./steps/FamilyStep";
+import ParentStep from "./steps/ParentStep";
+import ChildrenStep from "./steps/ChildrenStep";
+import OtherMemberStep from "./steps/OtherMemberStep";
+import LandStep from "./steps/LandStep";
+import CurrentHouseStep from "./steps/CurentHouseStep";
+import HouseStateStep from "./steps/HouseStateStep";
+import DocumentStep from "./steps/DocumentStep";
 
 export interface ProfileState {
     // --- Family ---
@@ -159,6 +167,43 @@ const initialProfileState: ProfileState = {
     furnitureDetails: null,
 };
 
+export const RESET_MAP: Record<string, string[]> = {
+    speaksDialect: ["nativeDialect"],
+    hasGovSupport: ["govSupport"],
+    hasVisa: [],
+    familyInUsa: ["receivesUsaSupport", "familyInUsaSupport"],
+    receivesUsaSupport: ["familyInUsaSupport"],
+    hasAddiction: ["addictionProblems"],
+    livesInLand: [
+        "timeLivingLand",
+        "currentCity",
+        "currentNeighborhood",
+        "currentGps",
+        "housingType",
+        "landlordName",
+        "timeInCurrentHousing",
+        "rentCost",
+        "hasRentReceipts",
+    ],
+};
+
+interface Step {
+    title: string;
+    icon: BoxIconName;
+    component: React.ComponentType<any>;
+}
+
+export const STEPS: Step[] = [
+    { title: "Familia", icon: "bxs-parent-child", component: FamilyStep },
+    { title: "Padres", icon: "bxs-man-woman", component: ParentStep },
+    { title: "Hijos", icon: "bxs-child", component: ChildrenStep },
+    { title: "Otros", icon: "bxs-user-plus", component: OtherMemberStep },
+    { title: "Terreno", icon: "bxs-file-detail", component: LandStep },
+    { title: "Vivienda", icon: "bxs-home", component: CurrentHouseStep },
+    { title: "Estado", icon: "bxs-building-house", component: HouseStateStep },
+    { title: "Documentos", icon: "bxs-file", component: DocumentStep },
+];
+
 const Page = () => {
     const { AnimatedPagerView, ref, activePage, setPage, onPageSelected } =
         usePagerView();
@@ -264,7 +309,10 @@ const Page = () => {
                 })}
             </AnimatedPagerView>
 
-            <View className="px-6 bg-white" style={{ paddingBottom: bottom + 8 }}>
+            <View
+                className="px-6 bg-white"
+                style={{ paddingBottom: bottom + 8 }}
+            >
                 <TouchableOpacity className="bg-primary p-4 rounded-xl">
                     <Text className="text-white text-center font-bold">
                         Crear Perfil

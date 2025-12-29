@@ -7,7 +7,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef, useState, useEffect } from "react";
 import ReusableBottomSheetEditor from "@/components/BottomSheetEditor";
 import { useEditableList } from "@/hooks/useEditableList";
-import { ProfileState } from "..";
+import { ProfileState } from "../[id]";
 import AddOtherMemberStep, { OtherMember } from "./AddOtherMemberStep";
 
 interface OtherMemberStepProps {
@@ -23,7 +23,7 @@ const OtherMemberStep = ({ data, onChange }: OtherMemberStepProps) => {
     const otherMembers = useEditableList<OtherMember>(data.otherMembers, (updatedMembers) =>
         onChange("otherMembers", updatedMembers)
     );
-    
+
     return (
         <StepContainer>
             <View className="bg-white gap-4 p-6 rounded-2xl">

@@ -9,7 +9,7 @@ import StepContainer from "./StepContainer";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef } from "react";
 import AddParentStep, { Parent } from "./AddParentStep";
-import { ProfileState } from "..";
+import { ProfileState } from "../[id]";
 import BottomSheetEditor from "@/components/BottomSheetEditor";
 import { useEditableList } from "@/hooks/useEditableList";
 

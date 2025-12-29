@@ -105,7 +105,7 @@ const Layout = () => {
                         />
 
                         <Stack.Screen
-                            name="new-family-profile/index"
+                            name="new-family-profile/[id]"
                             options={{
                                 headerTitle: "Nuevo Perfil",
                                 headerTitleAlign: "center",

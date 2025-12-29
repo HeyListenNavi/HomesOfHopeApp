@@ -3,7 +3,7 @@ import Input from "@/components/Input";
 import { Text } from "@/components/ui/text";
 import { View, TouchableOpacity } from "react-native";
 import StepContainer from "./StepContainer";
-import { ProfileState } from "..";
+import { ProfileState } from "../[id]";
 import { useEditableList } from "@/hooks/useEditableList";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef } from "react";
