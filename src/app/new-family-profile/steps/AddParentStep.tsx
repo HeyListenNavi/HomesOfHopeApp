@@ -3,22 +3,10 @@ import Checkbox from "@/components/Checkbox";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import { Text } from "@/components/ui/text";
-import { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, TextInputProps, TouchableOpacity } from "react-native";
 import CurrencyInput from "react-native-currency-input";
-
-const initialParentState: Parent = {
-    name: null,
-    relation: null,
-    age: null,
-    birthCountry: null,
-    birthState: null,
-    schooling: null,
-    occupation: null,
-    weeklySalary: null,
-    isAwaitingBaby: false,
-    gestationMonths: null,
-};
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 
 export interface Parent {
     name: string | null;
@@ -26,39 +14,43 @@ export interface Parent {
     age: string | null;
     birthCountry: string | null;
     birthState: string | null;
-    schooling: string | null;
+    latestSchoolGrade: string | null;
     occupation: string | null;
     weeklySalary: number | null;
     isAwaitingBaby: boolean;
     gestationMonths: string | null;
 }
 
-interface AddParentProps {
+interface AddParentStepProps {
     onSave: (parent: Parent) => void;
     initialValues?: Parent;
 }
 
-const AddParentStep = ({ onSave, initialValues }: AddParentProps) => {
-    const [form, setForm] = useState<Parent>(initialParentState);
+const AddParentStep = ({ onSave, initialValues }: AddParentStepProps) => {
+    const { handleSubmit, getValues, control, watch, setValue } = useForm<Parent>({
+        defaultValues: initialValues ?? {},
+    });
+
     const isEditing = !!initialValues;
 
+    const relation = watch("relation");
+    const isAwaitingBaby = watch("isAwaitingBaby");
+
+    const onSubmit: SubmitHandler<Parent> = (data) => {
+        onSave(data);
+    };
+
     useEffect(() => {
-        if (initialValues) {
-            setForm(initialValues);
-        } else {
-            setForm(initialParentState);
+        if (relation !== "madre") {
+            setValue("isAwaitingBaby", false);
+            setValue("gestationMonths", null);
+            return;
         }
-    }, [initialValues]);
 
-    const handleChange = (key: keyof Parent, value: any) => {
-        console.log({ [key]: value });
-        setForm((prev) => ({ ...prev, [key]: value }));
-    };
-
-    const handleSave = () => {
-        onSave(form);
-        setForm(initialParentState);
-    };
+        if (!isAwaitingBaby) {
+            setValue("gestationMonths", null);
+        }
+    }, [relation, isAwaitingBaby, setValue]);
 
     return (
         <View className="p-6 gap-4">
@@ -66,133 +58,207 @@ const AddParentStep = ({ onSave, initialValues }: AddParentProps) => {
                 variant="h3"
                 className="text-primary font-bold text-center mb-2"
             >
-                {isEditing ? `Editar ${form.relation}` : "Nuevo Padre / Tutor"}
+                {isEditing
+                    ? `Editar ${getValues("relation")}`
+                    : "Nuevo Padre / Tutor"}
             </Text>
 
-            <Input
-                label="Nombre Completo"
-                placeholder="Escribe el nombre completo"
-                iconName="bxs-user"
-                inSheet
-                value={form.name ?? ""}
-                onChangeText={(t) => handleChange("name", t)}
-            />
-
-            <View className="flex-row gap-4">
-                <View className="flex-1">
-                    <Select
-                        label="Parentesco"
-                        iconName="bxs-group"
-                        placeholder="Seleccionar"
-                        options={[
-                            { label: "Padre", value: "padre" },
-                            { label: "Madre", value: "madre" },
-                            { label: "Abuelo(a)", value: "abuelo" },
-                            { label: "Tío(a)", value: "tio" },
-                            { label: "Tutor", value: "tutor" },
-                        ]}
-                        value={form.relation ?? ""}
-                        onValueChange={(t) => handleChange("relation", t)}
-                    />
-                </View>
-
-                <View className="flex-1">
+            <Controller
+                name="name"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
                     <Input
-                        label="Edad"
-                        placeholder="Años"
-                        iconName="bxs-birthday-cake"
-                        keyboardType="number-pad"
-                        maxLength={3}
+                        label="Nombre Completo"
+                        placeholder="Escribe el nombre completo"
+                        iconName="bxs-user"
                         inSheet
-                        value={form.age ?? ""}
-                        onChangeText={(t) => handleChange("age", t)}
-                    />
-                </View>
-            </View>
-
-            <Input
-                label="País de Origen"
-                placeholder="Ej. México"
-                iconName="bxs-flag-alt"
-                inSheet
-                value={form.birthCountry ?? ""}
-                onChangeText={(t) => handleChange("birthCountry", t)}
-            />
-
-            <Input
-                label="Estado / Provincia"
-                placeholder="¿De qué estado provienen?"
-                iconName="bxs-location"
-                inSheet
-                value={form.birthState ?? ""}
-                onChangeText={(t) => handleChange("birthState", t)}
-            />
-
-            <Input
-                label="Nivel de Estudios"
-                placeholder="Último grado cursado"
-                iconName="bxs-education"
-                inSheet
-                value={form.schooling ?? ""}
-                onChangeText={(t) => handleChange("schooling", t)}
-            />
-
-            <Input
-                label="Ocupación Actual"
-                placeholder="¿En qué trabaja?"
-                iconName="bxs-briefcase-alt-2"
-                inSheet
-                value={form.occupation ?? ""}
-                onChangeText={(t) => handleChange("occupation", t)}
-            />
-
-            <CurrencyInput
-                value={form.weeklySalary}
-                onChangeValue={(v) => handleChange("weeklySalary", v)}
-                prefix="$"
-                delimiter=","
-                precision={0}
-                minValue={0}
-                renderTextInput={(props: TextInputProps) => (
-                    <Input
-                        label="Ingreso Semanal"
-                        placeholder="Monto aproximado"
-                        iconName="bxs-dollar-circle"
-                        keyboardType="number-pad"
-                        maxLength={15}
-                        inSheet
-                        {...props}
+                        value={field.value ?? ""}
+                        onChangeText={field.onChange}
                     />
                 )}
             />
 
-            {form.relation === "madre" && (
-                <Checkbox
-                    id="tempParentIsAwaitingBaby"
-                    label="¿Está embarazada?"
-                    placeholder="Marcar si está esperando bebé"
-                    iconName="bxs-child"
-                    checked={form.isAwaitingBaby}
-                    onCheckedChange={(t: boolean) =>
-                        handleChange("isAwaitingBaby", t)
-                    }
+            <View className="flex-row gap-4">
+                <View className="flex-1">
+                    <Controller
+                        name="relation"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                            <Select
+                                label="Parentesco"
+                                iconName="bxs-group"
+                                placeholder="Seleccionar"
+                                options={[
+                                    { label: "Padre", value: "padre" },
+                                    { label: "Madre", value: "madre" },
+                                    { label: "Abuelo(a)", value: "abuelo" },
+                                    { label: "Tío(a)", value: "tio" },
+                                    { label: "Tutor", value: "tutor" },
+                                ]}
+                                value={field.value ?? ""}
+                                onValueChange={field.onChange}
+                            />
+                        )}
+                    />
+                </View>
+
+                <View className="flex-1">
+                    <Controller
+                        name="age"
+                        control={control}
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                            <Input
+                                label="Edad"
+                                placeholder="Años"
+                                iconName="bxs-calendar"
+                                keyboardType="number-pad"
+                                maxLength={3}
+                                inSheet
+                                value={field.value ?? ""}
+                                onChangeText={field.onChange}
+                            />
+                        )}
+                    />
+                </View>
+            </View>
+
+            <Controller
+                name="birthCountry"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <Input
+                        label="País de Origen"
+                        placeholder="Ej. México"
+                        iconName="bxs-flag-alt"
+                        inSheet
+                        value={field.value ?? ""}
+                        onChangeText={field.onChange}
+                    />
+                )}
+            />
+
+            <Controller
+                name="birthState"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <Input
+                        label="Estado / Provincia"
+                        placeholder="¿De qué estado provienen?"
+                        iconName="bxs-location"
+                        inSheet
+                        value={field.value ?? ""}
+                        onChangeText={field.onChange}
+                    />
+                )}
+            />
+
+            <Controller
+                name="latestSchoolGrade"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <Input
+                        label="Nivel de Estudios"
+                        placeholder="Último grado cursado"
+                        iconName="bxs-education"
+                        inSheet
+                        value={field.value ?? ""}
+                        onChangeText={field.onChange}
+                    />
+                )}
+            />
+
+            <Controller
+                name="occupation"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <Input
+                        label="Ocupación Actual"
+                        placeholder="¿En qué trabaja?"
+                        iconName="bxs-briefcase-alt-2"
+                        inSheet
+                        value={field.value ?? ""}
+                        onChangeText={field.onChange}
+                    />
+                )}
+            />
+
+            <Controller
+                name="weeklySalary"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <CurrencyInput
+                        value={field.value}
+                        onChangeValue={field.onChange}
+                        prefix="$"
+                        delimiter=","
+                        precision={0}
+                        minValue={0}
+                        renderTextInput={(props: TextInputProps) => (
+                            <Input
+                                label="Ingreso Semanal"
+                                placeholder="Monto aproximado"
+                                iconName="bxs-dollar-circle"
+                                keyboardType="number-pad"
+                                maxLength={15}
+                                inSheet
+                                {...props}
+                            />
+                        )}
+                    />
+                )}
+            />
+
+            {relation === "madre" && (
+                <Controller
+                    name="isAwaitingBaby"
+                    control={control}
+                    render={({ field }) => (
+                        <Checkbox
+                            id="tempParentIsAwaitingBaby"
+                            label="¿Está embarazada?"
+                            placeholder="Marcar si está esperando bebé"
+                            iconName="bxs-child"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                        />
+                    )}
                 />
             )}
 
-            {form.isAwaitingBaby && (
-                <Input
-                    label="Meses de gestación"
-                    placeholder="Meses"
-                    iconName="bxs-hourglass"
-                    maxLength={1}
-                    inSheet
-                    value={form.gestationMonths ?? ""}
-                    onChangeText={(t) => handleChange("gestationMonths", t)}
+            {isAwaitingBaby && (
+                <Controller
+                    name="gestationMonths"
+                    rules={
+                        getValues("isAwaitingBaby") === true
+                            ? { required: true }
+                            : {}
+                    }
+                    control={control}
+                    render={({ field }) => (
+                        <Input
+                            label="Meses de gestación"
+                            placeholder="Meses"
+                            iconName="bxs-hourglass"
+                            keyboardType="number-pad"
+                            maxLength={1}
+                            inSheet
+                            value={field.value ?? ""}
+                            onChangeText={field.onChange}
+                        />
+                    )}
                 />
             )}
 
             <TouchableOpacity
-                onPress={handleSave}
+                onPress={handleSubmit(onSubmit)}
                 className="bg-primary p-4 rounded-xl mt-4 flex-row justify-center items-center gap-2"
             >
                 <Boxicon name="bxs-save" size={20} color="white" />

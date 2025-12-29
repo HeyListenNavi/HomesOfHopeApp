@@ -6,16 +6,12 @@ import Textarea from "@/components/Textarea";
 import { Text } from "@/components/ui/text";
 import { View, TouchableOpacity } from "react-native";
 import StepContainer from "./StepContainer";
-import {
-    BottomSheetModal,
-    BottomSheetBackdrop,
-    BottomSheetScrollView,
-    BottomSheetBackdropProps,
-} from "@gorhom/bottom-sheet";
-import { useRef, useMemo, useCallback } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useRef } from "react";
 import AddParentStep, { Parent } from "./AddParentStep";
 import { ProfileState } from "..";
+import BottomSheetEditor from "@/components/BottomSheetEditor";
+import { useEditableList } from "@/hooks/useEditableList";
 
 interface ParentStepProps {
     data: ProfileState;
@@ -27,32 +23,8 @@ interface ParentStepProps {
 
 const ParentStep = ({ data, onChange }: ParentStepProps) => {
     const bottomSheetRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ["75%", "90%"], []);
-    const { top } = useSafeAreaInsets();
-
-    const handleAddParent = (newParent: Parent) => {
-        const currentParents = (data.parents || []) as Parent[];
-        onChange("parents", [...currentParents, newParent]);
-        bottomSheetRef.current?.close();
-    };
-
-    const handleRemoveParent = (indexToRemove: number) => {
-        const currentParents = (data.parents || []) as Parent[];
-        const updatedParents = currentParents.filter(
-            (_, id: number) => id !== indexToRemove
-        );
-        onChange("parents", updatedParents);
-    };
-
-    const renderBackdrop = useCallback(
-        (props: BottomSheetBackdropProps) => (
-            <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={0}
-                disappearsOnIndex={-1}
-            />
-        ),
-        []
+    const parents = useEditableList<Parent>(data.parents, (updatedParents) =>
+        onChange("parents", updatedParents)
     );
 
     return (
@@ -69,39 +41,44 @@ const ParentStep = ({ data, onChange }: ParentStepProps) => {
                             </Text>
                         </View>
                     ) : (
-                        data.parents.map(
-                            (parent: Parent, index: number) => (
-                                <View
-                                    key={index}
-                                    className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex-row justify-between items-center"
-                                >
-                                    <View className="flex-1">
-                                        <Text className="font-bold text-gray-800 capitalize">
-                                            {parent.name}
-                                        </Text>
-                                        <Text className="text-gray-500 text-sm capitalize">
-                                            {parent.relation}
-                                        </Text>
-                                    </View>
-                                    <TouchableOpacity
-                                        onPress={() =>
-                                            handleRemoveParent(index)
-                                        }
-                                        className="bg-red-100 p-2 rounded-lg"
-                                    >
-                                        <Boxicon
-                                            name="bxs-trash-alt"
-                                            size={20}
-                                            color="#ef4444"
-                                        />
-                                    </TouchableOpacity>
+                        data.parents.map((parent: Parent, index: number) => (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => {
+                                    parents.edit(index);
+                                    bottomSheetRef.current?.present();
+                                }}
+                                className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex-row justify-between items-center"
+                            >
+                                <View className="flex-1">
+                                    <Text className="font-bold text-gray-800 capitalize">
+                                        {parent.name}
+                                    </Text>
+                                    <Text className="text-gray-500 text-sm capitalize">
+                                        {parent.relation}
+                                    </Text>
                                 </View>
-                            )
-                        )
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        parents.remove(index);
+                                    }}
+                                    className="bg-red-100 p-2 rounded-lg"
+                                >
+                                    <Boxicon
+                                        name="bxs-trash-alt"
+                                        size={20}
+                                        color="#ef4444"
+                                    />
+                                </TouchableOpacity>
+                            </TouchableOpacity>
+                        ))
                     )}
 
                     <TouchableOpacity
-                        onPress={() => bottomSheetRef.current?.present()}
+                        onPress={() => {
+                            parents.add();
+                            bottomSheetRef.current?.present();
+                        }}
                         className="bg-primary py-4 rounded-2xl flex-row justify-center gap-2"
                     >
                         <Boxicon name="bxs-plus" size={20} color="white" />
@@ -110,17 +87,15 @@ const ParentStep = ({ data, onChange }: ParentStepProps) => {
                         </Text>
                     </TouchableOpacity>
 
-                    <BottomSheetModal
-                        ref={bottomSheetRef}
-                        snapPoints={snapPoints}
-                        backdropComponent={renderBackdrop}
-                        enablePanDownToClose
-                        topInset={top}
-                    >
-                        <BottomSheetScrollView keyboardShouldPersistTaps="handled">
-                            <AddParentStep onSave={handleAddParent} />
-                        </BottomSheetScrollView>
-                    </BottomSheetModal>
+                    <BottomSheetEditor ref={bottomSheetRef}>
+                        <AddParentStep
+                            onSave={(parent) => {
+                                parents.save(parent);
+                                bottomSheetRef.current?.close();
+                            }}
+                            initialValues={parents.initialItem}
+                        />
+                    </BottomSheetEditor>
 
                     <Text className="text-gray-500">
                         Datos Familiares Generales

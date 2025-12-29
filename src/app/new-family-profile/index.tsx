@@ -5,7 +5,8 @@ import { usePagerView } from "react-native-pager-view";
 import { RESET_MAP, STEPS } from "./constants";
 import { Text } from "@/components/ui/text";
 import { Parent } from "./steps/AddParentStep";
-import { OtherMember } from "./steps/OtherMemberStep";
+import { OtherMember } from "./steps/AddOtherMemberStep";
+import { Child } from "./steps/AddChildStep";
 
 export interface ProfileState {
     // --- Family ---
@@ -34,12 +35,12 @@ export interface ProfileState {
     referralSource: string | null;
 
     // --- Children ---
-    children: any[];
+    children: Child[];
     hasSpecialNeeds: boolean | null;
     childrenWorking: boolean | null;
 
     // --- Others ---
-    others: OtherMember[];
+    otherMembers: OtherMember[];
 
     // --- Land ---
     landCity: string | null;
@@ -114,7 +115,7 @@ const initialProfileState: ProfileState = {
     childrenWorking: null,
 
     // --- Others ---
-    others: [],
+    otherMembers: [],
 
     // --- Land ---
     landCity: null,
