@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Stack } from "expo-router";
 import "global.css";
 import { Text } from "@/components/ui/text";
@@ -39,8 +39,8 @@ const Layout = () => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-                <KeyboardProvider>
+            <KeyboardProvider>
+                <BottomSheetModalProvider>
                     <Stack
                         screenOptions={{
                             headerShadowVisible: false,
@@ -67,19 +67,23 @@ const Layout = () => {
                                     <View className="bg-gray-100">
                                         <View
                                             className="flex flex-row items-center justify-between px-6 pb-6 bg-white rounded-b-3xl"
-                                            style={{ paddingTop: insets.top }}
+                                            style={{
+                                                paddingTop: insets.top + 12,
+                                            }}
                                         >
                                             <Text
-                                                className="font-bold text-primary text-2xl m-0"
+                                                className="font-bold text-primary m-0"
                                                 variant="h1"
                                             >
                                                 Hope
                                             </Text>
-                                            <Boxicon
-                                                name="bxs-user-circle"
-                                                size={38}
-                                                color="#61b346"
-                                            />
+                                            <TouchableOpacity>
+                                                <Boxicon
+                                                    name="bxs-user-circle"
+                                                    size={38}
+                                                    color="#61b346"
+                                                />
+                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 ),
@@ -122,10 +126,19 @@ const Layout = () => {
                                 headerBackTitle: "Atras",
                             }}
                         />
+
+                        <Stack.Screen
+                            name="staff-profile/[id]"
+                            options={{
+                                headerTitle: "Staff",
+                                headerShadowVisible: false,
+                                headerBackTitle: "Atras",
+                            }}
+                        />
                     </Stack>
-                </KeyboardProvider>
-            </BottomSheetModalProvider>
-            <PortalHost />
+                </BottomSheetModalProvider>
+                <PortalHost />
+            </KeyboardProvider>
         </GestureHandlerRootView>
     );
 };
