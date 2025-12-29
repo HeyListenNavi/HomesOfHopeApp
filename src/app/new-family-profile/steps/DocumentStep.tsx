@@ -1,12 +1,12 @@
 import { Text } from "@/components/ui/text";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import DocumentPreviewer from "@/components/DocumentPreviewer";
 import StepContainer from "./StepContainer";
 
 const DocumentStep = ({ data, onChange }: any) => {
     return (
         <StepContainer>
-            <View className="bg-white gap-4 p-6 rounded-2xl">
+            <View className="bg-white gap-6 p-6 rounded-2xl">
                 <Text variant="h3" className="text-primary font-bold">
                     Documentos
                 </Text>
