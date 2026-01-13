@@ -1,7 +1,9 @@
 import React from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Interview, InterviewCard } from "@/components/InterviewCard";
+import Boxicon from "@/components/Boxicons";
+import { useRouter } from "expo-router";
 
 const todayInterview: Interview = {
     id: "1",
@@ -40,40 +42,59 @@ const upcomingInterviews: Interview[] = [
 ];
 
 const Page = () => {
+    const router = useRouter();
+
     return (
-        <ScrollView className="flex-1 bg-gray-100">
-            <View className="p-6 gap-6">
-                <Text
-                    variant="h3"
-                    className="text-start font-bold text-gray-800"
-                >
-                    Entrevista de hoy
+        <ScrollView
+            className="flex-1 bg-gray-100"
+            contentContainerClassName="p-6 gap-8"
+            showsVerticalScrollIndicator={false}
+        >
+            <View className="gap-1">
+                <Text className="text-gray-500 text-sm">
+                    Seguimiento y programación
                 </Text>
+                <Text variant="h3" className="font-bold text-gray-800">
+                    Entrevistas
+                </Text>
+            </View>
 
-                <InterviewCard
-                    key={todayInterview.id}
-                    interview={todayInterview}
-                    variant="full"
-                />
+            <InterviewCard interview={todayInterview} variant="full" />
 
-                <View className="gap-4">
-                    <Text
-                        variant="h3"
-                        className="text-start font-bold text-gray-800"
-                    >
-                        Entrevistas proximas
+            <View className="gap-4">
+                <View className="flex-row justify-between items-center">
+                    <Text className="font-semibold text-gray-500">
+                        Próximas Entrevistas
                     </Text>
+                    <TouchableOpacity>
+                        <Text className="text-primary text-sm font-medium">
+                            Ver todas
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
+                {upcomingInterviews.length === 0 ? (
+                    <View className="bg-white p-6 rounded-2xl items-center gap-2">
+                        <Boxicon
+                            name="bxs-message-x"
+                            size={32}
+                            color="#9ca3af"
+                        />
+                        <Text className="text-gray-500">
+                            No hay entrevistas programadas
+                        </Text>
+                    </View>
+                ) : (
                     <View className="gap-3">
-                        {upcomingInterviews.map((visit) => (
+                        {upcomingInterviews.map((interview) => (
                             <InterviewCard
-                                key={visit.id}
-                                interview={visit}
+                                key={interview.id}
+                                interview={interview}
                                 variant="summary"
                             />
                         ))}
                     </View>
-                </View>
+                )}
             </View>
         </ScrollView>
     );

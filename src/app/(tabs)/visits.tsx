@@ -1,10 +1,12 @@
 import React from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import { VisitCard } from "@/components/VisitCard";
+import Boxicon from "@/components/Boxicons";
+import { useRouter } from "expo-router";
 
 interface VisitRoute {
-    id: string,
+    id: string;
     title: string;
     date: string;
     familyCount: number;
@@ -45,31 +47,56 @@ const upcomingVisits: VisitRoute[] = [
 
 const Page = () => {
     return (
-        <ScrollView className="flex-1 bg-gray-100">
-            <View className="p-6 gap-6">
-                <Text
-                    variant="h3"
-                    className="text-start font-bold text-gray-800"
-                >
-                    Visita de hoy
+        <ScrollView
+            className="flex-1 bg-gray-100"
+            contentContainerClassName="p-6 gap-8"
+            showsVerticalScrollIndicator={false}
+        >
+            <View className="gap-1">
+                <Text className="text-gray-500 text-sm">
+                    Gestión y seguimiento de recorridos
                 </Text>
+                <Text variant="h3" className="font-bold text-gray-800">
+                    Visitas
+                </Text>
+            </View>
 
-                <VisitCard key={todayVisit.id} visit={todayVisit} variant="full" />
+            <VisitCard visit={todayVisit} variant="full" />
 
-                <View className="gap-4">
-                    <Text
-                        variant="h3"
-                        className="text-start font-bold text-gray-800"
-                    >
-                        Visitas proximas
+            <View className="gap-4">
+                <View className="flex-row justify-between items-center">
+                    <Text className="text-gray-500">
+                        Próximas Visitas
                     </Text>
+                    <TouchableOpacity>
+                        <Text className="text-primary text-sm font-medium">
+                            Ver todas
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
+                {upcomingVisits.length === 0 ? (
+                    <View className="bg-white p-6 rounded-2xl items-center gap-2">
+                        <Boxicon
+                            name="bxs-calendar-x"
+                            size={32}
+                            color="#9ca3af"
+                        />
+                        <Text className="text-gray-500">
+                            No hay visitas programadas
+                        </Text>
+                    </View>
+                ) : (
                     <View className="gap-3">
                         {upcomingVisits.map((visit) => (
-                            <VisitCard key={visit.id} visit={visit} variant="summary" />
+                            <VisitCard
+                                key={visit.id}
+                                visit={visit}
+                                variant="summary"
+                            />
                         ))}
                     </View>
-                </View>
+                )}
             </View>
         </ScrollView>
     );

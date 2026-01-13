@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import Boxicon from "@/components/Boxicons";
 import { Family, FamilyCard } from "@/components/FamilyCard";
 import StatCard from "@/components/StatCard";
@@ -7,28 +7,29 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useRouter } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import QuickActionButton from "@/components/QuickActionButton";
 
 const recentFamilies: Family[] = [
     {
         id: 1,
         name: "Familia 1",
-        location: "Ubicacion",
-        lastAttended: "Hace 123 tiempo",
-        status: "Status",
+        location: "Ubicación",
+        lastAttended: "Hace 3 días",
+        status: "Activa",
     },
     {
         id: 2,
         name: "Familia 2",
-        location: "Ubicacion",
-        lastAttended: "Hace 123 tiempo",
-        status: "Status",
+        location: "Ubicación",
+        lastAttended: "Hace 1 semana",
+        status: "Pendiente",
     },
     {
         id: 3,
         name: "Familia 3",
-        location: "Ubicacion",
-        lastAttended: "Hace 123 tiempo",
-        status: "Status",
+        location: "Ubicación",
+        lastAttended: "Hace 2 semanas",
+        status: "Activa",
     },
 ];
 
@@ -38,37 +39,39 @@ const Page = () => {
     return (
         <KeyboardAwareScrollView
             className="flex-1 bg-gray-100"
-            contentContainerClassName="p-6 gap-6"
+            contentContainerClassName="p-6 gap-8"
             showsVerticalScrollIndicator={false}
         >
             <View className="gap-4">
-                <Text
-                    variant="h3"
-                    className="text-start font-bold text-gray-800"
-                >
-                    Inicio
-                </Text>
+                <View className="gap-1">
+                    <Text className="text-gray-500 text-sm">
+                        Resumen general
+                    </Text>
+                    <Text variant="h3" className="font-bold text-gray-800">
+                        Inicio
+                    </Text>
+                </View>
 
                 <StatCard
                     size="full"
                     value={123}
-                    label="Estadistica"
+                    label="Familias Registradas"
                     iconName="bxs-group"
                     iconColor="#2563eb"
                     iconBgColor="bg-blue-100"
                     trend={{
-                        value: "+123",
-                        label: "Este tiempo",
+                        value: "+12",
+                        label: "Este mes",
                         color: "#61b346",
                         bgColor: "bg-[#9BD189]/10",
                         iconName: "bxs-trending-up",
                     }}
                 />
 
-                <View className="flex-row justify-between">
+                <View className="flex-row gap-4">
                     <StatCard
                         size="half"
-                        value={123}
+                        value={18}
                         label="En entrevista"
                         iconName="bxs-file-detail"
                         iconColor="#f97316"
@@ -76,7 +79,7 @@ const Page = () => {
                     />
                     <StatCard
                         size="half"
-                        value={123}
+                        value={9}
                         label="En visitas"
                         iconName="bxs-location"
                         iconColor="#9333ea"
@@ -86,126 +89,72 @@ const Page = () => {
             </View>
 
             <View className="gap-4">
-                <Text
-                    variant="h3"
-                    className="text-start font-bold text-gray-800"
-                >
-                    Acciones Rapidas
+                <Text variant="h3" className="font-bold text-gray-800">
+                    Acciones rápidas
                 </Text>
 
-                <View className="flex-row flex-wrap px-4 py-6 gap-4 justify-center bg-white rounded-2xl">
-                    <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity
-                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                <View className="bg-white rounded-2xl px-4 py-6">
+                    <View className="flex-row flex-wrap gap-y-6">
+                        <QuickActionButton
+                            label="Crear Familia"
+                            iconName="bxs-user-plus"
+                            className="w-1/3 items-center"
                             onPress={() =>
                                 router.push("/new-family-profile/123")
                             }
-                        >
-                            <Text className="text-white bg-primary p-6 rounded-2xl">
-                                <Boxicon name="bxs-user-plus" size={24} />
-                            </Text>
-                            <Text className="text-gray-500 font-medium text-xs text-center">
-                                Crear Familia
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity
-                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                        />
+                        <QuickActionButton
+                            label="Crear Staff"
+                            iconName="bxs-user-id-card"
+                            className="w-1/3 items-center"
                             onPress={() =>
                                 router.push("/new-staff-profile/123")
                             }
-                        >
-                            <Text className="text-white bg-primary p-6 rounded-2xl">
-                                <Boxicon name="bxs-user-id-card" size={24} />
-                            </Text>
-                            <Text className="text-gray-500 font-medium text-xs text-center">
-                                Crear Staff
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]">
-                            <Text className="text-white bg-primary p-6 rounded-2xl">
-                                <Boxicon name="bxs-dashboard" size={24} />
-                            </Text>
-                            <Text className="text-gray-500 font-medium text-xs text-center">
-                                Abrir Panel
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity
-                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                        />
+                        <QuickActionButton
+                            label="Panel"
+                            iconName="bxs-dashboard"
+                            className="w-1/3 items-center"
+                        />
+                        <QuickActionButton
+                            label="Entrevista Hoy"
+                            iconName="bxs-calendar-check"
+                            className="w-1/3 items-center"
                             onPress={() => router.push("/interview-detail/123")}
-                        >
-                            <Text className="text-white bg-primary p-6 rounded-2xl">
-                                <Boxicon name="bxs-calendar-check" size={24} />
-                            </Text>
-                            <Text className="text-gray-500 font-medium text-xs text-center">
-                                Entrevista de Hoy
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity
-                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
+                        />
+                        <QuickActionButton
+                            label="Visitas"
+                            iconName="bxs-group"
+                            className="w-1/3 items-center"
                             onPress={() => router.push("/(tabs)/visits")}
-                        >
-                            <Text className="text-white bg-primary p-6 rounded-2xl">
-                                <Boxicon name="bxs-group" size={24} />
-                            </Text>
-                            <Text className="text-gray-500 font-medium text-xs text-center">
-                                Ver Visitas
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="flex-1 min-w-[28%]">
-                        <TouchableOpacity
-                            className="flex-col px-2 gap-2 items-center justify-center min-h-[96px]"
-                            onPress={() =>
-                                router.push("/(tabs)/interviews")
-                            }
-                        >
-                            <Text className="text-white bg-primary p-6 rounded-2xl">
-                                <Boxicon
-                                    name="bxs-message-circle-dots-2"
-                                    size={24}
-                                />
-                            </Text>
-                            <Text className="text-gray-500 font-medium text-xs text-center">
-                                Ver Entrevistas
-                            </Text>
-                        </TouchableOpacity>
+                        />
+                        <QuickActionButton
+                            label="Entrevistas"
+                            iconName="bxs-message-circle-dots-2"
+                            className="w-1/3 items-center"
+                            onPress={() => router.push("/(tabs)/interviews")}
+                        />
                     </View>
                 </View>
             </View>
 
             <View className="gap-4">
                 <View className="flex-row justify-between items-center">
-                    <Text
-                        variant="h3"
-                        className="text-start font-bold text-gray-800"
-                    >
+                    <Text variant="h3" className="font-bold text-gray-800">
                         Familias recientes
                     </Text>
                     <Button
                         variant="link"
                         onPress={() => router.push("/(tabs)/families")}
                     >
-                        <Text>Ver Todas</Text>
+                        <Text>Ver todas</Text>
                     </Button>
                 </View>
 
-                <View className="bg-white flex-row items-center px-4 py-3 rounded-2xl">
-                    <Boxicon size={20} color="#9ca3af" name="bx-search" />
+                <View className="bg-white flex-row items-center px-4 py-2 rounded-2xl">
+                    <Boxicon size={18} color="#9ca3af" name="bx-search" />
                     <TextInput
-                        placeholder="Buscar Familia..."
+                        placeholder="Buscar familia..."
                         placeholderTextColor="#9ca3af"
                         className="flex-1 ml-3 text-gray-700 text-base"
                     />
