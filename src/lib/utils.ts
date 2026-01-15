@@ -53,3 +53,17 @@ export const getPlusCode = (
         return null;
     }
 };
+
+export const formatDate = (dateString?: string | null) => {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) return "Fecha inválida";
+
+    return new Intl.DateTimeFormat("es-MX", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    }).format(date);
+};

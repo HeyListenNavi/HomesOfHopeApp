@@ -1,19 +1,13 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
-import Boxicon from "@/components/Boxicons";
+import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import { useRouter } from "expo-router";
-
-export interface VisitRoute {
-    id: string,
-    title: string;
-    date: string;
-    familyCount: number;
-    locationName: string;
-}
+import { formatDate } from "@/lib/utils";
+import { Visit } from "@/types/api";
 
 interface VisitCardProps {
-    visit: VisitRoute;
+    visit: Visit;
     variant?: "full" | "summary";
 }
 
@@ -23,18 +17,22 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
     if (variant === "full") {
         return (
             <TouchableOpacity
-                className="bg-white rounded-2xl p-5 gap-3"
-                onPress={() => router.push("/visit-detail/123")}
+                className="bg-white rounded-2xl p-5 gap-3 shadow-sm"
+                onPress={() => router.push(`/visit-detail/${visit.id}`)}
             >
                 <View className="flex-row justify-between items-start gap-2">
                     <View className="flex-1">
                         <Text className="text-2xl font-bold text-gray-800">
-                            {visit.title}
+                            {visit.family_profile?.family_name ?? "Sin nombre"}
                         </Text>
                         <View className="flex-row items-center gap-1">
-                            <Boxicon name="bxs-location" size={16} color="#9ca3af" />
+                            <Boxicon
+                                name="bxs-location"
+                                size={16}
+                                color="#9ca3af"
+                            />
                             <Text className="text-gray-500">
-                                {visit.locationName}
+                                {visit.location_type}
                             </Text>
                         </View>
                     </View>
@@ -43,70 +41,44 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
                     </View>
                 </View>
 
-                <View className="bg-gray-50 rounded-2xl p-4 flex-row items-center justify-between">
-                    <View className="flex-row items-center gap-3">
-                        <View className="bg-[#61b346]/10 p-2 rounded-full">
-                            <Boxicon
-                                name="bxs-group"
-                                size={24}
-                                color="#61b346"
-                            />
-                        </View>
-                        <View>
-                            <Text className="font-bold text-gray-800">
-                                {visit.familyCount}
-                            </Text>
-                            <Text className="text-gray-400">
-                                Familias a visitar
-                            </Text>
-                        </View>
-                    </View>
-
-                    <Boxicon
-                        name="bx-chevron-right"
-                        size={24}
-                        color="#d1d5db"
-                    />
+                <View className="flex-row items-center gap-3">
+                    <TouchableOpacity className="flex-1 bg-gray-50 border border-gray-200 px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                        <Text className="text-gray-500">
+                            <Boxicon name="bxs-location" size={16} />
+                        </Text>
+                        <Text className="text-gray-500 font-bold">Llamar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                        <Boxicon
+                            name="bxs-location"
+                            size={16}
+                            color="#ffffff"
+                        />
+                        <Text className="text-white font-bold">Ver Ruta</Text>
+                    </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center gap-2">
-                    <Text className="text-white font-bold">Iniciar Visita</Text>
-                    <Boxicon name="bxs-play-circle" size={20} color="white" />
-                </TouchableOpacity>
             </TouchableOpacity>
         );
     }
 
     return (
         <TouchableOpacity
-            className="bg-white p-4 rounded-2xl flex-row items-center justify-between active:bg-gray-100"
-            onPress={() => router.push("/visit-detail/123")}
+            className="bg-white p-4 rounded-2xl flex-row items-center justify-between active:bg-gray-50 border border-gray-100"
+            onPress={() => router.push(`/visit-detail/${visit.id}`)}
         >
             <View className="flex-row items-center gap-4 flex-1">
                 <View className="bg-gray-100 h-12 w-12 rounded-full items-center justify-center">
-                    <Boxicon
-                        name="bxs-calendar-detail"
-                        size={24}
-                        color="#6b7280"
-                    />
+                    <Boxicon name="bxs-home-heart" size={24} color="#6b7280" />
                 </View>
 
                 <View className="flex-1 gap-1">
-                    <Text className="font-bold">{visit.title}</Text>
+                    <Text className="font-bold text-gray-800" numberOfLines={1}>
+                        {visit.family_profile?.family_name}
+                    </Text>
                     <View className="flex-row items-center gap-2">
-                        <Text className="text-gray-400 text-sm">
-                            {visit.date}
+                        <Text className="text-gray-400 text-xs">
+                            {formatDate(visit.scheduled_at)}
                         </Text>
-                        <View className="flex-row items-center gap-0.5 bg-[#61b346]/10 px-2 py-0.5 rounded-md">
-                            <Boxicon
-                                name="bxs-group"
-                                size={12}
-                                color="#61b346"
-                            />
-                            <Text className="text-primary text-xs font-bold">
-                                {visit.familyCount}
-                            </Text>
-                        </View>
                     </View>
                 </View>
             </View>

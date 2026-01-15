@@ -5,22 +5,65 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
+    Alert,
+    ActivityIndicator,
 } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useRouter } from "expo-router";
 import Boxicon from "@/components/Boxicons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import api from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
+import { AxiosError } from "axios";
 
 export default function LoginScreen() {
     const router = useRouter();
+    const authStore = useAuthStore();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleLogin = () => {
-        console.log("Iniciando sesión con:", email);
+    const [isLoading, setIsLoading] = useState(false);
 
-        router.replace("/(tabs)");
+    const handleLogin = async () => {
+        if (!email.trim() || !password.trim()) {
+            Alert.alert("Atención", "Por favor ingresa correo y contraseña");
+            return;
+        }
+
+        setIsLoading(true);
+        Keyboard.dismiss();
+
+        try {
+            const response = await api.post("/login", {
+                email,
+                password,
+            });
+
+            const token = response.data.access_token;
+
+            if (token) {
+                authStore.setToken(token);
+                router.replace("/(tabs)");
+            }
+        } catch (error) {
+            const err = error as AxiosError;
+
+            if (!err.response) {
+                Alert.alert("Sin conexión", "Revisa tu internet");
+                return;
+            }
+
+            if (err.response.status === 401 || err.response.status === 422) {
+                Alert.alert("Acceso denegado", "Credenciales incorrectas");
+                return;
+            }
+
+            Alert.alert("Error", "Algo salió mal. Intenta de nuevo más tarde");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -56,6 +99,7 @@ export default function LoginScreen() {
                                     keyboardType="email-address"
                                     value={email}
                                     onChangeText={setEmail}
+                                    editable={!isLoading}
                                 />
                             </View>
 
@@ -75,6 +119,7 @@ export default function LoginScreen() {
                                     secureTextEntry={!showPassword}
                                     value={password}
                                     onChangeText={setPassword}
+                                    editable={!isLoading}
                                 />
                                 <TouchableOpacity
                                     className="p-2"
@@ -100,17 +145,26 @@ export default function LoginScreen() {
                         </View>
 
                         <TouchableOpacity
-                            className="bg-[#61b346] py-4 rounded-2xl flex-row justify-center items-center gap-1"
+                            className={`bg-[#61b346] h-[56px] py-4 rounded-2xl flex-row justify-center items-center gap-1 ${
+                                isLoading ? "opacity-70" : ""
+                            }`}
                             onPress={handleLogin}
+                            disabled={isLoading}
                         >
-                            <Text className="text-white font-bold text-lg">
-                                Iniciar Sesión
-                            </Text>
-                            <Boxicon
-                                color="white"
-                                size={28}
-                                name="bxs-arrow-right-stroke"
-                            />
+                            {isLoading ? (
+                                <ActivityIndicator color="white" />
+                            ) : (
+                                <>
+                                    <Text className="text-white font-bold text-lg">
+                                        Iniciar Sesión
+                                    </Text>
+                                    <Boxicon
+                                        color="white"
+                                        size={28}
+                                        name="bxs-arrow-right-stroke"
+                                    />
+                                </>
+                            )}
                         </TouchableOpacity>
 
                         <View className="flex-row justify-center">

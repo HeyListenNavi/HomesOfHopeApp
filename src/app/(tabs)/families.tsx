@@ -1,38 +1,46 @@
-import React from "react";
-import { View, ScrollView, TextInput, TouchableOpacity } from "react-native";
-import { Family, FamilyCard } from "@/components/FamilyCard";
+import React, { useEffect, useState } from "react";
+import {
+    View,
+    ScrollView,
+    TextInput,
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator,
+} from "react-native";
+import { FamilyCard } from "@/components/FamilyCard";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { useRouter } from "expo-router";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-
-const recentFamilies: Family[] = [
-    {
-        id: 1,
-        name: "Familia 1",
-        location: "Ubicación",
-        lastAttended: "Hace 123 tiempo",
-        status: "Activa",
-    },
-    {
-        id: 2,
-        name: "Familia 2",
-        location: "Ubicación",
-        lastAttended: "Hace 123 tiempo",
-        status: "Activa",
-    },
-    {
-        id: 3,
-        name: "Familia 3",
-        location: "Ubicación",
-        lastAttended: "Hace 123 tiempo",
-        status: "Activa",
-    },
-];
+import { familyService } from "@/services/familyService";
+import { FamilyProfile } from "@/types/api";
 
 const Page = () => {
     const router = useRouter();
+
+    const [recentFamilies, setRecentFamilies] = useState<FamilyProfile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const loadData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await familyService.getAll();
+            setRecentFamilies(response.data);
+        } catch (error) {
+            console.error("Error al cargar familias:", error);
+            Alert.alert(
+                "Error",
+                "No se pudieron cargar las familias recientes."
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
     return (
         <ScrollView
@@ -125,21 +133,21 @@ const Page = () => {
                 </View>
 
                 <View className="gap-3">
-                    {recentFamilies.length === 0 ? (
-                        <View className="bg-white p-6 rounded-2xl items-center gap-2">
-                            <Boxicon
-                                name="bxs-user-x"
-                                size={32}
-                                color="#9ca3af"
-                            />
-                            <Text className="text-gray-500 font-medium">
-                                No hay familias registradas
+                    {isLoading ? (
+                        <View className="py-8 items-center">
+                            <ActivityIndicator size="large" color="#61b346" />
+                            <Text className="text-gray-400 mt-2">
+                                Cargando...
                             </Text>
                         </View>
-                    ) : (
+                    ) : recentFamilies.length > 0 ? (
                         recentFamilies.map((family) => (
                             <FamilyCard key={family.id} family={family} />
                         ))
+                    ) : (
+                        <Text className="text-center text-gray-400 py-4">
+                            No hay familias registradas aún.
+                        </Text>
                     )}
                 </View>
             </View>

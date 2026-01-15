@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import Boxicon from "@/components/Boxicons";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
+import { useAuthStore } from "@/store/authStore";
 
 const user = {
     name: "Usuario",
@@ -17,6 +18,12 @@ const user = {
 
 const Page = () => {
     const router = useRouter();
+    const authStore = useAuthStore();
+
+    const handleLogout = () => {
+        authStore.logout();
+        router.replace("/login");
+    }
 
     return (
         <View className="flex-1 bg-slate-50">
@@ -144,7 +151,7 @@ const Page = () => {
 
                 <TouchableOpacity
                     className="flex-row items-center justify-between bg-white rounded-2xl px-5 py-4"
-                    onPress={() => router.replace("/login")}
+                    onPress={handleLogout}
                 >
                     <View className="flex-row items-center gap-4">
                         <View className="w-10 h-10 rounded-full bg-red-50 items-center justify-center">

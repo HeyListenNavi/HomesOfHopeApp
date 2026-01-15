@@ -1,40 +1,40 @@
-import React from "react";
-import { View, TextInput, TouchableOpacity } from "react-native";
-import Boxicon from "@/components/Boxicons";
-import { Family, FamilyCard } from "@/components/FamilyCard";
+import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator, Alert } from "react-native";
+import { FamilyCard } from "@/components/FamilyCard";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useRouter } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import QuickActionButton from "@/components/QuickActionButton";
-
-const recentFamilies: Family[] = [
-    {
-        id: 1,
-        name: "Familia 1",
-        location: "Ubicación",
-        lastAttended: "Hace 3 días",
-        status: "Activa",
-    },
-    {
-        id: 2,
-        name: "Familia 2",
-        location: "Ubicación",
-        lastAttended: "Hace 1 semana",
-        status: "Pendiente",
-    },
-    {
-        id: 3,
-        name: "Familia 3",
-        location: "Ubicación",
-        lastAttended: "Hace 2 semanas",
-        status: "Activa",
-    },
-];
+import { familyService } from "@/services/familyService";
+import { FamilyProfile } from "@/types/api";
 
 const Page = () => {
     const router = useRouter();
+
+    const [recentFamilies, setRecentFamilies] = useState<FamilyProfile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const loadData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await familyService.getAll();
+            setRecentFamilies(response.data);
+        } catch (error) {
+            console.error("Error al cargar familias:", error);
+            Alert.alert(
+                "Error",
+                "No se pudieron cargar las familias recientes."
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
     return (
         <KeyboardAwareScrollView
@@ -151,19 +151,23 @@ const Page = () => {
                     </Button>
                 </View>
 
-                <View className="bg-white flex-row items-center px-4 py-2 rounded-2xl">
-                    <Boxicon size={18} color="#9ca3af" name="bx-search" />
-                    <TextInput
-                        placeholder="Buscar familia..."
-                        placeholderTextColor="#9ca3af"
-                        className="flex-1 ml-3 text-gray-700 text-base"
-                    />
-                </View>
-
                 <View className="gap-3">
-                    {recentFamilies.map((family) => (
-                        <FamilyCard key={family.id} family={family} />
-                    ))}
+                    {isLoading ? (
+                        <View className="py-8 items-center">
+                            <ActivityIndicator size="large" color="#61b346" />
+                            <Text className="text-gray-400 mt-2">
+                                Cargando...
+                            </Text>
+                        </View>
+                    ) : recentFamilies.length > 0 ? (
+                        recentFamilies.map((family) => (
+                            <FamilyCard key={family.id} family={family} />
+                        ))
+                    ) : (
+                        <Text className="text-center text-gray-400 py-4">
+                            No hay familias registradas aún.
+                        </Text>
+                    )}
                 </View>
             </View>
         </KeyboardAwareScrollView>

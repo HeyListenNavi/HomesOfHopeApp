@@ -1,93 +1,94 @@
-import React from "react";
-import { View, ScrollView, TouchableOpacity, Linking } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+    View,
+    ScrollView,
+    TouchableOpacity,
+    Linking,
+    ActivityIndicator,
+    Alert,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import DocumentPreviewer from "@/components/DocumentPreviewer";
 import { Badge } from "@/components/ui/badge";
-import { getPlusCode } from "@/lib/utils";
+import { formatDate, getPlusCode } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import DetailSectionCard from "@/components/DetailSectionCard";
 import InfoRow from "@/components/InfoRow";
 import ServicesList from "@/components/ServicesList";
-
-const MOCK_DATA = {
-    familyName: "Familia Hernández Ruiz",
-    phoneNumber: "664-123-4567",
-    phoneNumberExtra: "664-987-6543",
-    date: "01/02/03",
-
-    // Parents
-    civilState: "Casado(a)",
-    timeCivilState: "10 años",
-    religion: "Cristiana",
-    timeReligion: "5 años",
-    churchAttendance: "Regularmente",
-    speaksDialect: true,
-    nativeDialect: "Mixteco",
-    hasGovSupport: true,
-    govSupport: "Beca Bienestar",
-    hasVisa: false,
-    familyInUsa: true,
-    receivesUsaSupport: true,
-    familyInUsaSupport: "Envían $100 dlls al mes",
-    hasAddiction: false,
-    addictionProblems: "Uso de drogas",
-    referralSource: "Por un vecino",
-
-    // Children
-    hasSpecialNeeds: "Ninguna",
-    childrenWorking: "No",
-
-    // Land
-    landCity: "Tijuana",
-    landNeighborhood: "El Florido",
-    livesInLand: false,
-    timeLivingLand: null,
-    landPrice: "20,000",
-    landPriceCurrency: "mxn",
-    landDownPayment: "5,000",
-    landDownPaymentCurrency: "usd",
-    landMonthlyPayment: "1,000",
-    landMonthlyPaymentCurrency: "mxn",
-    landLastPayment: "01/10/2023",
-    landPaymentsUptodate: true,
-    landServices: ["luz", "agua", "fosa"],
-    landGps: "32.461755° N, -117.109904° W",
-    landOwner: "Juan Pérez",
-    landNeedsMufa: false,
-    landMeasurements: "10x20 metros",
-    landArea: "200 metros cuadrados",
-
-    // Housing
-    currentCity: "Tijuana",
-    currentNeighborhood: "Zona Centro",
-    currentGps: "32.5333° N, 117.0167° W",
-    housingType: "Rentada",
-    landlordName: "Maria Gonzalez",
-    timeInCurrentHousing: "2 años",
-    rentCost: "3,500",
-    rentCostCurrency: "usd",
-    hasRentReceipts: true,
-
-    // House State
-    roofMaterial: "Madera y Lona",
-    floorMaterial: "Tierra",
-    wallMaterial: "Madera reciclada",
-    numBedrooms: "1",
-    roomCondition: "Mal estado, goteras",
-    bathroomDetails: "Letrina exterior",
-    furnitureDetails: "2 camas, 1 mesa",
-};
+import { Document, FamilyProfile, Member } from "@/types/api";
+import { familyService } from "@/services/familyService";
 
 const Page = () => {
-    const data = MOCK_DATA;
     const router = useRouter();
+    const { id } = useLocalSearchParams();
+
+    const [data, setData] = useState<FamilyProfile>();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (!id) return;
+
+        const loadFamily = async () => {
+            try {
+                const family = await familyService.getById(Number(id));
+
+                setData(family);
+            } catch (error) {
+                console.error(error);
+                Alert.alert(
+                    "Error",
+                    "No se pudo cargar el perfil, se mostrarán datos de prueba."
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadFamily();
+    }, [id]);
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 justify-center items-center bg-gray-100">
+                <ActivityIndicator size="large" color="#61b346" />
+                <Text className="mt-4 text-gray-500">Cargando perfil...</Text>
+            </View>
+        );
+    }
+
+    if (!data) return null;
+
+    const children =
+        data.members?.filter((m: Member) =>
+            m.relationship?.toLowerCase().includes("hijo")
+        ) || [];
+
+    const parents =
+        data.members?.filter(
+            (m: Member) =>
+                m.relationship?.toLowerCase().includes("padre") ||
+                m.relationship?.toLowerCase().includes("tutor") ||
+                m.relationship?.toLowerCase().includes("madre")
+        ) || [];
+
+    const getAge = (dateString: string) => {
+        if (!dateString) return "?";
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
 
     return (
         <ScrollView
@@ -98,18 +99,18 @@ const Page = () => {
             <View className="bg-white rounded-2xl">
                 <View className="h-80 bg-gray-200 items-center justify-center">
                     <Boxicon name="bxs-image" size={48} color="#9ca3af" />
-                    <Text className="text-gray-400 mt-2">
+                    <Text className="w-full text-center text-gray-400 mt-2">
                         Fotografía Familiar
                     </Text>
                 </View>
                 <View className="p-6 bg-white rounded-2xl rounded-t-none gap-6">
-                    <View className="gap-1">
+                    <View className="gap-2">
                         <View className="flex-row items-center justify-between">
                             <Text
                                 variant="h2"
-                                className="text-primary font-bold py-0 border-b-transparent"
+                                className="flex-1 text-primary font-bold py-0 border-b-transparent"
                             >
-                                {data.familyName}
+                                {data.family_name}
                             </Text>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -136,7 +137,14 @@ const Page = () => {
                                             Compartir
                                         </Text>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onPress={() => router.push("/new-family-profile/123")} className="flex-row gap-1 items-center p-3 rounded-lg">
+                                    <DropdownMenuItem
+                                        onPress={() =>
+                                            router.push(
+                                                "/new-family-profile/123"
+                                            )
+                                        }
+                                        className="flex-row gap-1 items-center p-3 rounded-lg"
+                                    >
                                         <Text className="text-gray-600">
                                             <Boxicon
                                                 name="bxs-edit"
@@ -150,23 +158,26 @@ const Page = () => {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </View>
-                        <View className="flex-row gap-2">
-                            <View className="flex-row items-center gap-1">
+                        <View className="gap-2">
+                            <View className="flex-1 flex-row items-center gap-1">
                                 <Text className="text-gray-400">
-                                    <Boxicon name="bxs-location" size={20} />
+                                    <Boxicon name="bxs-location" size={16} />
                                 </Text>
-                                <Text className="text-gray-400">
-                                    {data.landNeighborhood}, {data.landCity}
+                                <Text className="text-gray-400 text-sm">
+                                    {data.construction_address ?? ""}
                                 </Text>
                             </View>
-                            <Badge variant={"secondary"}>
-                                <Text className="text-gray-500">
-                                    {data.date}
+                            <View className="flex-1 flex-row items-center gap-1">
+                                <Text className="text-gray-400">
+                                    <Boxicon name="bxs-clock" size={16} />
                                 </Text>
-                            </Badge>
+                                <Text className="text-gray-400 text-sm">
+                                    {formatDate(data.opened_at) ?? ""}
+                                </Text>
+                            </View>
                         </View>
                     </View>
-                    <View className="flex-row gap-2 items-center">
+                    {/* <View className="flex-row gap-2 items-center">
                         <TouchableOpacity
                             onPress={() =>
                                 Linking.openURL(
@@ -201,12 +212,56 @@ const Page = () => {
                                 />
                             </TouchableOpacity>
                         )}
-                    </View>
+                    </View> */}
                 </View>
             </View>
 
             <DetailSectionCard title="Padres y Tutores" icon="bxs-man-woman">
-                <View className="flex-row gap-1">
+                <View className="gap-3">
+                    {parents.length > 0 ? (
+                        parents.map((parent: Member) => (
+                            <View key={parent.id} className="gap-2">
+                                <Text>{`${parent.name} ${parent.paternal_surname}`}</Text>
+                                <View className="flex-row gap-1">
+                                    <View className="flex-1">
+                                        <InfoRow
+                                            value={`${getAge(
+                                                parent.birth_date
+                                            )} años`}
+                                            label="Edad"
+                                        />
+                                    </View>
+                                    <View className="flex-1">
+                                        <InfoRow
+                                            value={`${parent.curp}`.toUpperCase()}
+                                            label="Curp"
+                                        />
+                                    </View>
+                                </View>
+                                <View className="flex-row gap-1">
+                                    <View className="flex-1">
+                                        <InfoRow
+                                            label="Trabajo"
+                                            value={parent.occupation || "No"}
+                                        />
+                                    </View>
+                                    <View className="flex-1">
+                                        <InfoRow
+                                            className="capitalize"
+                                            label="Relación"
+                                            value={`${parent.relationship}`}
+                                        />
+                                    </View>
+                                </View>
+                            </View>
+                        ))
+                    ) : (
+                        <Text className="text-gray-500 italic py-2">
+                            No hay padres registrados en este perfil
+                        </Text>
+                    )}
+                </View>
+                {/* <View className="flex-row gap-1">
                     <View className="flex-1">
                         <InfoRow
                             label="Estado Civil"
@@ -308,18 +363,43 @@ const Page = () => {
                         data.hasAddiction ? data.addictionProblems : "Ninguna"
                     }
                 />
-                <InfoRow label="Referencia" value={data.referralSource} />
+                <InfoRow label="Referencia" value={data.referralSource} /> */}
             </DetailSectionCard>
 
             <DetailSectionCard title="Hijos" icon="bxs-child">
-                <InfoRow
-                    label="Necesidades Especiales"
-                    value={data.hasSpecialNeeds || "Ninguna registrada"}
-                />
-                <InfoRow
-                    label="Trabajo Infantil"
-                    value={data.childrenWorking || "No"}
-                />
+                <View className="gap-3">
+                    {children.length > 0 ? (
+                        children.map((child: Member) => (
+                            <View key={child.id} className="gap-2">
+                                <Text>{`${child.name} ${child.paternal_surname}`}</Text>
+                                <View className="flex-row gap-1">
+                                    <View className="flex-1">
+                                        <InfoRow
+                                            value={`${getAge(
+                                                child.birth_date
+                                            )} años`}
+                                            label="Edad"
+                                        />
+                                    </View>
+                                    <View className="flex-1">
+                                        <InfoRow
+                                            value={`${child.curp}`.toUpperCase()}
+                                            label="Curp"
+                                        />
+                                    </View>
+                                </View>
+                                <InfoRow
+                                    label="Trabajo Infantil"
+                                    value={child.occupation || "No"}
+                                />
+                            </View>
+                        ))
+                    ) : (
+                        <Text className="text-gray-500 italic py-2">
+                            No hay hijos registrados en este perfil
+                        </Text>
+                    )}
+                </View>
             </DetailSectionCard>
 
             <DetailSectionCard title="Terreno" icon="bxs-location">
@@ -327,19 +407,19 @@ const Page = () => {
                     <View className="flex-1">
                         <InfoRow
                             label="Ubicación del Terreno"
-                            value={`${data.landCity}, ${data.landNeighborhood}`}
+                            value={data.construction_address}
                         />
                     </View>
-                    <View className="flex-1">
+                    {/* <View className="flex-1">
                         <InfoRow
                             label="GPS"
                             value={getPlusCode(data.landGps)}
                             description={data.landGps}
                         />
-                    </View>
+                    </View> */}
                 </View>
 
-                <View className="flex-row gap-1">
+                {/* <View className="flex-row gap-1">
                     <View className="flex-1">
                         <InfoRow
                             label="Nombre del Dueño"
@@ -459,28 +539,28 @@ const Page = () => {
                 <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
                     <Boxicon name="bxs-location" size={16} color="#ffffff" />
                     <Text className="text-white font-bold">Ver Mapa</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </DetailSectionCard>
 
-            {!data.livesInLand ? (
+            {data.current_address ? (
                 <DetailSectionCard title="Vivienda Actual" icon="bxs-home-alt">
                     <View className="flex-row gap-1">
                         <View className="flex-1">
                             <InfoRow
                                 label="Ubicación"
-                                value={`${data.currentCity}, ${data.currentNeighborhood}`}
+                                value={data.current_address}
                             />
                         </View>
-                        <View className="flex-1">
+                        {/* <View className="flex-1">
                             <InfoRow
                                 label="GPS"
                                 value={getPlusCode(data.currentGps)}
                                 description={data.currentGps}
                             />
-                        </View>
+                        </View> */}
                     </View>
 
-                    <View className="h-[1px] bg-gray-200/70 my-1" />
+                    {/* <View className="h-[1px] bg-gray-200/70 my-1" />
 
                     <View className="flex-row gap-1">
                         <View className="flex-1">
@@ -545,41 +625,43 @@ const Page = () => {
                             color="#ffffff"
                         />
                         <Text className="text-white font-bold">Ver Mapa</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </DetailSectionCard>
             ) : (
                 <DetailSectionCard title="Vivienda Actual" icon="bxs-home">
                     <Text className="text-gray-500 italic">
-                        Viven actualmente en el terreno.
+                        Viven actualmente en el terreno
                     </Text>
                 </DetailSectionCard>
             )}
 
             <DetailSectionCard title="Estado de la Casa" icon="bxs-home-heart">
-                <InfoRow label="Techo" value={data.roofMaterial} />
+                <Text></Text>
+                {/* <InfoRow label="Techo" value={data.roofMaterial} />
                 <InfoRow label="Piso" value={data.floorMaterial} />
                 <InfoRow label="Paredes" value={data.wallMaterial} />
                 <View className="h-[1px] bg-gray-200/70 my-1" />
                 <InfoRow label="Cuartos" value={data.numBedrooms} />
                 <InfoRow label="Condición" value={data.roomCondition} />
                 <InfoRow label="Baño" value={data.bathroomDetails} />
-                <InfoRow label="Muebles" value={data.furnitureDetails} />
+                <InfoRow label="Muebles" value={data.furnitureDetails} /> */}
             </DetailSectionCard>
 
             <DetailSectionCard title="Documentos" icon="bxs-file-detail">
                 <View className="gap-4">
-                    <DocumentPreviewer
-                        label="INE"
-                        description="Identificación oficial vigente"
-                    />
-                    <DocumentPreviewer
-                        label="Comprobante Domicilio"
-                        description="Recibo de luz reciente"
-                    />
-                    <DocumentPreviewer
-                        label="Título de Propiedad"
-                        description="Carta de posesión o título"
-                    />
+                    {data.documents && data.documents.length > 0 ? (
+                        data.documents.map((document: Document) => (
+                            <View key={document.id} className="gap-2">
+                                <DocumentPreviewer
+                                    label={document.document_type}
+                                />
+                            </View>
+                        ))
+                    ) : (
+                        <Text className="text-gray-500 italic py-2">
+                            No hay documentos registrados en este perfil
+                        </Text>
+                    )}
                 </View>
             </DetailSectionCard>
         </ScrollView>

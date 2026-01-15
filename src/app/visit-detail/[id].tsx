@@ -1,80 +1,54 @@
-import React from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+    View,
+    ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+    Alert,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FamilyVisit, VisitFamilyCard } from "@/components/FamilyVisitCard";
+import { VisitFamilyCard } from "@/components/FamilyVisitCard";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { visitService } from "@/services/visitService";
+import { Visit } from "@/types/api";
 
-export interface Assignee {
-    id: string;
-    name: string;
-    avatarUrl: string;
-    initials: string;
-}
+export default function VisitDetailPage() {
+    const { id } = useLocalSearchParams();
+    const router = useRouter();
 
-export interface VisitDetailData {
-    id: string;
-    routeTitle: string;
-    assignees: Assignee[];
-    notes: string;
-}
+    const [loading, setLoading] = useState(true);
+    const [visit, setVisit] = useState<Visit>();
 
-const families: FamilyVisit[] = [
-    {
-        id: 101,
-        name: "Familia Hernandez",
-        location: "Calle Principal #123",
-        status: "visited",
-    },
-    {
-        id: 102,
-        name: "Familia Martinez",
-        location: "Av. Las Torres, Lote 4",
-        status: "pending",
-    },
-    {
-        id: 103,
-        name: "Familia Ruíz",
-        location: "Callejón sin salida S/N",
-        status: "pending",
-    },
-];
+    useEffect(() => {
+        if (!id) return;
+        loadVisitDetails();
+    }, [id]);
 
-const visit: VisitDetailData = {
-    id: "visit-123",
-    routeTitle: "Ruta Lomas del Valle",
-    assignees: [
-        {
-            id: "1",
-            name: "Juan",
-            avatarUrl: "https://github.com/mrzachnugent.png",
-            initials: "ZN",
-        },
-        {
-            id: "2",
-            name: "Ana",
-            avatarUrl: "https://github.com/leerob.png",
-            initials: "LR",
-        },
-        {
-            id: "3",
-            name: "Pedro",
-            avatarUrl: "https://github.com/evilrabbit.png",
-            initials: "ER",
-        },
-    ],
-    notes: "Recuerden llevar despensas extra para la Familia Ruíz. Verificar si ya tienen agua potable.",
-};
-
-const Page = () => {
-    const getAssigneeLabel = (assignees: Assignee[]) => {
-        const names = assignees.map((a) => a.name);
-
-        if (names.length === 1) return `Asignado a ${names[0]}`;
-
-        const last = names.pop();
-        return `Asignado a ${names.join(", ")} y ${last}`;
+    const loadVisitDetails = async () => {
+        try {
+            setLoading(true);
+            const data = await visitService.getById(Number(id));
+            setVisit(data);
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "No se pudo cargar la visita");
+            router.back();
+        } finally {
+            setLoading(false);
+        }
     };
+
+    if (loading) {
+        return (
+            <View className="flex-1 justify-center items-center bg-white">
+                <ActivityIndicator size="large" color="#61b346" />
+            </View>
+        );
+    }
+
+    if (!visit) return null;
 
     return (
         <ScrollView className="flex-1 bg-white">
@@ -85,36 +59,30 @@ const Page = () => {
                             Detalles de la visita
                         </Text>
                         <Text variant="h2" className="border-b-0 font-bold">
-                            {visit.routeTitle}
+                            {visit.family_profile?.family_name}
                         </Text>
 
-                        <View className="flex-row items-center gap-3">
+                        <View className="flex-row items-center gap-3 mt-2">
                             <View className="flex-row">
-                                {visit.assignees.map((assignee) => (
-                                    <Avatar
-                                        key={assignee.id}
-                                        alt={assignee.initials}
-                                        className="border-background -mr-2 border-2"
-                                    >
-                                        <AvatarImage
-                                            source={{
-                                                uri: assignee.avatarUrl,
-                                            }}
-                                        />
-                                        <AvatarFallback>
-                                            <Text>{assignee.initials}</Text>
-                                        </AvatarFallback>
-                                    </Avatar>
-                                ))}
+                                <Avatar
+                                    alt={visit.attendant?.name ?? "Sin asignar"}
+                                    className="border-white -mr-2 border-2"
+                                >
+                                    <AvatarImage
+                                        source={{
+                                            uri:`https://ui-avatars.com/api/?name=${encodeURIComponent(visit.attendant?.name ?? "Sin Nombre")}&background=random`,
+                                        }}
+                                    />
+                                </Avatar>
                             </View>
-                            <Text className="text-gray-400">
-                                {getAssigneeLabel(visit.assignees)}
+                            <Text className="text-gray-400 text-sm flex-1">
+                                {`Asignado a ${visit.attendant?.name}`}
                             </Text>
                         </View>
                     </View>
 
                     <View className="bg-yellow-50 p-4 rounded-xl border border-yellow-100">
-                        <View className="flex-row items-center gap-2">
+                        <View className="flex-row items-center gap-2 mb-1">
                             <Boxicon
                                 name="bxs-note"
                                 size={16}
@@ -125,31 +93,31 @@ const Page = () => {
                             </Text>
                         </View>
                         <Text className="text-yellow-800/70">
-                            {visit.notes}
+                            {visit.notes?.length > 0 ? visit.notes : "Sin notas"}
                         </Text>
                     </View>
 
-                    <TouchableOpacity className="bg-primary w-full py-4 rounded-2xl flex-row justify-center items-center gap-2">
-                        <Text className="text-white font-bold">
-                            Iniciar Visita
-                        </Text>
-                        <Boxicon name="bxs-play-circle" size={20} color="white" />
+                    <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                        <Boxicon
+                            name="bxs-location"
+                            size={16}
+                            color="#ffffff"
+                        />
+                        <Text className="text-white font-bold">Ver Ruta</Text>
                     </TouchableOpacity>
                 </View>
 
                 <View className="gap-3">
                     <View>
-                        <Text variant="h3" className="font-bold">Familias</Text>
+                        <Text variant="h3" className="font-bold">
+                            Familia
+                        </Text>
                     </View>
 
                     <View className="gap-2">
-                        {families.map((family, index) => (
-                            <VisitFamilyCard
-                                key={family.id}
-                                index={index + 1}
-                                family={family}
-                            />
-                        ))}
+                        <VisitFamilyCard
+                            family={visit.family_profile}
+                        />
                     </View>
 
                     <View className="items-center">
@@ -161,6 +129,4 @@ const Page = () => {
             </View>
         </ScrollView>
     );
-};
-
-export default Page;
+}
