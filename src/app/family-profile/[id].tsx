@@ -18,7 +18,7 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import DetailSectionCard from "@/components/DetailSectionCard";
 import InfoRow from "@/components/InfoRow";
-import { Member, Document } from "@/types/api";
+import { FamilyMember, Document } from "@/types/api";
 
 // 1. Import the specific hook for a single family
 import { useFamily } from "@/hooks/useFamilies";
@@ -65,11 +65,11 @@ const Page = () => {
     }
 
     // 4. Derived state (Safe to run now because we know 'family' exists)
-    const children = family.members?.filter((m: Member) =>
+    const children = family.members?.filter((m: FamilyMember) =>
         m.relationship?.toLowerCase().includes("hijo")
     ) || [];
 
-    const parents = family.members?.filter((m: Member) =>
+    const parents = family.members?.filter((m: FamilyMember) =>
         ["padre", "madre", "tutor"].some(role => m.relationship?.toLowerCase().includes(role))
     ) || [];
 
@@ -139,7 +139,7 @@ const Page = () => {
             <DetailSectionCard title="Padres y Tutores" icon="bxs-man-woman">
                 <View className="gap-3">
                     {parents.length > 0 ? (
-                        parents.map((parent: Member) => (
+                        parents.map((parent: FamilyMember) => (
                             <View key={parent.id} className="gap-2">
                                 <Text className="font-bold text-gray-700">
                                     {parent.name} {parent.paternal_surname}
@@ -187,7 +187,7 @@ const Page = () => {
             <DetailSectionCard title="Hijos" icon="bxs-child">
                 <View className="gap-3">
                     {children.length > 0 ? (
-                        children.map((child: Member) => (
+                        children.map((child: FamilyMember) => (
                             <View key={child.id} className="gap-2">
                                 <Text className="font-bold text-gray-700">
                                     {child.name} {child.paternal_surname}
