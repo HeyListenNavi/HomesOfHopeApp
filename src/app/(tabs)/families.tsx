@@ -142,28 +142,22 @@ const Page = () => {
             return (
                 <View className="items-center py-20">
                     <ActivityIndicator size="large" color="#61b346" />
-                    <Text className="text-gray-400 mt-4">Buscando...</Text>
+                    <Text className="text-gray-400 mt-4">Cargando...</Text>
                 </View>
             );
         }
 
-        if (allFamilies.length === 0) {
-            return (
-                <View className="items-center py-10">
-                    <Boxicon name="bx-search" size={48} color="#d1d5db" />
-                    <Text className="text-gray-400 mt-2 text-center">
-                        No se encontraron familias. Intenta con otra búsqueda.
-                    </Text>
-                </View>
-            );
-        }
-        return null;
-    };
+        return (
+            <View className="bg-white px-6 py-8 rounded-2xl items-center gap-2">
+                <Boxicon name="bx-search" size={48} color="#d1d5db" />
+                <Text className="text-gray-500">No se encontraron familias.</Text>
+            </View>
+        );
+    }
 
     return (
         <View className="flex-1 bg-gray-100">
             <KeyboardAwareFlatList
-                enableOnAndroid={true}
                 data={allFamilies}
                 renderItem={renderItem}
 
@@ -176,9 +170,8 @@ const Page = () => {
                 ListFooterComponent={ListFooterComponent}
                 ListEmptyComponent={ListEmptyComponent}
 
-                contentContainerClassName="p-4"
+                contentContainerClassName="p-6"
                 showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
 
                 refreshControl={
                     <RefreshControl
@@ -187,6 +180,9 @@ const Page = () => {
                         colors={["#61b346"]}
                     />
                 }
+
+                keyboardShouldPersistTaps="handled"
+                enableOnAndroid={true}
             />
         </View>
     );

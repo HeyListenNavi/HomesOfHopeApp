@@ -28,7 +28,7 @@ export default function VisitsScreen() {
         return data?.pages.flatMap(page => page.data) || [];
     }, [data]);
 
-    const today = new Date().toDateString(); 
+    const today = new Date().toDateString();
 
     const todaysVisits = useMemo(() =>
         allVisits.filter(visit => new Date(visit.scheduled_at).toDateString() === today),
@@ -83,49 +83,49 @@ export default function VisitsScreen() {
     };
 
     const ListEmptyComponent = () => {
-        if (!isLoading && futureVisits.length === 0) {
+        if (isLoading) {
             return (
-                <View className="bg-white px-6 py-8 rounded-2xl items-center gap-2">
-                    <Boxicon name="bxs-calendar" size={32} color="#9ca3af" />
-                    <Text className="text-gray-500">No hay visitas futuras programadas.</Text>
+                <View className="items-center py-20">
+                    <ActivityIndicator size="large" color="#61b346" />
+                    <Text className="text-gray-400 mt-4">Cargando...</Text>
                 </View>
             );
         }
-        return null;
+
+        return (
+            <View className="bg-white px-6 py-8 rounded-2xl items-center gap-2">
+                <Boxicon name="bxs-calendar" size={32} color="#9ca3af" />
+                <Text className="text-gray-500">No hay visitas programadas.</Text>
+            </View>
+        );
     };
 
     return (
         <View className="flex-1 bg-gray-100">
-            {isLoading ? (
-                <View className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color="#61b346" />
-                </View>
-            ) : (
-                <FlatList
-                    data={futureVisits}
-                    renderItem={renderItem}
+            <FlatList
+                data={futureVisits}
+                renderItem={renderItem}
 
-                    onEndReached={() => {
-                        if (hasNextPage) fetchNextPage();
-                    }}
-                    onEndReachedThreshold={0.5}
+                onEndReached={() => {
+                    if (hasNextPage) fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
 
-                    ListHeaderComponent={ListHeaderComponent}
-                    ListFooterComponent={ListFooterComponent}
-                    ListEmptyComponent={ListEmptyComponent}
+                ListHeaderComponent={ListHeaderComponent}
+                ListFooterComponent={ListFooterComponent}
+                ListEmptyComponent={ListEmptyComponent}
 
-                    contentContainerClassName="p-4"
-                    showsVerticalScrollIndicator={false}
+                contentContainerClassName="p-4"
+                showsVerticalScrollIndicator={false}
 
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={isRefetching && !isFetchingNextPage}
-                            onRefresh={refetch}
-                            colors={["#61b346"]}
-                        />
-                    }
-                />
-            )}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefetching && !isFetchingNextPage}
+                        onRefresh={refetch}
+                        colors={["#61b346"]}
+                    />
+                }
+            />
         </View>
     );
 }
