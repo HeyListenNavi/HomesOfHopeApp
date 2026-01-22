@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
     View,
     ScrollView,
@@ -11,36 +11,17 @@ import Boxicon from "@/components/Boxicons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VisitFamilyCard } from "@/components/FamilyVisitCard";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { visitService } from "@/services/visitService";
-import { Visit } from "@/types/api";
+// 1. Remove the service, import the hook
+import { useVisit } from "@/hooks/useVisits";
 
 export default function VisitDetailPage() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
 
-    const [loading, setLoading] = useState(true);
-    const [visit, setVisit] = useState<Visit>();
+    // 2. Fetch data automatically
+    const { data: visit, isLoading, isError } = useVisit(Number(id));
 
-    useEffect(() => {
-        if (!id) return;
-        loadVisitDetails();
-    }, [id]);
-
-    const loadVisitDetails = async () => {
-        try {
-            setLoading(true);
-            const data = await visitService.getById(Number(id));
-            setVisit(data);
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "No se pudo cargar la visita");
-            router.back();
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
+    if (isLoading) {
         return (
             <View className="flex-1 justify-center items-center bg-white">
                 <ActivityIndicator size="large" color="#61b346" />
@@ -48,7 +29,21 @@ export default function VisitDetailPage() {
         );
     }
 
-    if (!visit) return null;
+    // 3. Handle Errors gracefully
+    if (isError || !visit) {
+        return (
+            <View className="flex-1 justify-center items-center bg-white gap-4">
+                <Boxicon name="bxs-x-circle" size={48} color="#ef4444" />
+                <Text className="text-gray-500">No se pudo cargar la visita</Text>
+                <TouchableOpacity 
+                    onPress={() => router.back()}
+                    className="bg-gray-100 px-4 py-2 rounded-lg"
+                >
+                    <Text>Regresar</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <ScrollView className="flex-1 bg-white">
@@ -59,9 +54,10 @@ export default function VisitDetailPage() {
                             Detalles de la visita
                         </Text>
                         <Text variant="h2" className="border-b-0 font-bold">
-                            {visit.family_profile?.family_name}
+                            {visit.family_profile?.family_name || "Familia Desconocida"}
                         </Text>
 
+                        {/* Attendant Section */}
                         <View className="flex-row items-center gap-3 mt-2">
                             <View className="flex-row">
                                 <Avatar
@@ -70,17 +66,27 @@ export default function VisitDetailPage() {
                                 >
                                     <AvatarImage
                                         source={{
-                                            uri:`https://ui-avatars.com/api/?name=${encodeURIComponent(visit.attendant?.name ?? "Sin Nombre")}&background=random`,
+                                            uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                visit.attendant?.name ?? "Sin Nombre"
+                                            )}&background=random`,
                                         }}
                                     />
+                                    <AvatarFallback>
+                                        <Text>
+                                            {visit.attendant?.name?.substring(0, 2).toUpperCase() ?? "??"}
+                                        </Text>
+                                    </AvatarFallback>
                                 </Avatar>
                             </View>
                             <Text className="text-gray-400 text-sm flex-1">
-                                {`Asignado a ${visit.attendant?.name}`}
+                                {visit.attendant 
+                                    ? `Asignado a ${visit.attendant.name}` 
+                                    : "Sin personal asignado"}
                             </Text>
                         </View>
                     </View>
 
+                    {/* Notes Section */}
                     <View className="bg-yellow-50 p-4 rounded-xl border border-yellow-100">
                         <View className="flex-row items-center gap-2 mb-1">
                             <Boxicon
@@ -88,15 +94,22 @@ export default function VisitDetailPage() {
                                 size={16}
                                 color="#eab308"
                             />
-                            <Text className="font-bold text-yellow-600">
-                                Notas
+                            <Text className="font-bold italic text-yellow-600">
+                                Notas generales
                             </Text>
                         </View>
+                        {/* Check if notes is an array or string based on your type definition */}
                         <Text className="text-yellow-800/70">
-                            {visit.notes?.length > 0 ? visit.notes : "Sin notas"}
+                            {Array.isArray(visit.notes) && visit.notes.length > 0 
+                                ? visit.notes.join(", ") 
+                                : typeof visit.notes === 'string' && visit.notes 
+                                    ? visit.notes 
+                                    : "Sin notas registradas"
+                            }
                         </Text>
                     </View>
 
+                    {/* Action Buttons */}
                     <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
                         <Boxicon
                             name="bxs-location"
@@ -107,6 +120,7 @@ export default function VisitDetailPage() {
                     </TouchableOpacity>
                 </View>
 
+                {/* Related Family Card */}
                 <View className="gap-3">
                     <View>
                         <Text variant="h3" className="font-bold">
@@ -115,15 +129,15 @@ export default function VisitDetailPage() {
                     </View>
 
                     <View className="gap-2">
-                        <VisitFamilyCard
-                            family={visit.family_profile}
-                        />
-                    </View>
-
-                    <View className="items-center">
-                        <Text className="text-gray-400 text-xs">
-                            Fin de la lista de familias
-                        </Text>
+                        {visit.family_profile ? (
+                            <VisitFamilyCard
+                                family={visit.family_profile}
+                            />
+                        ) : (
+                            <Text className="text-gray-400 italic">
+                                Perfil de familia no disponible
+                            </Text>
+                        )}
                     </View>
                 </View>
             </View>

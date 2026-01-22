@@ -1,59 +1,53 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
     View,
-    ScrollView,
-    TextInput,
     TouchableOpacity,
-    Alert,
     ActivityIndicator,
+    RefreshControl,
+    ListRenderItem
 } from "react-native";
 import { FamilyCard } from "@/components/FamilyCard";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { useRouter } from "expo-router";
 import StatCard from "@/components/StatCard";
-import { Button } from "@/components/ui/button";
-import { familyService } from "@/services/familyService";
+import Input from "@/components/Input";
+import { useFamilyList } from "@/hooks/useFamilies";
 import { FamilyProfile } from "@/types/api";
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 const Page = () => {
     const router = useRouter();
+    const [search, setSearch] = useState("");
 
-    const [recentFamilies, setRecentFamilies] = useState<FamilyProfile[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        data,
+        isLoading,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        refetch,
+        isRefetching
+    } = useFamilyList(search);
 
-    const loadData = async () => {
-        setIsLoading(true);
-        try {
-            const response = await familyService.getAll();
-            setRecentFamilies(response.data);
-        } catch (error) {
-            console.error("Error al cargar familias:", error);
-            Alert.alert(
-                "Error",
-                "No se pudieron cargar las familias recientes."
-            );
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const allFamilies = useMemo(() => {
+        return data?.pages.flatMap(page => page.data) || [];
+    }, [data]);
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    const renderItem: ListRenderItem<FamilyProfile> = ({ item }) => (
+        <View className="mb-3">
+            <FamilyCard family={item} />
+        </View>
+    );
 
-    return (
-        <ScrollView
-            className="flex-1 bg-gray-100"
-            contentContainerClassName="p-6 gap-8"
-            showsVerticalScrollIndicator={false}
-        >
+    const ListHeaderComponent = (
+        <View className="gap-8 mb-4">
             <View className="flex-row items-center justify-between">
                 <View className="gap-1">
                     <Text className="text-gray-500 text-sm">
                         Gestión de perfiles familiares
                     </Text>
-
                     <Text variant="h3" className="font-bold text-gray-800">
                         Familias
                     </Text>
@@ -76,13 +70,12 @@ const Page = () => {
                 <View className="flex-row justify-between">
                     <StatCard
                         size="half"
-                        value={recentFamilies.length}
+                        value={123}
                         label="Familias"
                         iconName="bxs-group"
                         iconColor="#61b346"
                         iconBgColor="bg-[#61b346]/10"
                     />
-
                     <StatCard
                         size="half"
                         value={123}
@@ -92,7 +85,6 @@ const Page = () => {
                         iconBgColor="bg-green-500/10"
                     />
                 </View>
-
                 <StatCard
                     size="full"
                     value={123}
@@ -113,45 +105,90 @@ const Page = () => {
             <View className="gap-4">
                 <View className="flex-row justify-between items-center">
                     <Text variant="h3" className="font-bold text-gray-800">
-                        Familias Recientes
+                        Lista de Familias
                     </Text>
-                    <Button
-                        variant="link"
-                        onPress={() => router.push("/(tabs)/families")}
-                    >
-                        <Text>Ver todas</Text>
-                    </Button>
                 </View>
 
-                <View className="bg-white flex-row items-center px-4 py-2 rounded-2xl">
+                <View className="bg-white flex-row items-center px-4 rounded-2xl">
                     <Boxicon size={18} color="#9ca3af" name="bx-search" />
-                    <TextInput
+                    <Input
                         placeholder="Buscar familia..."
-                        placeholderTextColor="#9ca3af"
-                        className="flex-1 ml-3 text-gray-700 text-base"
+                        debounce={true}
+                        debounceDelay={500}
+                        onChangeText={setSearch}
+                        value={search}
+                        className="flex-1"
+                        inputClassName="bg-white"
                     />
                 </View>
-
-                <View className="gap-3">
-                    {isLoading ? (
-                        <View className="py-8 items-center">
-                            <ActivityIndicator size="large" color="#61b346" />
-                            <Text className="text-gray-400 mt-2">
-                                Cargando...
-                            </Text>
-                        </View>
-                    ) : recentFamilies.length > 0 ? (
-                        recentFamilies.map((family) => (
-                            <FamilyCard key={family.id} family={family} />
-                        ))
-                    ) : (
-                        <Text className="text-center text-gray-400 py-4">
-                            No hay familias registradas aún.
-                        </Text>
-                    )}
-                </View>
             </View>
-        </ScrollView>
+        </View>
+    );
+
+    const ListFooterComponent = () => {
+        if (isFetchingNextPage) {
+            return (
+                <View className="py-6 items-center">
+                    <ActivityIndicator size="small" color="#61b346" />
+                    <Text className="text-xs text-gray-400 mt-2">Cargando más...</Text>
+                </View>
+            );
+        }
+        return <View className="h-10" />;
+    };
+
+    const ListEmptyComponent = () => {
+        if (isLoading) {
+            return (
+                <View className="items-center py-20">
+                    <ActivityIndicator size="large" color="#61b346" />
+                    <Text className="text-gray-400 mt-4">Buscando...</Text>
+                </View>
+            );
+        }
+
+        if (allFamilies.length === 0) {
+            return (
+                <View className="items-center py-10">
+                    <Boxicon name="bx-search" size={48} color="#d1d5db" />
+                    <Text className="text-gray-400 mt-2 text-center">
+                        No se encontraron familias. Intenta con otra búsqueda.
+                    </Text>
+                </View>
+            );
+        }
+        return null;
+    };
+
+    return (
+        <View className="flex-1 bg-gray-100">
+            <KeyboardAwareFlatList
+                enableOnAndroid={true}
+                data={allFamilies}
+                renderItem={renderItem}
+
+                onEndReached={() => {
+                    if (hasNextPage) fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
+
+                ListHeaderComponent={ListHeaderComponent}
+                ListFooterComponent={ListFooterComponent}
+                ListEmptyComponent={ListEmptyComponent}
+
+                contentContainerClassName="p-4"
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefetching && !isFetchingNextPage}
+                        onRefresh={refetch}
+                        colors={["#61b346"]}
+                    />
+                }
+            />
+        </View>
     );
 };
 
