@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, ToastAndroid, Linking, Alert } from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import { useRouter } from "expo-router";
@@ -13,6 +13,38 @@ interface VisitCardProps {
 
 export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
     const router = useRouter();
+
+    const openMapsLink = async () => {
+        const address = visit?.family_profile?.construction_address_link;
+
+        if (!address) {
+            ToastAndroid.show("Enlace de mapas no disponible.", ToastAndroid.SHORT);
+            return;
+        }
+
+        try {
+            await Linking.openURL(address);
+        } catch (err) {
+            ToastAndroid.show("No se pudo abrir la aplicación de mapas.", ToastAndroid.SHORT);
+        }
+    };
+
+    const openPhone = async () => {
+        const phone = visit?.family_profile?.responsible_member?.phone;
+
+        if (!phone) {
+            ToastAndroid.show("Número de teléfono del responsable no disponible.", ToastAndroid.SHORT);
+            return;
+        }
+
+        const url = `tel:${phone}`;
+
+        try {
+            await Linking.openURL(url);
+        } catch (err) {
+            ToastAndroid.show('No se pudo abrir la aplicación de teléfono.', ToastAndroid.SHORT);
+        }
+    };
 
     if (variant === "full") {
         return (
@@ -42,13 +74,19 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
                 </View>
 
                 <View className="flex-row items-center gap-3">
-                    <TouchableOpacity className="flex-1 bg-gray-50 border border-gray-200 px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                    <TouchableOpacity
+                        className="flex-1 bg-gray-50 border border-gray-200 px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center"
+                        onPress={() => openPhone() }
+                    >
                         <Text className="text-gray-500">
-                            <Boxicon name="bxs-location" size={16} />
+                            <Boxicon name="bxs-phone" size={16} />
                         </Text>
                         <Text className="text-gray-500 font-bold">Llamar</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center">
+                    <TouchableOpacity
+                        className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center"
+                        onPress={() => openMapsLink()}
+                    >
                         <Boxicon
                             name="bxs-location"
                             size={16}
