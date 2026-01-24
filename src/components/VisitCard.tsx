@@ -49,7 +49,7 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
     if (variant === "full") {
         return (
             <TouchableOpacity
-                className="bg-white rounded-2xl p-5 gap-3 shadow-sm"
+                className="bg-white rounded-2xl p-5 gap-3"
                 onPress={() => router.push(`/visit-detail/${visit.id}`)}
             >
                 <View className="flex-row justify-between items-start gap-2">
