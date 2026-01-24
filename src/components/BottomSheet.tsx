@@ -4,19 +4,25 @@ import {
     BottomSheetScrollView,
     BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
-import { ReactNode, forwardRef, useCallback, useMemo } from "react";
+import { ReactNode, useCallback, useMemo, Ref } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface ReusableBottomSheetEditorProps {
+interface BottomSheetProps {
     children: ReactNode;
+    ref?: Ref<BottomSheetModal>;
+    snapPoints?: (string | number)[];
 }
 
-const ReusableBottomSheetEditor = forwardRef<
-    BottomSheetModal,
-    ReusableBottomSheetEditorProps
->(function BottomSheetEditor({ children }, ref) {
-    const snapPoints = useMemo(() => ["75%", "90%"], []);
+const BottomSheet = ({ 
+    children, 
+    ref, 
+    snapPoints = ["75%", "90%"],
+}: BottomSheetProps) => {
     const { top, bottom } = useSafeAreaInsets();
+
+    const bottomSheetSnapPoints = useMemo(() => {
+        return snapPoints;
+    }, []); 
 
     const renderBackdrop = useCallback(
         (props: BottomSheetBackdropProps) => (
@@ -32,7 +38,7 @@ const ReusableBottomSheetEditor = forwardRef<
     return (
         <BottomSheetModal
             ref={ref}
-            snapPoints={snapPoints}
+            snapPoints={bottomSheetSnapPoints}
             backdropComponent={renderBackdrop}
             enablePanDownToClose
             topInset={top}
@@ -43,6 +49,6 @@ const ReusableBottomSheetEditor = forwardRef<
             </BottomSheetScrollView>
         </BottomSheetModal>
     );
-});
+};
 
-export default ReusableBottomSheetEditor;
+export default BottomSheet;
