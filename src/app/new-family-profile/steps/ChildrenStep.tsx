@@ -9,7 +9,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef } from "react";
 import { OtherMember } from "./AddOtherMemberStep";
 import AddChildStep, { Child } from "./AddChildStep";
-import BottomSheetEditor from "@/components/BottomSheetEditor";
+import BottomSheet from "@/components/BottomSheet";
 
 interface ChildrenStepProps {
     data: ProfileState;
@@ -85,7 +85,7 @@ const ChildrenStep = ({ data, onChange }: ChildrenStepProps) => {
                         </Text>
                     </TouchableOpacity>
 
-                    <BottomSheetEditor ref={bottomSheetRef}>
+                    <BottomSheet ref={bottomSheetRef}>
                         <AddChildStep
                             onSave={(child) => {
                                 children.save(child);
@@ -93,7 +93,7 @@ const ChildrenStep = ({ data, onChange }: ChildrenStepProps) => {
                             }}
                             initialValues={children.initialItem}
                         />
-                    </BottomSheetEditor>
+                    </BottomSheet>
 
                     <Text className="text-gray-500">
                         Información general de los hijos

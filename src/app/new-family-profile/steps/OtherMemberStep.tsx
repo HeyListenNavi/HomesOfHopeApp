@@ -5,7 +5,7 @@ import { View, TouchableOpacity } from "react-native";
 import StepContainer from "./StepContainer";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef, useState, useEffect } from "react";
-import ReusableBottomSheetEditor from "@/components/BottomSheetEditor";
+import BottomSheet from "@/components/BottomSheet";
 import { useEditableList } from "@/hooks/useEditableList";
 import { ProfileState } from "../[id]";
 import AddOtherMemberStep, { OtherMember } from "./AddOtherMemberStep";
@@ -86,7 +86,7 @@ const OtherMemberStep = ({ data, onChange }: OtherMemberStepProps) => {
                         </Text>
                     </TouchableOpacity>
 
-                    <ReusableBottomSheetEditor
+                    <BottomSheet
                         ref={bottomSheetRef}
                     >
                         <AddOtherMemberStep
@@ -96,7 +96,7 @@ const OtherMemberStep = ({ data, onChange }: OtherMemberStepProps) => {
                             }}
                             initialValues={otherMembers.initialItem}
                         />
-                    </ReusableBottomSheetEditor>
+                    </BottomSheet>
                 </View>
             </View>
         </StepContainer>

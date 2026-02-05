@@ -10,7 +10,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef } from "react";
 import AddParentStep, { Parent } from "./AddParentStep";
 import { ProfileState } from "../[id]";
-import BottomSheetEditor from "@/components/BottomSheetEditor";
+import BottomSheet from "@/components/BottomSheet";
 import { useEditableList } from "@/hooks/useEditableList";
 
 interface ParentStepProps {
@@ -87,7 +87,7 @@ const ParentStep = ({ data, onChange }: ParentStepProps) => {
                         </Text>
                     </TouchableOpacity>
 
-                    <BottomSheetEditor ref={bottomSheetRef}>
+                    <BottomSheet ref={bottomSheetRef}>
                         <AddParentStep
                             onSave={(parent) => {
                                 parents.save(parent);
@@ -95,7 +95,7 @@ const ParentStep = ({ data, onChange }: ParentStepProps) => {
                             }}
                             initialValues={parents.initialItem}
                         />
-                    </BottomSheetEditor>
+                    </BottomSheet>
 
                     <Text className="text-gray-500">
                         Datos Familiares Generales
