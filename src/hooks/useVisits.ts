@@ -2,11 +2,11 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { visitService } from '@/services/services';
 import { Visit } from '@/types/api';
 
-export const useVisitList = (search = '') => {
+export const useVisitList = (params: Record<string, any> = {}) => {
     return useInfiniteQuery({
-        queryKey: ['visits', 'infinite', search],
+        queryKey: ['visits', 'infinite', params],
 
-        queryFn: ({ pageParam = 1 }) => visitService.getAll(pageParam, search),
+        queryFn: ({ pageParam = 1 }) => visitService.getAll(pageParam, params),
         
         initialPageParam: 1,
         getNextPageParam: (lastPage) => {

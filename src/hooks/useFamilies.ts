@@ -2,11 +2,11 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { familyService } from '@/services/services';
 import { FamilyProfile } from '@/types/api';
 
-export const useFamilyList = (search = '') => {
+export const useFamilyList = (params: Record<string, any>) => {
     return useInfiniteQuery({
-        queryKey: ['families', 'infinite', search],
+        queryKey: ['families', 'infinite', params],
 
-        queryFn: ({ pageParam = 1 }) => familyService.getAll(pageParam, search),
+        queryFn: ({ pageParam = 1 }) => familyService.getAll(pageParam, params),
         
         initialPageParam: 1,
         
