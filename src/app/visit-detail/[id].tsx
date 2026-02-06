@@ -344,7 +344,7 @@ export default function VisitDetailPage() {
                             </Text>
                         </View>
                         <Text className="text-gray-500">
-                            "{visit.outcome_summary}"
+                            {visit.outcome_summary ?? "Sin notas"}
                         </Text>
                     </View>
 
@@ -359,8 +359,9 @@ export default function VisitDetailPage() {
                         </View>
 
                         <View className="gap-2">
-                            {localTasks.map((task: Task) => {
-                                const isCompleted = !!task.completed_at;
+                            {localTasks.length > 0 ? (
+                                localTasks.map((task: Task) => {
+                                    const isCompleted = task.status == 'completed';
 
                                 return (
                                     <TouchableOpacity
@@ -370,7 +371,7 @@ export default function VisitDetailPage() {
                                         }
                                         className={`border p-4 rounded-2xl gap-3 flex-row items-center transition-all ${
                                             isCompleted
-                                                ? "bg-primary/10"
+                                                    ? "bg-primary/10 border-transparent"
                                                 : "bg-gray-50 border-gray-200"
                                         }`}
                                     >
@@ -411,7 +412,62 @@ export default function VisitDetailPage() {
                                         </View>
                                     </TouchableOpacity>
                                 );
-                            })}
+                                })
+                            ) : (
+                                <Text>Sin tareas asignadas</Text>
+                            )}
+                        </View>
+                    </View>
+
+                    <View className="rounded-2xl bg-white p-5 gap-4">
+                        <View className="flex-row gap-2 items-center">
+                            <Text className="text-primary">
+                                <Boxicon name="bxs-note-book" size={18} />
+                            </Text>
+                            <Text className="font-bold flex-1 text-gray-800">
+                                Notas
+                            </Text>
+                        </View>
+
+                        <View className="gap-3">
+                            {visit.notes && visit.notes.length > 0 ? (
+                                visit.notes.map((note: Note) => (
+                                    <View
+                                        key={note.id}
+                                        className="bg-gray-50 p-4 rounded-2xl gap-2"
+                                    >
+                                        <Text className="text-gray-800 text-sm leading-relaxed">
+                                            {note.content}
+                                        </Text>
+
+                                        <View className="flex-row justify-between items-center mt-1 pt-2 border-t border-gray-200/50">
+                                            <View className="flex-row items-center gap-1">
+                                                <Boxicon
+                                                    name="bxs-user"
+                                                    size={10}
+                                                    color="#6b7280"
+                                                />
+                                                <Text className="text-xs text-gray-500 font-medium">
+                                                    {note.author?.name ||
+                                                        "Usuario"}
+                                                </Text>
+                                            </View>
+
+                                            <Text className="text-xs text-gray-400">
+                                                {new Date(
+                                                    note.created_at,
+                                                ).toLocaleDateString()}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))
+                            ) : (
+                                <View className="items-center justify-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <Text className="text-gray-400 text-sm italic">
+                                        Sin notas registradas
+                                    </Text>
+                                </View>
+                            )}
                         </View>
                     </View>
 
@@ -426,6 +482,7 @@ export default function VisitDetailPage() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+
             <BottomSheet ref={bottomSheetRef} snapPoints={[]}>
                 <View className="px-6 pb-6">
                     <Text className="text-xl font-bold text-gray-900 mb-2 mt-2">
