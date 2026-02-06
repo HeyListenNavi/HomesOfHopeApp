@@ -42,7 +42,7 @@ export interface FamilyProfile extends Model {
 
 export interface FamilyMember extends Model {
     family_profile_id: number;
-    name: string;
+    full_name: string;
     paternal_surname: string;
     maternal_surname?: string | null;
     birth_date: string;
