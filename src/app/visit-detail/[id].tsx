@@ -21,6 +21,7 @@ import BottomSheet from "@/components/BottomSheet";
 import { Note, Task } from "@/types/api";
 import InfoRow from "@/components/InfoRow";
 import { useUpdateTask } from "@/hooks/useTasks";
+import VisitForm from "@/components/VisitForm";
 
 export default function VisitDetailPage() {
     const { id } = useLocalSearchParams();
@@ -484,107 +485,8 @@ export default function VisitDetailPage() {
             </ScrollView>
 
             <BottomSheet ref={bottomSheetRef} snapPoints={[]}>
-                <View className="px-6 pb-6">
-                    <Text className="text-xl font-bold text-gray-900 mb-2 mt-2">
-                        Evidencia de Cierre
-                    </Text>
-                    <Text className="text-sm text-gray-500 mb-6">
-                        Complete los siguientes campos para finalizar la visita.
-                    </Text>
-
-                    <View className="gap-6 pb-10">
-                        <View>
-                            <Text className="text-xs font-bold text-gray-700 uppercase mb-3">
-                                1. Fotografías del sitio{" "}
-                                <Text className="text-red-500">*</Text>
-                            </Text>
-                            <TouchableOpacity className="h-24 border-2 border-dashed border-gray-300 rounded-xl items-center justify-center bg-gray-50 active:bg-blue-50 active:border-blue-300">
-                                <View className="w-10 h-10 bg-white rounded-full items-center justify-center mb-2">
-                                    <Boxicon
-                                        name="bxs-camera"
-                                        size={20}
-                                        color="#9CA3AF"
-                                    />
-                                </View>
-                                <Text className="text-xs font-medium text-gray-500">
-                                    Tomar fotos
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View>
-                            <Text className="text-xs font-bold text-gray-700 uppercase mb-3">
-                                2. Video Recorrido{" "}
-                                <Text className="text-red-500">*</Text>
-                            </Text>
-                            <TouchableOpacity className="h-20 border border-gray-200 rounded-xl flex-row items-center px-4 bg-white active:bg-gray-50">
-                                <View className="w-10 h-10 bg-red-100 rounded-full items-center justify-center mr-3">
-                                    <Boxicon
-                                        name="bxs-video"
-                                        size={20}
-                                        color="#dc2626"
-                                    />
-                                </View>
-                                <View className="flex-1">
-                                    <Text className="text-sm font-semibold text-gray-800">
-                                        Grabar Recorrido
-                                    </Text>
-                                    <Text className="text-xs text-gray-400">
-                                        Máximo 30 segundos
-                                    </Text>
-                                </View>
-                                <Boxicon
-                                    name="bx-chevron-right"
-                                    size={24}
-                                    color="#9CA3AF"
-                                />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View>
-                            <Text className="text-xs font-bold text-gray-700 uppercase mb-3">
-                                3. Conclusiones (Audio){" "}
-                                <Text className="text-red-500">*</Text>
-                            </Text>
-                            <TouchableOpacity className="w-full bg-red-50 border border-red-100 rounded-xl p-4 flex-row items-center justify-center gap-2 active:bg-red-100">
-                                <View className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <Text className="text-sm font-bold text-red-600">
-                                    Iniciar Grabación
-                                </Text>
-                                <Boxicon
-                                    name="bxs-microphone"
-                                    size={18}
-                                    color="#dc2626"
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View className="gap-3 mb-4">
-                        <TouchableOpacity
-                            className={`w-full py-4 rounded-2xl flex-row justify-center items-center gap-2 ${
-                                isSyncing ? "bg-gray-700" : "bg-gray-900"
-                            }`}
-                            onPress={handleFinalizeVisit}
-                            disabled={isSyncing}
-                        >
-                            {isSyncing && <ActivityIndicator color="white" />}
-                            <Text className="text-white font-bold text-center text-base">
-                                {isSyncing
-                                    ? "Guardando..."
-                                    : "Confirmar y Finalizar"}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => bottomSheetRef.current?.dismiss()}
-                            disabled={isSyncing}
-                            className="w-full py-3"
-                        >
-                            <Text className="text-sm font-semibold text-gray-500 text-center">
-                                Cancelar
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                <View className="p-6">
+                    <VisitForm/>
                 </View>
             </BottomSheet>
         </View>
