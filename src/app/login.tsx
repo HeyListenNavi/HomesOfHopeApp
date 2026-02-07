@@ -41,7 +41,7 @@ export default function LoginScreen() {
                 password,
             });
 
-            const token = response.data.access_token;
+            const token = response.data.token;
 
             if (token) {
                 authStore.setToken(token);
