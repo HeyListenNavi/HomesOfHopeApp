@@ -13,10 +13,8 @@ import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useVisit } from "@/hooks/useVisits";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import BrandBoxicon from "@/components/BrandBoxicons";
-import { formatDate } from "@/lib/utils";
 import BottomSheet from "@/components/BottomSheet";
 import { Note, Task } from "@/types/api";
 import InfoRow from "@/components/InfoRow";
@@ -50,6 +48,7 @@ export default function VisitDetailPage() {
                     const isNowCompleted = !t.completed_at;
                     return {
                         ...t,
+                        status: isNowCompleted ? "completed" : "pending",
                         completed_at: isNowCompleted
                             ? new Date().toISOString()
                             : null,
@@ -82,7 +81,7 @@ export default function VisitDetailPage() {
                         id: task.id,
                         data: {
                             status: isCompleted ? "completed" : "pending",
-                            completed_at: isCompleted ? undefined : null,
+                            completed_at: isCompleted ? task.completed_at : null,
                         },
                     });
                 }),
@@ -486,7 +485,7 @@ export default function VisitDetailPage() {
 
             <BottomSheet ref={bottomSheetRef} snapPoints={[]}>
                 <View className="p-6">
-                    <VisitForm/>
+                    <VisitForm isSyncing={isSyncing} bottomSheetRef={bottomSheetRef} onFinalize={handleFinalizeVisit} />
                 </View>
             </BottomSheet>
         </View>
