@@ -12,7 +12,7 @@ import {
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useVisit } from "@/hooks/useVisits";
+import { useVisit, useUpdateVisit } from "@/hooks/useVisits";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import BrandBoxicon from "@/components/BrandBoxicons";
 import BottomSheet from "@/components/BottomSheet";
@@ -20,6 +20,7 @@ import { Note, Task } from "@/types/api";
 import InfoRow from "@/components/InfoRow";
 import { useUpdateTask } from "@/hooks/useTasks";
 import VisitForm from "@/components/VisitForm";
+import { useUploadDocument } from "@/hooks/useDocuments";
 
 export default function VisitDetailPage() {
     const { id } = useLocalSearchParams();
@@ -28,6 +29,8 @@ export default function VisitDetailPage() {
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
     const { data: visit, isLoading, isError } = useVisit(Number(id));
+    const updateVisit = useUpdateVisit();
+    const { mutateAsync: upload } = useUploadDocument();
     const updateTask = useUpdateTask();
 
     const [localTasks, setLocalTasks] = useState<Task[]>([]);
@@ -59,21 +62,17 @@ export default function VisitDetailPage() {
         );
     };
 
-    const handleFinalizeVisit = async () => {
+    const handleFinalizeVisit = async (formData?: { photos: string[], video: string | null, audio: string | null }) => {
         setIsSyncing(true);
 
-        const tasksToUpdate = localTasks.filter((localTask) => {
-            const serverTask = visit?.tasks?.find(
-                (t: Task) => t.id === localTask.id,
-            );
-
-            const localStatus = !!localTask.completed_at;
-            const serverStatus = !!serverTask?.completed_at;
-
-            return localStatus !== serverStatus;
-        });
-
         try {
+            const tasksToUpdate = localTasks.filter((localTask) => {
+                const serverTask = visit?.tasks?.find((t: Task) => t.id === localTask.id);
+                const localStatus = !!localTask.completed_at;
+                const serverStatus = !!serverTask?.completed_at;
+                return localStatus !== serverStatus;
+            });
+
             await Promise.all(
                 tasksToUpdate.map((task) => {
                     const isCompleted = !!task.completed_at;
@@ -84,15 +83,107 @@ export default function VisitDetailPage() {
                             completed_at: isCompleted ? task.completed_at : null,
                         },
                     });
-                }),
+                })
             );
 
-            ToastAndroid.show("Tareas sincronizadas", ToastAndroid.SHORT);
+            if (formData) {
+                const uploadPromises = [];
+                const visitIdStr = id.toString(); 
+
+                if (formData.audio) {
+                    const audioData = new FormData();
+                    const filename = formData.audio.split('/').pop() || 'audio.m4a';
+                    
+                    audioData.append('file', {
+                        uri: formData.audio,
+                        name: filename,
+                        type: 'audio/m4a',
+                    } as any);
+                    
+                    audioData.append('documentable_id', visitIdStr);
+                    audioData.append('documentable_type', 'visit');
+                    audioData.append('document_type', 'conclusion_audio');
+
+                    uploadPromises.push(
+                        upload({ 
+                            formData: audioData,
+                            documentable: 'visits',
+                            id: Number(id)
+                        })
+                    );
+                }
+
+                if (formData.video) {
+                    const videoData = new FormData();
+                    const filename = formData.video.split('/').pop() || 'video.mp4';
+                    
+                    videoData.append('file', {
+                        uri: formData.video,
+                        name: filename,
+                        type: 'video/mp4',
+                    } as any);
+
+                    videoData.append('documentable_id', visitIdStr);
+                    videoData.append('documentable_type', 'visit');
+                    videoData.append('document_type', 'walkthrough_video');
+
+                    uploadPromises.push(
+                        upload({ 
+                            formData: videoData,
+                            documentable: 'visits',
+                            id: Number(id)
+                        })
+                    );
+                }
+
+                if (formData.photos && formData.photos.length > 0) {
+                    formData.photos.forEach((photoUri, index) => {
+                        const photoData = new FormData();
+                        const filename = photoUri.split('/').pop() || `photo_${index}.jpg`;
+                        
+                        photoData.append('file', {
+                            uri: photoUri,
+                            name: filename,
+                            type: 'image/jpeg',
+                        } as any);
+
+                        photoData.append('documentable_id', visitIdStr);
+                        photoData.append('documentable_type', 'visit');
+                        photoData.append('document_type', 'evidence_photo');
+
+                        uploadPromises.push(
+                            upload({ 
+                                formData: photoData,
+                                documentable: 'visits',
+                                id: Number(id)
+                            })
+                        );
+                    });
+                }
+
+                if (uploadPromises.length > 0) {
+                    console.log(`Subiendo ${uploadPromises.length} archivos de evidencia...`);
+                    await Promise.all(uploadPromises);
+                    console.log("¡Toda la evidencia se subió correctamente!");
+                }
+            }
+
+            await updateVisit.mutateAsync({
+                id: Number(id),
+                data: {
+                    status: 'completed',
+                    completed_at: new Date().toISOString(),
+                } as any
+            });
+
+
+            ToastAndroid.show("Visita finalizada correctamente", ToastAndroid.SHORT);
             bottomSheetRef.current?.dismiss();
         } catch (error) {
+            console.error(error);
             Alert.alert(
-                "Error de Conexión",
-                "No se pudieron guardar los cambios. Verifique su internet e intente nuevamente.",
+                "Error",
+                "Hubo un problema al finalizar la visita.",
             );
         } finally {
             setIsSyncing(false);
@@ -363,55 +454,52 @@ export default function VisitDetailPage() {
                                 localTasks.map((task: Task) => {
                                     const isCompleted = task.status == 'completed';
 
-                                return (
-                                    <TouchableOpacity
-                                        key={task.id}
-                                        onPress={() =>
-                                            handleToggleTask(task.id)
-                                        }
-                                        className={`border p-4 rounded-2xl gap-3 flex-row items-center transition-all ${
-                                            isCompleted
-                                                    ? "bg-primary/10 border-transparent"
+                                    return (
+                                        <TouchableOpacity
+                                            key={task.id}
+                                            onPress={() =>
+                                                handleToggleTask(task.id)
+                                            }
+                                            className={`border p-4 rounded-2xl gap-3 flex-row items-center transition-all ${isCompleted
+                                                ? "bg-primary/10 border-transparent"
                                                 : "bg-gray-50 border-gray-200"
-                                        }`}
-                                    >
-                                        <Boxicon
-                                            name={
-                                                isCompleted
-                                                    ? "bxs-check-circle"
-                                                    : "bx-circle"
-                                            }
-                                            size={24}
-                                            color={
-                                                isCompleted
-                                                    ? "#15803d"
-                                                    : "#9ca3af"
-                                            }
-                                        />
-                                        <View className="flex-1 gap-1">
-                                            <Text
-                                                className={`font-medium ${
+                                                }`}
+                                        >
+                                            <Boxicon
+                                                name={
                                                     isCompleted
+                                                        ? "bxs-check-circle"
+                                                        : "bx-circle"
+                                                }
+                                                size={24}
+                                                color={
+                                                    isCompleted
+                                                        ? "#15803d"
+                                                        : "#9ca3af"
+                                                }
+                                            />
+                                            <View className="flex-1 gap-1">
+                                                <Text
+                                                    className={`font-medium ${isCompleted
                                                         ? "text-green-800 line-through decoration-green-800"
                                                         : "text-gray-900"
-                                                }`}
-                                            >
-                                                {task.title}
-                                            </Text>
-                                            {task.description && (
-                                                <Text
-                                                    className={`text-sm ${
-                                                        isCompleted
+                                                        }`}
+                                                >
+                                                    {task.title}
+                                                </Text>
+                                                {task.description && (
+                                                    <Text
+                                                        className={`text-sm ${isCompleted
                                                             ? "text-green-600"
                                                             : "text-gray-500"
-                                                    }`}
-                                                >
-                                                    {task.description}
-                                                </Text>
-                                            )}
-                                        </View>
-                                    </TouchableOpacity>
-                                );
+                                                            }`}
+                                                    >
+                                                        {task.description}
+                                                    </Text>
+                                                )}
+                                            </View>
+                                        </TouchableOpacity>
+                                    );
                                 })
                             ) : (
                                 <Text>Sin tareas asignadas</Text>

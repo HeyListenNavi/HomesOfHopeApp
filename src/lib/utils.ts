@@ -1,4 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
+import { Alert } from "react-native";
+import { File } from "expo-file-system";
 import { twMerge } from "tailwind-merge";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -58,7 +60,7 @@ export const formatDate = (dateString?: string | null) => {
     if (!dateString) return "N/A";
 
     const date = new Date(dateString);
-    
+
     if (isNaN(date.getTime())) return "Fecha inválida";
 
     return new Intl.DateTimeFormat("es-MX", {
@@ -66,4 +68,13 @@ export const formatDate = (dateString?: string | null) => {
         month: "short",
         year: "numeric",
     }).format(date);
+};
+
+export const deleteFile = (uri: string) => {
+    try {
+        const file = new File(uri);
+        file.delete();
+    } catch (error) {
+        Alert.alert("Error", "No se ha podido eliminar el archivo");
+    }
 };

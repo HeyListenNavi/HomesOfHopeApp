@@ -38,3 +38,15 @@ export const useCreateVisit = () => {
         },
     });
 };
+
+export const useUpdateVisit = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: number; data: Partial<Visit> }) =>
+            visitService.update(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["visit"] });
+        },
+    });
+};

@@ -1,91 +1,94 @@
-import { useState, useEffect } from "react";
-import { Alert } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Linking } from "react-native";
 import {
     useAudioRecorder,
     useAudioRecorderState,
     AudioModule,
     RecordingPresets,
     setAudioModeAsync,
+    useAudioPlayer,
+    useAudioPlayerStatus,
 } from "expo-audio";
-import { File } from "expo-file-system";
+import { deleteFile } from "@/lib/utils";
 
 export const useVoiceRecorder = () => {
     const [recordedUri, setRecordedUri] = useState<string | null>(null);
+    const [duration, setDuration] = useState(0);
 
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     const recorderState = useAudioRecorderState(audioRecorder);
-
-    useEffect(() => {
-        (async () => {
-            console.log("Pidiendo permiso para utilizar el microfono");
-            const status = await AudioModule.requestRecordingPermissionsAsync();
-            if (!status.granted) {
-                console.error("Error obteniendo el permiso");
-                Alert.alert(
-                    "Permiso requerido",
-                    "Se requiere acceso al micrófono."
-                );
-            }
-            await setAudioModeAsync({
-                playsInSilentMode: true,
-                allowsRecording: true,
-            });
-        })();
-    }, []);
-
-    const deleteFile = (uri: string) => {
-        console.log("Borrando el audio");
-        try {
-            const file = new File(uri);
-            file.delete();
-            console.log("Se ha borrado el audio");
-        } catch (error) {
-            Alert.alert("Error", "No se ha podido eliminar el audio");
-            console.error("Error eliminando archivo:", error);
-        }
-    };
+    const player = useAudioPlayer(recordedUri);
+    const playerStatus = useAudioPlayerStatus(player);
 
     const startRecording = async () => {
-        try {
-            if (recordedUri) {
-                deleteFile(recordedUri);
-                setRecordedUri(null);
-                console.log("Se borro el archivo existente");
-            }
+        const permissionResult = await AudioModule.requestRecordingPermissionsAsync();
 
-            await audioRecorder.prepareToRecordAsync();
-            audioRecorder.record();
-            console.log("Se comenzo a grabar");
-        } catch (error) {
-            Alert.alert("Error", "No se ha podido comenzar a grabar");
-            console.error("Error al iniciar grabación:", error);
+        if (!permissionResult.granted) {
+            Alert.alert(
+                'Permiso requerido',
+                'Se requiere acceso al micrófono para grabar audio.',
+                [{ text: 'Abrir Ajustes', onPress: () => Linking.openSettings() }, { text: 'Cancelar', style: 'cancel' }]
+            );
+            return;
         }
+
+        setAudioModeAsync({
+            playsInSilentMode: true,
+            allowsRecording: true,
+            allowsBackgroundRecording: true,
+            interruptionModeAndroid: "doNotMix",
+        });
+
+        await audioRecorder.prepareToRecordAsync();
+        audioRecorder.record();
     };
 
     const stopRecording = async () => {
-        try {
-            await audioRecorder.stop();
-            setRecordedUri(audioRecorder.uri);
-            console.log("Se ha guardado el audio");
-        } catch (error) {
-            console.error("Error al detener:", error);
-            Alert.alert("Error", "No se ha podido guardar el audio");
+        setDuration(recorderState.durationMillis);
+        await audioRecorder.stop();
+        setRecordedUri(audioRecorder.uri);
+    };
+
+    const togglePlayback = () => {
+        if (!player) return;
+        player.playing ? player.pause() : player.play();
+
+        if (player.currentTime >= player.duration - 100) {
+            player.seekTo(0);
         }
     };
+
+    const resetPlayback = () => {
+        if (player) {
+            player.seekTo(0);
+            player.pause();
+        }
+    }
 
     const discardRecording = () => {
         if (recordedUri) {
             deleteFile(recordedUri);
             setRecordedUri(null);
+            setDuration(0);
         }
     };
+
+    const currentDuration = recorderState.isRecording
+        ? recorderState.durationMillis
+        : duration;
 
     return {
         recordedUri,
         isRecording: recorderState.isRecording,
-        duration: Math.round(recorderState.durationMillis / 1000),
+        duration: Math.round(currentDuration / 1000),
         startRecording,
         stopRecording,
         discardRecording,
+        
+        progress: playerStatus.duration > 0 ? (playerStatus.currentTime / playerStatus.duration) * 100 : 0,
+        currentTime: Math.round(playerStatus.currentTime),
+        isPlaying: playerStatus.playing,
+        togglePlayback,
+        resetPlayback,
     };
 };
