@@ -88,24 +88,24 @@ export default function VisitDetailPage() {
 
             if (formData) {
                 const uploadPromises = [];
-                const visitIdStr = id.toString(); 
+                const visitIdStr = id.toString();
 
                 if (formData.audio) {
                     const audioData = new FormData();
                     const filename = formData.audio.split('/').pop() || 'audio.m4a';
-                    
+
                     audioData.append('file', {
                         uri: formData.audio,
                         name: filename,
                         type: 'audio/m4a',
                     } as any);
-                    
+
                     audioData.append('documentable_id', visitIdStr);
                     audioData.append('documentable_type', 'visit');
                     audioData.append('document_type', 'conclusion_audio');
 
                     uploadPromises.push(
-                        upload({ 
+                        upload({
                             formData: audioData,
                             documentable: 'visits',
                             id: Number(id)
@@ -116,7 +116,7 @@ export default function VisitDetailPage() {
                 if (formData.video) {
                     const videoData = new FormData();
                     const filename = formData.video.split('/').pop() || 'video.mp4';
-                    
+
                     videoData.append('file', {
                         uri: formData.video,
                         name: filename,
@@ -128,7 +128,7 @@ export default function VisitDetailPage() {
                     videoData.append('document_type', 'walkthrough_video');
 
                     uploadPromises.push(
-                        upload({ 
+                        upload({
                             formData: videoData,
                             documentable: 'visits',
                             id: Number(id)
@@ -140,7 +140,7 @@ export default function VisitDetailPage() {
                     formData.photos.forEach((photoUri, index) => {
                         const photoData = new FormData();
                         const filename = photoUri.split('/').pop() || `photo_${index}.jpg`;
-                        
+
                         photoData.append('file', {
                             uri: photoUri,
                             name: filename,
@@ -152,7 +152,7 @@ export default function VisitDetailPage() {
                         photoData.append('document_type', 'evidence_photo');
 
                         uploadPromises.push(
-                            upload({ 
+                            upload({
                                 formData: photoData,
                                 documentable: 'visits',
                                 id: Number(id)
@@ -561,12 +561,13 @@ export default function VisitDetailPage() {
 
                     <TouchableOpacity
                         onPress={() => bottomSheetRef.current?.present()}
-                        className="w-full flex-row items-center justify-center gap-2 py-4 bg-primary rounded-2xl active:scale-[0.98] transition"
+                        disabled={isSyncing}
+                        className={`w-full flex-row items-center justify-center gap-2 py-4 rounded-2xl active:scale-[0.98] transition ${isSyncing ? 'bg-primary/70' : 'bg-primary'}`}
                     >
                         <Text className="text-white text-base font-bold">
                             Finalizar Visita
                         </Text>
-                        <Boxicon name="bxs-check" size={20} color="#ffffff" />
+                        { isSyncing ? <ActivityIndicator color="white" className="ml-2" /> : <Boxicon name="bxs-check" size={20} color="#ffffff" />}
                     </TouchableOpacity>
                 </View>
             </ScrollView>
