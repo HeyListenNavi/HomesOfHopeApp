@@ -10,7 +10,6 @@ import Input from "@/components/Input";
 import Select from "@/components/Select";
 import Textarea from "@/components/Textarea";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import Boxicon from "@/components/Boxicons";
 
 const Page = () => {
     const { bottom } = useSafeAreaInsets();
@@ -29,15 +28,13 @@ const Page = () => {
     });
 
     const onSubmit: SubmitHandler<Partial<FamilyProfile>> = (data) => {
-        console.log("Submitting data:", data);
-
         createFamily(data, {
             onSuccess: () => {
-                ToastAndroid.show("Visita finalizada correctamente", ToastAndroid.SHORT);
+                ToastAndroid.show("Perfil familiar creado correctamente", ToastAndroid.SHORT);
                 navigation.goBack();
             },
             onError: (error: any) => {
-                console.error(error);
+                console.error(error.response?.data?.errors);
                 Alert.alert(
                     "Error",
                     "Hubo un problema al crear el perfil familiar.",
@@ -106,13 +103,42 @@ const Page = () => {
 
                     <Controller
                         control={control}
+                        name="opened_at"
+                        rules={{ 
+                            required: "La fecha de apertura es obligatoria",
+                            pattern: {
+                                value: /^\d{4}-\d{2}-\d{2}$/,
+                                message: "Formato inválido (YYYY-MM-DD)"
+                            }
+                        }}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <View className="gap-1">
+                                <Input
+                                    label="Fecha de Registro (YYYY-MM-DD)"
+                                    placeholder="2024-02-01"
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    iconName="bxs-calendar"
+                                />
+                                {errors.opened_at && (
+                                    <Text className="text-red-500 text-sm ml-1">
+                                        {errors.opened_at.message}
+                                    </Text>
+                                )}
+                            </View>
+                        )}
+                    />
+
+                    <Controller
+                        control={control}
                         name="current_address"
                         rules={{ required: "La dirección actual es obligatoria" }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <View className="gap-1">
                                 <Input
                                     label="Dirección Actual"
-                                    placeholder="Dirección donde viven actualmente"
+                                    placeholder="Dirección completa donde viven actualmente"
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     value={value ?? ""}
@@ -134,7 +160,7 @@ const Page = () => {
                             <View className="gap-1">
                                 <Input
                                     label="Dirección de Construcción"
-                                    placeholder="Dirección del terreno/construcción"
+                                    placeholder="Dirección completa del terreno"
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     value={value ?? ""}
