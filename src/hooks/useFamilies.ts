@@ -33,8 +33,11 @@ export const useCreateFamily = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (newFamily: Partial<FamilyProfile>) => familyService.create(newFamily),
-        onSuccess: () => {
+        mutationFn: async (newFamily: Partial<FamilyProfile>) => {
+            const response = await familyService.create(newFamily) as any;
+            return response.data as FamilyProfile;
+        },
+        onSuccess: (family) => {
             queryClient.invalidateQueries({ queryKey: ['families'] });
         },
     });
