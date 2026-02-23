@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, Image, Linking, Alert } from "react-native";
 import React from "react";
 import Boxicon from "@/components/Boxicons";
 import { Label } from "@/components/ui/label";
@@ -20,13 +20,35 @@ interface DocumentPreviewerProps {
     label?: string;
     description?: string;
     needsReview?: boolean;
+    url?: string; // <-- Propiedad agregada para evitar el error de TypeScript
 }
 
 const DocumentPreviewer = ({
     label = "Documento",
     description = "Descripción del documento",
     needsReview = false,
+    url,
 }: DocumentPreviewerProps) => {
+
+    // Función para intentar abrir el documento (PDF, web, etc.) en el navegador o visor externo
+    const openDocument = async () => {
+        if (!url) return;
+        
+        try {
+            const supported = await Linking.canOpenURL(url);
+            if (supported) {
+                await Linking.openURL(url);
+            } else {
+                Alert.alert("Error", "No hay una aplicación instalada que pueda abrir este enlace.");
+            }
+        } catch (error) {
+            Alert.alert("Error", "Ocurrió un problema al intentar abrir el documento.");
+        }
+    };
+
+    // Heurística simple para intentar adivinar si la URL apunta a una imagen
+    const isImage = url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) != null;
+
     return (
         <Dialog>
             <View className="gap-3">
@@ -46,14 +68,15 @@ const DocumentPreviewer = ({
                 </View>
 
                 <DialogTrigger asChild>
-                    <TouchableOpacity className="bg-white items-center justify-center h-96 p-4 rounded-2xl border-2 border-gray-300 border-dashed">
+                    {/* Nota: Cambié el h-96 a py-6 para que el botón de abrir no ocupe toda la pantalla */}
+                    <TouchableOpacity className="bg-white items-center justify-center py-6 rounded-2xl border-2 border-gray-300 border-dashed">
                         <Boxicon
                             name="bxs-arrow-out-up-square-half"
-                            size={48}
+                            size={32}
                             color="#61b346"
                         />
-                        <Text className="text-primary text-center text-2xl font-bold mt-2">
-                            {label}
+                        <Text className="text-primary text-center text-lg font-bold mt-2">
+                            Abrir {label}
                         </Text>
                     </TouchableOpacity>
                 </DialogTrigger>
@@ -91,11 +114,11 @@ const DocumentPreviewer = ({
                                         label="Razon"
                                         iconName="bxs-x-circle"
                                         placeholder="Escribe aqui la razon..."
-                                        value={"reaon"}
+                                        value={"reason"}
                                         onChangeText={() => {}}
                                     />
 
-                                    <DialogFooter className="flex-row justify-center gap-2">
+                                    <DialogFooter className="flex-row justify-center gap-2 mt-4">
                                         <DialogClose asChild>
                                             <TouchableOpacity className="p-4 rounded-xl items-center justify-center bg-transparent">
                                                 <Text className="text-gray-500 font-semibold">
@@ -138,7 +161,7 @@ const DocumentPreviewer = ({
                                     ¿Deseas aprobar este documento?
                                 </DialogDescription>
 
-                                <DialogFooter className="flex-row gap-2 justify-center">
+                                <DialogFooter className="flex-row gap-2 justify-center mt-4">
                                     <DialogClose asChild>
                                         <TouchableOpacity className="p-4 rounded-xl bg-transparent">
                                             <Text className="text-gray-500 font-semibold">
@@ -170,16 +193,40 @@ const DocumentPreviewer = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <View className="w-full h-96 bg-gray-100 rounded-xl border border-gray-200 items-center justify-center my-4">
-                    <Boxicon name="bxs-file" size={80} color="#d1d5db" />
-                    <Text className="text-gray-400 mt-2 font-medium">
-                        Vista Previa del Documento
-                    </Text>
+                <View className="w-full h-96 bg-gray-100 rounded-xl border border-gray-200 items-center justify-center my-4 overflow-hidden">
+                    {url ? (
+                        isImage ? (
+                            // Si es una imagen, se renderiza directamente en el modal
+                            <Image 
+                                source={{ uri: url }} 
+                                className="w-full h-full" 
+                                resizeMode="contain" 
+                            />
+                        ) : (
+                            // Si es PDF/otro, se muestra un botón para salir de la app y abrirlo
+                            <View className="items-center justify-center gap-4">
+                                <Boxicon name="bxs-file-pdf" size={80} color="#9ca3af" />
+                                <TouchableOpacity 
+                                    onPress={openDocument}
+                                    className="bg-primary px-6 py-3 rounded-xl flex-row items-center gap-2"
+                                >
+                                    <Text className="text-white font-bold">Abrir Archivo Externamente</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    ) : (
+                        <View className="items-center justify-center">
+                            <Boxicon name="bxs-file-blank" size={80} color="#d1d5db" />
+                            <Text className="text-gray-400 mt-2 font-medium">
+                                Enlace no disponible
+                            </Text>
+                        </View>
+                    )}
                 </View>
 
                 <DialogFooter className="flex-row justify-center gap-2">
                     <DialogClose asChild>
-                        <TouchableOpacity className="p-4 rounded-xl bg-gray-100">
+                        <TouchableOpacity className="p-4 rounded-xl bg-gray-100 w-full items-center">
                             <Text className="text-gray-500 font-semibold">
                                 Cerrar
                             </Text>
