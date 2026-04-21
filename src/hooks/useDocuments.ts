@@ -19,3 +19,15 @@ export const useUploadDocument = () => {
         },
     });
 };
+
+export const useDeleteDocument = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) => documentService.delete(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['families'] });
+            queryClient.invalidateQueries({ queryKey: ['family'] });
+        },
+    });
+};

@@ -53,9 +53,11 @@ export const StaffCard = ({ staff }: StaffCardProps) => {
                 </View>
             </View>
 
-            <TouchableOpacity className="bg-[#9BD189]/10 p-3 rounded-full">
-                <BrandBoxicon name="bx-whatsapp" size={26} color="#61b346" />
-            </TouchableOpacity>
+            {staff.phoneNumber ? (
+                <TouchableOpacity className="bg-[#9BD189]/10 p-3 rounded-full">
+                    <BrandBoxicon name="bx-whatsapp" size={26} color="#61b346" />
+                </TouchableOpacity>
+            ) : null}
         </TouchableOpacity>
     );
 };

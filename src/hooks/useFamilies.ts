@@ -2,7 +2,9 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { familyService } from '@/services/services';
 import { FamilyProfile } from '@/types/api';
 
-export const useFamilyList = (params: Record<string, any>) => {
+export const useFamilyList = (search: string = '') => {
+    const params = search.trim() ? { family_name: search.trim() } : {};
+
     return useInfiniteQuery({
         queryKey: ['families', 'infinite', params],
 
@@ -33,11 +35,33 @@ export const useCreateFamily = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (newFamily: Partial<FamilyProfile>) => {
-            const response = await familyService.create(newFamily) as any;
-            return response.data as FamilyProfile;
+        mutationFn: (newFamily: Partial<FamilyProfile>) =>
+            familyService.create(newFamily),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['families'] });
         },
-        onSuccess: (family) => {
+    });
+};
+
+export const useUpdateFamily = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: number; data: Partial<FamilyProfile> }) =>
+            familyService.update(id, data),
+        onSuccess: (_, { id }) => {
+            queryClient.invalidateQueries({ queryKey: ['families'] });
+            queryClient.invalidateQueries({ queryKey: ['family', id] });
+        },
+    });
+};
+
+export const useDeleteFamily = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) => familyService.delete(id),
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['families'] });
         },
     });

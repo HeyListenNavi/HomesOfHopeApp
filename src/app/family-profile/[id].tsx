@@ -4,7 +4,8 @@ import {
     ScrollView,
     TouchableOpacity,
     ActivityIndicator,
-    Image
+    Image,
+    Linking,
 } from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
@@ -193,6 +194,29 @@ const Page = () => {
                                 </Text>
                             </View>
                         </View>
+
+                        {/* Contacto WhatsApp del responsable */}
+                        {family.responsible_member?.phone ? (
+                            <TouchableOpacity
+                                onPress={() =>
+                                    Linking.openURL(
+                                        `whatsapp://send?phone=${family.responsible_member!.phone}`,
+                                    )
+                                }
+                                className="flex-row items-center gap-3 bg-[#f0fdf4] border border-[#bbf7d0] rounded-2xl px-4 py-3 mt-1"
+                            >
+                                <Boxicon name="bxs-phone" size={20} color="#16a34a" />
+                                <View className="flex-1">
+                                    <Text className="text-xs text-green-600 font-medium">
+                                        Responsable • {family.responsible_member.name} {family.responsible_member.paternal_surname}
+                                    </Text>
+                                    <Text className="text-green-800 font-bold">
+                                        {family.responsible_member.phone}
+                                    </Text>
+                                </View>
+                                <Boxicon name="bxs-chevron-right" size={14} color="#16a34a" />
+                            </TouchableOpacity>
+                        ) : null}
                     </View>
                 </View>
             </View>
@@ -266,11 +290,11 @@ const Page = () => {
                                         {doc.size ? `${(doc.size / 1024).toFixed(1)} KB` : ''}
                                     </Text>
                                 </View>
-                                {/* Asumimos que DocumentPreviewer puede tomar una url para visualizar o descargar */}
                                 <View className="mt-2">
-                                    <DocumentPreviewer 
-                                        label="Ver Documento" 
-                                        url={doc.url} 
+                                    <DocumentPreviewer
+                                        label="Ver Documento"
+                                        url={doc.url}
+                                        documentId={doc.id}
                                     />
                                 </View>
                             </View>

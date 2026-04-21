@@ -20,8 +20,8 @@ export default function LoginScreen() {
     const router = useRouter();
     const authStore = useAuthStore();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("admin@admin.com");
+    const [password, setPassword] = useState("admin");
     const [showPassword, setShowPassword] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -42,9 +42,13 @@ export default function LoginScreen() {
             });
 
             const token = response.data.token;
+            const user = response.data.user;
 
             if (token) {
                 authStore.setToken(token);
+                if (user) {
+                    authStore.setUser(user);
+                }
                 router.replace("/(tabs)");
             }
         } catch (error) {

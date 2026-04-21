@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import { View, TouchableOpacity, Linking } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import Boxicon from "@/components/Boxicons";
@@ -14,6 +14,14 @@ interface FamilyCardProps {
 
 export const FamilyCard = ({ family }: FamilyCardProps) => {
     const router = useRouter();
+    const phone = family.responsible_member?.phone;
+
+    const openWhatsApp = (e: any) => {
+        e.stopPropagation?.();
+        if (!phone) return;
+        const cleaned = phone.replace(/\D/g, "");
+        Linking.openURL(`whatsapp://send?phone=${cleaned}`);
+    };
 
     return (
         <TouchableOpacity
@@ -46,9 +54,15 @@ export const FamilyCard = ({ family }: FamilyCardProps) => {
                 </View>
             </View>
 
-            <TouchableOpacity className="bg-[#9BD189]/10 p-3 rounded-full">
-                <BrandBoxicon name="bx-whatsapp" size={28} color="#61b346" />
-            </TouchableOpacity>
+            {phone ? (
+                <TouchableOpacity
+                    className="bg-[#9BD189]/10 p-3 rounded-full"
+                    onPress={openWhatsApp}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                    <BrandBoxicon name="bx-whatsapp" size={28} color="#61b346" />
+                </TouchableOpacity>
+            ) : null}
         </TouchableOpacity>
     );
 };

@@ -1,62 +1,67 @@
 import Boxicon from "@/components/Boxicons";
-import Checkbox from "@/components/Checkbox";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Alert, ActivityIndicator, ToastAndroid } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useRouter } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useCreateUser } from "@/hooks/useUsers";
 
 export interface StaffForm {
     name: string | null;
     role: string | null;
-    phoneNumber: string | null;
     email: string | null;
-    isActive: boolean;
-}
-
-interface CreateStaffViewProps {
-    initialValues?: StaffForm;
+    password: string | null;
 }
 
 const ROLE_OPTIONS = [
-    { label: "Trabajador Social", value: "social_worker" },
-    { label: "Entrevistador", value: "interviewer" },
-    { label: "Administrador", value: "admin" },
-    { label: "Voluntario", value: "volunteer" },
+    { label: "Trabajador Social", value: "Trabajador Social" },
+    { label: "Entrevistador", value: "Entrevistador" },
+    { label: "Administrador", value: "Administrador" },
+    { label: "Voluntario", value: "Voluntario" },
 ];
 
-const Page = ({ initialValues }: CreateStaffViewProps) => {
+const Page = () => {
     const router = useRouter();
-    const { control, handleSubmit } = useForm<StaffForm>({
-        defaultValues: initialValues ?? {
+    const { mutateAsync: createUser } = useCreateUser();
+
+    const { control, handleSubmit, formState: { isSubmitting } } = useForm<StaffForm>({
+        defaultValues: {
             name: null,
             role: null,
-            phoneNumber: null,
             email: null,
-            isActive: true,
+            password: null,
         },
     });
 
-    const isEditing = !!initialValues;
+    const onSubmit: SubmitHandler<StaffForm> = async (data) => {
+        if (!data.name || !data.email || !data.password) {
+            Alert.alert("Error", "Nombre, correo y contraseña son obligatorios.");
+            return;
+        }
 
-    const onSubmit: SubmitHandler<StaffForm> = (data) => {
-        console.log(data);
-        router.back();
-    };
+        if (data.password.length < 8) {
+            Alert.alert("Error", "La contraseña debe tener al menos 8 caracteres.");
+            return;
+        }
 
-    const maskPhoneNumber = (text: string) => {
-        const cleaned = ("" + text).replace(/\D/g, "");
-        if (cleaned.length <= 3) return cleaned;
-        if (cleaned.length <= 6)
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-        return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(
-            6,
-            10
-        )}`;
+        try {
+            await createUser({
+                name: data.name,
+                email: data.email,
+                password: data.password,
+            });
+            ToastAndroid.show("Staff creado correctamente", ToastAndroid.SHORT);
+            router.back();
+        } catch (error: any) {
+            const message =
+                error?.response?.data?.message ??
+                "Hubo un problema al crear el usuario.";
+            Alert.alert("Error", message);
+        }
     };
 
     return (
@@ -66,7 +71,6 @@ const Page = ({ initialValues }: CreateStaffViewProps) => {
         >
             <View className="items-center gap-3 mb-2">
                 <Avatar className="h-24 w-24" alt={""}>
-                    <AvatarImage source={{ uri: undefined }} />
                     <AvatarFallback>
                         <Boxicon name="bxs-user" size={42} color="#9ca3af" />
                     </AvatarFallback>
@@ -76,32 +80,38 @@ const Page = ({ initialValues }: CreateStaffViewProps) => {
                     variant="h3"
                     className="text-primary font-bold text-center"
                 >
-                    {isEditing ? "Editar Staff" : "Nuevo Staff"}
+                    Nuevo Staff
                 </Text>
             </View>
 
             <Controller
                 name="name"
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                    <Input
-                        label="Nombre Completo"
-                        placeholder="Nombre del integrante"
-                        iconName="bxs-user"
-                        value={field.value ?? ""}
-                        onChangeText={field.onChange}
-                    />
+                rules={{ required: "El nombre es obligatorio" }}
+                render={({ field, fieldState }) => (
+                    <View className="gap-1">
+                        <Input
+                            label="Nombre Completo"
+                            placeholder="Nombre del integrante"
+                            iconName="bxs-user"
+                            value={field.value ?? ""}
+                            onChangeText={field.onChange}
+                        />
+                        {fieldState.error && (
+                            <Text className="text-red-500 text-sm ml-1">
+                                {fieldState.error.message}
+                            </Text>
+                        )}
+                    </View>
                 )}
             />
 
             <Controller
                 name="role"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                     <Select
-                        label="Rol"
+                        label="Rol (opcional)"
                         placeholder="Selecciona un rol"
                         iconName="bxs-user-id-card"
                         value={field.value ?? ""}
@@ -112,67 +122,76 @@ const Page = ({ initialValues }: CreateStaffViewProps) => {
             />
 
             <Controller
-                name="phoneNumber"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                    <Input
-                        label="Número de teléfono"
-                        placeholder="Número de contacto"
-                        iconName="bxs-phone"
-                        keyboardType="phone-pad"
-                        maxLength={12}
-                        prefix="+52"
-                        value={field.value ?? ""}
-                        onChangeText={(text) => {
-                            const masked = maskPhoneNumber(text);
-                            field.onChange(masked);
-                        }}
-                    />
-                )}
-            />
-
-            <Controller
                 name="email"
                 control={control}
                 rules={{
-                    required: true,
-                    pattern: /^\S+@\S+$/i,
+                    required: "El correo es obligatorio",
+                    pattern: {
+                        value: /^\S+@\S+$/i,
+                        message: "Correo inválido",
+                    },
                 }}
-                render={({ field }) => (
-                    <Input
-                        label="Correo Electrónico"
-                        placeholder="correo@ejemplo.com"
-                        iconName="bxs-envelope"
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        value={field.value ?? ""}
-                        onChangeText={field.onChange}
-                    />
+                render={({ field, fieldState }) => (
+                    <View className="gap-1">
+                        <Input
+                            label="Correo Electrónico"
+                            placeholder="correo@ejemplo.com"
+                            iconName="bxs-envelope"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            value={field.value ?? ""}
+                            onChangeText={field.onChange}
+                        />
+                        {fieldState.error && (
+                            <Text className="text-red-500 text-sm ml-1">
+                                {fieldState.error.message}
+                            </Text>
+                        )}
+                    </View>
                 )}
             />
 
             <Controller
-                name="isActive"
+                name="password"
                 control={control}
-                render={({ field }) => (
-                    <Checkbox
-                        label="Staff activo"
-                        placeholder="¿Actualmente activo?"
-                        iconName="bxs-check-circle"
-                        checked={field.value ?? true}
-                        onCheckedChange={field.onChange}
-                    />
+                rules={{
+                    required: "La contraseña es obligatoria",
+                    minLength: {
+                        value: 8,
+                        message: "Mínimo 8 caracteres",
+                    },
+                }}
+                render={({ field, fieldState }) => (
+                    <View className="gap-1">
+                        <Input
+                            label="Contraseña"
+                            placeholder="Mínimo 8 caracteres"
+                            iconName="bxs-lock"
+                            secureTextEntry
+                            value={field.value ?? ""}
+                            onChangeText={field.onChange}
+                        />
+                        {fieldState.error && (
+                            <Text className="text-red-500 text-sm ml-1">
+                                {fieldState.error.message}
+                            </Text>
+                        )}
+                    </View>
                 )}
             />
 
             <TouchableOpacity
                 onPress={handleSubmit(onSubmit)}
-                className="bg-primary p-4 rounded-xl mt-4 flex-row justify-center items-center gap-2"
+                disabled={isSubmitting}
+                className={`bg-primary p-4 rounded-xl mt-4 flex-row justify-center items-center gap-2 ${isSubmitting ? "opacity-70" : ""}`}
             >
-                <Boxicon name="bxs-save" size={20} color="white" />
+                {isSubmitting ? (
+                    <ActivityIndicator color="white" />
+                ) : (
+                    <Boxicon name="bxs-save" size={20} color="white" />
+                )}
                 <Text className="text-white font-bold text-lg">
-                    {isEditing ? "Guardar Cambios" : "Crear Staff"}
+                    {isSubmitting ? "Guardando..." : "Crear Staff"}
                 </Text>
             </TouchableOpacity>
         </KeyboardAwareScrollView>

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ScrollView, TouchableOpacity, Linking } from "react-native";
+import { View, ScrollView, TouchableOpacity, Linking, ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +10,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import DetailSectionCard from "@/components/DetailSectionCard";
 import InfoRow from "@/components/InfoRow";
+import { useUser } from "@/hooks/useUsers";
 
 export interface Staff {
     id: string;
@@ -28,22 +29,43 @@ export interface Staff {
     interviewsThisMonth?: number;
 }
 
-const mockStaff: Staff = {
-    name: "Nombre",
-    role: "Rol",
-    status: "Estatus",
-    phoneNumber: "123 456 7890",
-    email: "correo@ywamsdb.org",
-    photoUrl: "https://i.pravatar.cc/150?img=47",
-    joinedAt: "12/34/5678",
-    visitsThisMonth: 24,
-    interviewsThisMonth: 6,
-    id: "1",
-};
-
 const Page = () => {
     const router = useRouter();
-    const staff = mockStaff;
+    const { id } = useLocalSearchParams<{ id: string }>();
+    const userId = Number(id);
+
+    const { data: user, isLoading, isError } = useUser(userId);
+
+    if (isLoading) {
+        return (
+            <View className="flex-1 bg-gray-100 items-center justify-center gap-3">
+                <ActivityIndicator size="large" color="#61b346" />
+                <Text className="text-gray-400">Cargando perfil...</Text>
+            </View>
+        );
+    }
+
+    if (isError || !user) {
+        return (
+            <View className="flex-1 bg-gray-100 items-center justify-center gap-3 p-8">
+                <Boxicon name="bxs-x-circle" size={40} color="#ef4444" />
+                <Text className="text-gray-700 font-semibold text-center">
+                    No se pudo cargar el perfil del staff
+                </Text>
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Text className="text-primary font-medium">← Volver</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    const joinedAt = user.created_at
+        ? new Date(user.created_at).toLocaleDateString("es-MX", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+          })
+        : "N/A";
 
     return (
         <ScrollView
@@ -54,35 +76,24 @@ const Page = () => {
             <View className="bg-white p-6 rounded-2xl gap-5">
                 <View className="flex-row items-center gap-4">
                     <Avatar className="w-20 h-20" alt={""}>
-                        {staff.photoUrl ? (
-                            <AvatarImage source={{ uri: staff.photoUrl }} />
-                        ) : (
-                            <AvatarFallback className="bg-tranparent items-center justify-center">
-                                <Boxicon
-                                    name="bxs-user-circle"
-                                    size={50}
-                                    color="#61b346"
-                                />
-                            </AvatarFallback>
-                        )}
+                        <AvatarFallback className="bg-transparent items-center justify-center">
+                            <Boxicon
+                                name="bxs-user-circle"
+                                size={50}
+                                color="#61b346"
+                            />
+                        </AvatarFallback>
                     </Avatar>
 
                     <View className="flex-1 gap-1">
                         <Text variant="h3" className="font-bold text-gray-800">
-                            {staff.name}
+                            {user.name}
                         </Text>
-                        <Text className="text-gray-500">{staff.role}</Text>
+                        <Text className="text-gray-500">{user.email}</Text>
 
                         <View className="flex-row gap-2 mt-1">
                             <Badge>
-                                <Text className="text-white">
-                                    {staff.status}
-                                </Text>
-                            </Badge>
-                            <Badge variant="secondary">
-                                <Text className="text-gray-600">
-                                    {staff.phoneNumber}
-                                </Text>
+                                <Text className="text-white">Activo</Text>
                             </Badge>
                         </View>
                     </View>
@@ -103,21 +114,12 @@ const Page = () => {
                         >
                             <DropdownMenuItem
                                 onPress={() =>
-                                    router.push("/new-staff-profile/123")
+                                    router.push(`/new-staff-profile/${user.id}`)
                                 }
                                 className="flex-row gap-2 p-3"
                             >
                                 <Boxicon name="bxs-edit" size={18} />
                                 <Text>Editar</Text>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem className="flex-row gap-2 p-3">
-                                <Boxicon
-                                    name="bxs-user-x"
-                                    size={18}
-                                    color="#ef4444"
-                                />
-                                <Text className="text-red-500">Desactivar</Text>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -126,55 +128,19 @@ const Page = () => {
                 <View className="flex-row gap-2">
                     <TouchableOpacity
                         onPress={() =>
-                            Linking.openURL(
-                                `whatsapp://send?phone=${staff.phoneNumber}`
-                            )
+                            Linking.openURL(`mailto:${user.email}`)
                         }
                         className="flex-1 bg-primary py-4 rounded-2xl flex-row items-center justify-center gap-2"
                     >
-                        <Boxicon name="bxs-phone" size={16} color="#ffffff" />
+                        <Boxicon name="bxs-envelope" size={16} color="#ffffff" />
                         <Text className="text-white font-bold">Contactar</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => Linking.openURL(`mailto:${staff.email}`)}
-                        className="bg-gray-100 px-4 py-4 rounded-2xl"
-                    >
-                        <Boxicon
-                            name="bxs-envelope"
-                            size={18}
-                            color="#6b7280"
-                        />
                     </TouchableOpacity>
                 </View>
             </View>
 
             <DetailSectionCard title="Información General" icon="bxs-user">
-                <InfoRow label="Correo" value={staff.email} />
-                <InfoRow label="Teléfono" value={staff.phoneNumber} />
-                <InfoRow label="Fecha de Ingreso" value={staff.joinedAt} />
-            </DetailSectionCard>
-
-            <DetailSectionCard title="Actividad" icon="bxs-bar-chart-big">
-                <View className="flex-row gap-4">
-                    <View className="flex-1 bg-gray-100 p-4 rounded-xl gap-1">
-                        <Text className="text-gray-400 text-xs uppercase">
-                            Visita (Mes)
-                        </Text>
-                        <Text className="text-2xl font-bold text-gray-800">
-                            {staff.visitsThisMonth}
-                        </Text>
-                    </View>
-
-                    <View className="flex-1 bg-gray-100 p-4 rounded-xl gap-1">
-                        <Text className="text-gray-400 text-xs uppercase">
-                            Entrevistas (Mes)
-                        </Text>
-                        <Text className="text-2xl font-bold text-gray-800">
-                            {staff.interviewsThisMonth}
-                        </Text>
-                    </View>
-                </View>
+                <InfoRow label="Correo" value={user.email} />
+                <InfoRow label="Fecha de Ingreso" value={joinedAt} />
             </DetailSectionCard>
         </ScrollView>
     );
