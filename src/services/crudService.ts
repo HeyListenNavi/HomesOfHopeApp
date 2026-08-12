@@ -1,4 +1,4 @@
-import api from "./api";
+import AXIOS_INSTANCE from "./api";
 import { Pagination } from "@/types/api";
 
 export class CrudService<T> {
@@ -19,24 +19,24 @@ export class CrudService<T> {
             queryParams.append(key, params[key].toString());
         });
 
-        const response = await api.get<Pagination<T>>(
+        const response = await AXIOS_INSTANCE.get<Pagination<T>>(
             `${this.endpoint}?${queryParams.toString()}`,
         );
         return response.data;
     }
 
     async getById(id: number): Promise<T> {
-        const response = await api.get<T>(`${this.endpoint}/${id}`);
+        const response = await AXIOS_INSTANCE.get<T>(`${this.endpoint}/${id}`);
         return response.data;
     }
 
     async create(data: Partial<T>): Promise<T> {
-        const response = await api.post<T>(this.endpoint, data);
+        const response = await AXIOS_INSTANCE.post<T>(this.endpoint, data);
         return response.data;
     }
 
     async upload(formData: FormData): Promise<T> {
-        const response = await api.post<T>(this.endpoint, formData, {
+        const response = await AXIOS_INSTANCE.post<T>(this.endpoint, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -45,11 +45,11 @@ export class CrudService<T> {
     }
 
     async update(id: number, data: Partial<T>): Promise<T> {
-        const response = await api.put<T>(`${this.endpoint}/${id}`, data);
+        const response = await AXIOS_INSTANCE.put<T>(`${this.endpoint}/${id}`, data);
         return response.data;
     }
 
     async delete(id: number): Promise<void> {
-        await api.delete(`${this.endpoint}/${id}`);
+        await AXIOS_INSTANCE.delete(`${this.endpoint}/${id}`);
     }
 }

@@ -1,9 +1,9 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { useAuthStore } from "@/store/authStore";
 
-export const API_URL = "http://192.168.1.48:8000/api";
+export const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.157:8000/api";
 
-const api = axios.create({
+const AXIOS_INSTANCE = axios.create({
     baseURL: API_URL,
     headers: {
         Accept: "application/json",
@@ -11,7 +11,7 @@ const api = axios.create({
     },
 });
 
-api.interceptors.request.use(
+AXIOS_INSTANCE.interceptors.request.use(
     async (config) => {
         const token = useAuthStore.getState().token;
         if (token) {
@@ -22,7 +22,7 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-api.interceptors.response.use(
+AXIOS_INSTANCE.interceptors.response.use(
     (response) => response,
     (error: AxiosError) => {
         if (error.response?.status === 401) {
@@ -32,4 +32,11 @@ api.interceptors.response.use(
     }
 );
 
-export default api;
+export const customInstance = <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<T> => {
+    return AXIOS_INSTANCE({
+        ...config,
+        ...options,
+    }).then(({ data }) => data);
+};
+
+export default AXIOS_INSTANCE;
