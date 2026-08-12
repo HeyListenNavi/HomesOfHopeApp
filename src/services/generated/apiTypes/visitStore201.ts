@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { Visit } from './visit';
+import type { VisitStore201Data } from './visitStore201Data';
 
 export type VisitStore201 = {
   message: 'Visit scheduled successfully';
-  data: Visit;
+  data: VisitStore201Data;
 };

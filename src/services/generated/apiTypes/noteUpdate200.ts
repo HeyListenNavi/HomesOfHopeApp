@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { Note } from './note';
+import type { NoteResource } from './noteResource';
 
 export type NoteUpdate200 = {
   message: 'Note updated successfully';
-  data: Note;
+  data: NoteResource;
 };

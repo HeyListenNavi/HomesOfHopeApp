@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { FamilyProfile } from './familyProfile';
+import type { FamilyProfileResource } from './familyProfileResource';
 
 export type FamilyProfileUpdate200 = {
   message: 'Family Profile updated successfully';
-  data: FamilyProfile;
+  data: FamilyProfileResource;
 };

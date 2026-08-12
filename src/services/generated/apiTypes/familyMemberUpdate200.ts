@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { FamilyMember } from './familyMember';
+import type { FamilyMemberResource } from './familyMemberResource';
 
 export type FamilyMemberUpdate200 = {
   message: 'Family Member updated successfully';
-  data: FamilyMember;
+  data: FamilyMemberResource;
 };

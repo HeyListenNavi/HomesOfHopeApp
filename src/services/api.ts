@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.157:8000/api";
 
-const AXIOS_INSTANCE = axios.create({
+export const api = axios.create({
     baseURL: API_URL,
     headers: {
         Accept: "application/json",
@@ -11,7 +11,7 @@ const AXIOS_INSTANCE = axios.create({
     },
 });
 
-AXIOS_INSTANCE.interceptors.request.use(
+api.interceptors.request.use(
     async (config) => {
         const token = useAuthStore.getState().token;
         if (token) {
@@ -22,7 +22,7 @@ AXIOS_INSTANCE.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-AXIOS_INSTANCE.interceptors.response.use(
+api.interceptors.response.use(
     (response) => response,
     (error: AxiosError) => {
         if (error.response?.status === 401) {
@@ -32,11 +32,13 @@ AXIOS_INSTANCE.interceptors.response.use(
     }
 );
 
-export const customInstance = <T>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<T> => {
-    return AXIOS_INSTANCE({
-        ...config,
-        ...options,
-    }).then(({ data }) => data);
+export const customInstance = <T>(config: AxiosRequestConfig | string, options?: AxiosRequestConfig & { body?: any }): Promise<T> => {
+    const finalConfig: any = typeof config === 'string' ? { url: config, ...options } : { ...config, ...options };
+    if (finalConfig.body && !finalConfig.data) {
+        finalConfig.data = finalConfig.body;
+        delete finalConfig.body;
+    }
+    return api(finalConfig).then(({ data, status }) => ({ data, status }) as T);
 };
 
-export default AXIOS_INSTANCE;
+export default api;

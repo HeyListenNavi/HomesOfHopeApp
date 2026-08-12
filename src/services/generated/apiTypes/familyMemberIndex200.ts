@@ -4,49 +4,12 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { FamilyMember } from './familyMember';
-import type { FamilyMemberIndex200LinksItem } from './familyMemberIndex200LinksItem';
+import type { FamilyMemberIndex200Links } from './familyMemberIndex200Links';
+import type { FamilyMemberIndex200Meta } from './familyMemberIndex200Meta';
+import type { FamilyMemberResource } from './familyMemberResource';
 
 export type FamilyMemberIndex200 = {
-  /** @minimum 1 */
-  current_page: number;
-  data: FamilyMember[];
-  /** @nullable */
-  first_page_url: string | null;
-  /**
-     * @minimum 1
-     * @nullable
-     */
-  from: number | null;
-  /** @nullable */
-  last_page_url: string | null;
-  /** @minimum 1 */
-  last_page: number;
-  /** Generated paginator links. */
-  links: FamilyMemberIndex200LinksItem[];
-  /** @nullable */
-  next_page_url: string | null;
-  /**
-     * Base path for paginator generated URLs.
-     * @nullable
-     */
-  path: string | null;
-  /**
-     * Number of items shown per page.
-     * @minimum 0
-     */
-  per_page: number;
-  /** @nullable */
-  prev_page_url: string | null;
-  /**
-     * Number of the last item in the slice.
-     * @minimum 1
-     * @nullable
-     */
-  to: number | null;
-  /**
-     * Total number of items being paginated.
-     * @minimum 0
-     */
-  total: number;
+  data: FamilyMemberResource[];
+  links: FamilyMemberIndex200Links;
+  meta: FamilyMemberIndex200Meta;
 };

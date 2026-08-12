@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { User } from './user';
+import type { UserResource } from './userResource';
 
 export type AuthLogin200 = {
   token: string;
-  user: User | null;
+  user: UserResource;
 };

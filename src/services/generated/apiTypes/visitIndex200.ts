@@ -4,49 +4,12 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { Visit } from './visit';
-import type { VisitIndex200LinksItem } from './visitIndex200LinksItem';
+import type { VisitIndex200Links } from './visitIndex200Links';
+import type { VisitIndex200Meta } from './visitIndex200Meta';
+import type { VisitResource } from './visitResource';
 
 export type VisitIndex200 = {
-  /** @minimum 1 */
-  current_page: number;
-  data: Visit[];
-  /** @nullable */
-  first_page_url: string | null;
-  /**
-     * @minimum 1
-     * @nullable
-     */
-  from: number | null;
-  /** @nullable */
-  last_page_url: string | null;
-  /** @minimum 1 */
-  last_page: number;
-  /** Generated paginator links. */
-  links: VisitIndex200LinksItem[];
-  /** @nullable */
-  next_page_url: string | null;
-  /**
-     * Base path for paginator generated URLs.
-     * @nullable
-     */
-  path: string | null;
-  /**
-     * Number of items shown per page.
-     * @minimum 0
-     */
-  per_page: number;
-  /** @nullable */
-  prev_page_url: string | null;
-  /**
-     * Number of the last item in the slice.
-     * @minimum 1
-     * @nullable
-     */
-  to: number | null;
-  /**
-     * Total number of items being paginated.
-     * @minimum 0
-     */
-  total: number;
+  data: VisitResource[];
+  links: VisitIndex200Links;
+  meta: VisitIndex200Meta;
 };

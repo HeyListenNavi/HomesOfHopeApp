@@ -4,49 +4,12 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { Note } from './note';
-import type { NoteIndex200LinksItem } from './noteIndex200LinksItem';
+import type { NoteIndex200Links } from './noteIndex200Links';
+import type { NoteIndex200Meta } from './noteIndex200Meta';
+import type { NoteResource } from './noteResource';
 
 export type NoteIndex200 = {
-  /** @minimum 1 */
-  current_page: number;
-  data: Note[];
-  /** @nullable */
-  first_page_url: string | null;
-  /**
-     * @minimum 1
-     * @nullable
-     */
-  from: number | null;
-  /** @nullable */
-  last_page_url: string | null;
-  /** @minimum 1 */
-  last_page: number;
-  /** Generated paginator links. */
-  links: NoteIndex200LinksItem[];
-  /** @nullable */
-  next_page_url: string | null;
-  /**
-     * Base path for paginator generated URLs.
-     * @nullable
-     */
-  path: string | null;
-  /**
-     * Number of items shown per page.
-     * @minimum 0
-     */
-  per_page: number;
-  /** @nullable */
-  prev_page_url: string | null;
-  /**
-     * Number of the last item in the slice.
-     * @minimum 1
-     * @nullable
-     */
-  to: number | null;
-  /**
-     * Total number of items being paginated.
-     * @minimum 0
-     */
-  total: number;
+  data: NoteResource[];
+  links: NoteIndex200Links;
+  meta: NoteIndex200Meta;
 };

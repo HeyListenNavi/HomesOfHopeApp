@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { Visit } from './visit';
+import type { VisitUpdate200Data } from './visitUpdate200Data';
 
 export type VisitUpdate200 = {
   message: 'Visit updated successfully';
-  data: Visit;
+  data: VisitUpdate200Data;
 };

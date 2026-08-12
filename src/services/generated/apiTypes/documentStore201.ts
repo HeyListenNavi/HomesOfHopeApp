@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { Document } from './document';
+import type { DocumentResource } from './documentResource';
 
 export type DocumentStore201 = {
   message: 'Document uploaded successfully';
-  data: Document;
+  data: DocumentResource;
 };
