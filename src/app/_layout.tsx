@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import "global.css";
+import "~/global.css";
 import { Text } from "@/components/ui/text";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";

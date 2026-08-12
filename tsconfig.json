@@ -5,10 +5,9 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "module": "ESNext",
-        "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
-            "~/*": ["*"],
+            "~/*": ["./*"],
         }
     },
     "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"]
