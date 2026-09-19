@@ -21,7 +21,7 @@ export const usePictures = () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsMultipleSelection: true,
-            quality: 1,
+            quality: 0.7,
         });
 
         if (!result.canceled) {
@@ -46,7 +46,7 @@ export const usePictures = () => {
         let result = await ImagePicker.launchCameraAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
-            quality: 1,
+            quality: 0.7,
         });
 
         if (!result.canceled) {

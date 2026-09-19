@@ -27,7 +27,7 @@ export const useVideo = () => {
         });
 
         if (!result.canceled) {
-            setVideo(result.assets[0].uri   );
+            setVideo(result.assets[0].uri);
         }
     };
 

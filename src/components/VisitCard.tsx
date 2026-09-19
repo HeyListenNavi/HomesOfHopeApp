@@ -4,18 +4,24 @@ import { Text } from "@/components/ui/text";
 import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import { useRouter } from "expo-router";
 import { formatDate } from "@/lib/utils";
-import { Visit } from "@/types/api";
+import { VisitResource, VisitStatus } from "@/services/generated/apiTypes";
+import { Badge } from "@/components/ui/badge";
 
 interface VisitCardProps {
-    visit: Visit;
+    visit: VisitResource;
     variant?: "full" | "summary";
+    familyName?: string;
+    readOnly?: boolean;
 }
 
-export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
+const VisitCard = ({ visit, variant = "summary", familyName, readOnly = false }: VisitCardProps) => {
     const router = useRouter();
 
     const openMapsLink = async () => {
-        const address = visit?.family_profile?.construction_address_link;
+        const isLand = visit?.location_type === "land";
+        const address = isLand
+            ? visit?.familyProfile?.land_address_link
+            : visit?.familyProfile?.home_address_link;
 
         if (!address) {
             ToastAndroid.show("Enlace de mapas no disponible.", ToastAndroid.SHORT);
@@ -30,7 +36,8 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
     };
 
     const openPhone = async () => {
-        const phone = visit?.family_profile?.responsible_member?.phone;
+        const phone = visit?.familyProfile?.responsibleMember?.phone;
+        console.log(visit)
 
         if (!phone) {
             ToastAndroid.show("Número de teléfono del responsable no disponible.", ToastAndroid.SHORT);
@@ -46,50 +53,64 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
         }
     };
 
+    const locationLabel = visit.location_type === "home" ? "Vivienda Actual" : visit.location_type === "land" ? "Terreno" : visit.location_type || "Visita";
+
+    const finalFamilyName = familyName || visit.familyProfile?.family_name || "Visita Programada";
+
+    const canFinalize = visit.status === VisitStatus.scheduled;
+
     if (variant === "full") {
+        const accessibilityLabel = `${finalFamilyName}, ${locationLabel}, Hoy`;
+
         return (
             <TouchableOpacity
-                className="bg-white rounded-2xl p-5 gap-3"
-                onPress={() => router.push(`/visit-detail/${visit.id}`)}
+                className="bg-white rounded-3xl shadow-md shadow-black/5 p-6 gap-4"
+                onPress={() => router.push(readOnly || !canFinalize ? `/visit-detail/${visit.id}` : `/visit-close/${visit.id}`)}
+                accessibilityRole="button"
+                accessibilityLabel={accessibilityLabel}
             >
                 <View className="flex-row justify-between items-start gap-2">
-                    <View className="flex-1">
+                    <View className="flex-1 gap-1">
                         <Text className="text-2xl font-bold text-gray-800">
-                            {visit.family_profile?.family_name ?? "Sin nombre"}
+                            {finalFamilyName}
                         </Text>
                         <View className="flex-row items-center gap-1">
                             <Boxicon
                                 name="bxs-location"
-                                size={16}
+                                size={20}
                                 color="#9ca3af"
                             />
-                            <Text className="text-gray-500">
-                                {visit.location_type}
+                            <Text className="text-gray-500 text-lg">
+                                {locationLabel}
                             </Text>
                         </View>
                     </View>
-                    <View className="bg-[#61b346]/10 px-3 py-1 rounded-full">
-                        <Text className="text-primary font-bold">Hoy</Text>
+                    <View className="bg-primary/10 px-3 py-1.5 rounded-full">
+                        <Text className="text-primary font-bold text-sm">Hoy</Text>
                     </View>
                 </View>
 
                 <View className="flex-row items-center gap-3">
                     <TouchableOpacity
-                        className="flex-1 bg-gray-50 border border-gray-200 px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center"
-                        onPress={() => openPhone() }
+                        className="flex-1 bg-gray-100 px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center"
+                        onPress={() => openPhone()}
+                        accessibilityRole="button"
+                        accessibilityLabel="Llamar al responsable de la familia"
                     >
                         <Text className="text-gray-500">
-                            <Boxicon name="bxs-phone" size={16} />
+                            <Boxicon name="bxs-phone" size={20} />
                         </Text>
                         <Text className="text-gray-500 font-bold">Llamar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center"
+                        className="flex-1 bg-primary px-4 py-4 gap-1 rounded-2xl flex-row justify-center items-center shadow-lg shadow-primary/30"
                         onPress={() => openMapsLink()}
+                        accessibilityRole="button"
+                        accessibilityLabel="Ver ruta en mapas"
                     >
                         <Boxicon
                             name="bxs-location"
-                            size={16}
+                            size={20}
                             color="#ffffff"
                         />
                         <Text className="text-white font-bold">Ver Ruta</Text>
@@ -99,29 +120,40 @@ export const VisitCard = ({ visit, variant = "summary" }: VisitCardProps) => {
         );
     }
 
+    const accessibilityLabel = `${finalFamilyName}, ${locationLabel}, ${formatDate(visit.scheduled_at)}`;
+
     return (
         <TouchableOpacity
-            className="bg-white p-4 rounded-2xl flex-row items-center justify-between active:bg-gray-50 border border-gray-100"
-            onPress={() => router.push(`/visit-detail/${visit.id}`)}
+            className="bg-white border border-gray-100 px-4 py-6 rounded-3xl flex-row items-center shadow-sm shadow-black/5 active:bg-gray-50 gap-4"
+            onPress={() => router.push(readOnly || !canFinalize ? `/visit-detail/${visit.id}` : `/visit-close/${visit.id}`)}
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel}
         >
-            <View className="flex-row items-center gap-4 flex-1">
-                <View className="bg-gray-100 h-12 w-12 rounded-full items-center justify-center">
-                    <Boxicon name="bxs-home-heart" size={24} color="#6b7280" />
-                </View>
+            <View className="h-16 w-16 rounded-2xl bg-gray-100 items-center justify-center shrink-0">
+                <Boxicon name="bxs-location" size={28} color="#6b7280" />
+            </View>
 
-                <View className="flex-1 gap-1">
-                    <Text className="font-bold text-gray-800" numberOfLines={1}>
-                        {visit.family_profile?.family_name}
-                    </Text>
-                    <View className="flex-row items-center gap-2">
-                        <Text className="text-gray-400 text-xs">
+            <View className="flex-1 gap-1">
+                <Text className="font-bold text-gray-800 text-xl leading-tight" numberOfLines={1}>
+                    {finalFamilyName}
+                </Text>
+
+                <Text className="text-gray-500 text-base font-medium capitalize" numberOfLines={1}>
+                    {locationLabel}
+                </Text>
+
+                <View className="flex-row items-center gap-2 mt-1">
+                    <Badge className="bg-blue-100 border-transparent px-3 py-1.5 rounded-full">
+                        <Text className="text-blue-700 text-sm font-bold">
                             {formatDate(visit.scheduled_at)}
                         </Text>
-                    </View>
+                    </Badge>
                 </View>
             </View>
 
-            <Boxicon name="bx-chevron-right" size={24} color="#d1d5db" />
+            <Boxicon name="bx-chevron-right" size={32} color="#d1d5db" />
         </TouchableOpacity>
     );
 };
+
+export default VisitCard;
