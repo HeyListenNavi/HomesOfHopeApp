@@ -3,10 +3,10 @@ import {
     createMaterialTopTabNavigator,
     MaterialTopTabNavigationEventMap,
     MaterialTopTabNavigationOptions,
-} from "@react-navigation/material-top-tabs";
+} from "expo-router/js-top-tabs";
 import { withLayoutContext } from "expo-router";
-import { ParamListBase, TabNavigationState } from "@react-navigation/native";
-import CustomTabBar from "@/components/CustomTabBar";
+import { ParamListBase, TabNavigationState } from "expo-router/react-navigation";
+import CustomTabBar, { CustomTabBarProps } from "@/components/CustomTabBar";
 import Boxicon from "@/components/Boxicons";
 
 const { Navigator } = createMaterialTopTabNavigator();
@@ -23,7 +23,7 @@ export default function TabsLayout() {
         <MaterialTopTabs
             initialRouteName="index"
             tabBarPosition="bottom"
-            tabBar={(props) => <CustomTabBar {...props} />}
+            tabBar={(props: CustomTabBarProps) => <CustomTabBar {...props} />}
             screenOptions={{
                 swipeEnabled: true,
                 animationEnabled: true,
@@ -37,7 +37,7 @@ export default function TabsLayout() {
                     title: "Inicio",
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
-                            name={focused ? "bxs-home" : "bx-home"}
+                            name={focused ? "bxs-home" : "bxs-home"}
                             size={24}
                             color={color}
                         />
@@ -50,7 +50,7 @@ export default function TabsLayout() {
                     title: "Visitas",
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
-                            name={focused ? "bxs-map" : "bx-map"}
+                            name={focused ? "bxs-location" : "bxs-location"}
                             size={24}
                             color={color}
                         />
@@ -63,7 +63,7 @@ export default function TabsLayout() {
                     title: "Entrevistas",
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
-                            name={focused ? "bxs-clipboard-detail" : "bx-clipboard-detail"}
+                            name={focused ? "bxs-clipboard-detail" : "bxs-clipboard-detail"}
                             size={24}
                             color={color}
                         />
@@ -76,7 +76,7 @@ export default function TabsLayout() {
                     title: "Perfiles",
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
-                            name={focused ? "bxs-group" : "bx-group"}
+                            name={focused ? "bxs-home-heart" : "bxs-home-heart"}
                             size={24}
                             color={color}
                         />
@@ -89,7 +89,7 @@ export default function TabsLayout() {
                     title: "Equipo",
                     tabBarIcon: ({ color, focused }) => (
                         <Boxicon
-                            name={focused ? "bxs-list-ul" : "bx-list-ul"}
+                            name={focused ? "bxs-user" : "bxs-user"}
                             size={24}
                             color={color}
                         />

@@ -1,35 +1,41 @@
 import { View, Animated, Pressable } from 'react-native'
 import React from 'react'
-import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
+import type { MaterialTopTabNavigationEventMap, MaterialTopTabNavigationOptions } from 'expo-router/js-top-tabs';
+import type { NavigationHelpers, ParamListBase, TabNavigationState } from 'expo-router/react-navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+interface CustomTabBarProps {
+    state: TabNavigationState<ParamListBase>;
+    descriptors: Record<string, { options: MaterialTopTabNavigationOptions }>;
+    navigation: NavigationHelpers<ParamListBase, MaterialTopTabNavigationEventMap>;
+    position: Animated.AnimatedInterpolation<number>;
+}
+
+export { CustomTabBarProps };
 
 const CustomTabBar = ({
     state,
     descriptors,
     navigation,
     position,
-}: MaterialTopTabBarProps)  => {
+}: CustomTabBarProps)  => {
     const insets = useSafeAreaInsets();
 
     return (
         <View
-            className="flex-row bg-white"
-            style={{ paddingBottom: insets.bottom }}
+            className="absolute left-6 right-6 bg-white rounded-full flex-row shadow-lg shadow-black/20"
+            style={{ 
+                bottom: insets.bottom > 0 ? insets.bottom + 4 : 12, 
+                paddingVertical: 8,
+                paddingHorizontal: 8,
+                elevation: 10,
+                zIndex: 50
+            }}
         >
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];
 
-                const inputRange = state.routes.map((_, i) => i);
-
-                const activeOpacity = position.interpolate({
-                    inputRange,
-                    outputRange: inputRange.map((i) => (i === index ? 1 : 0)),
-                });
-
-                const inactiveOpacity = position.interpolate({
-                    inputRange,
-                    outputRange: inputRange.map((i) => (i === index ? 0 : 1)),
-                });
+                const isFocused = state.index === index;
 
                 const onPress = () => {
                     const event = navigation.emit({
@@ -38,7 +44,6 @@ const CustomTabBar = ({
                         canPreventDefault: true,
                     });
 
-                    const isFocused = state.index === index;
                     if (!isFocused && !event.defaultPrevented) {
                         navigation.navigate(route.name, route.params);
                     }
@@ -57,40 +62,16 @@ const CustomTabBar = ({
                         role="button"
                         onPress={onPress}
                         onLongPress={onLongPress}
-                        className="flex-1 items-center justify-center py-3"
+                        className="flex-1 items-center justify-center py-2"
                     >
                         <View
-                            style={{
-                                width: 24,
-                                height: 28,
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
+                            className={`px-4 py-2.5 rounded-full flex-row items-center justify-center gap-1.5 transition-all ${isFocused ? "bg-primary" : "bg-transparent"}`}
                         >
-                            <Animated.View
-                                style={{
-                                    opacity: activeOpacity,
-                                    position: "absolute",
-                                }}
-                            >
-                                {options.tabBarIcon &&
-                                    options.tabBarIcon({
-                                        focused: true,
-                                        color: options.tabBarActiveTintColor || "#2563eb",
-                                    })}
-                            </Animated.View>
-                            <Animated.View
-                                style={{
-                                    opacity: inactiveOpacity,
-                                    position: "absolute",
-                                }}
-                            >
-                                {options.tabBarIcon &&
-                                    options.tabBarIcon({
-                                        focused: false,
-                                        color: "#94a3b8",
-                                    })}
-                            </Animated.View>
+                            {options.tabBarIcon &&
+                                options.tabBarIcon({
+                                    focused: isFocused,
+                                    color: isFocused ? "#ffffff" : "#9ca3af",
+                                })}
                         </View>
                     </Pressable>
                 );

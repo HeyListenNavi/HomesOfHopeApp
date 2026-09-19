@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/text";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import Boxicon from "@/components/Boxicons";
-import { FluentEmoji } from "@/components/FluentEmoji";
+import FluentEmoji from "@/components/FluentEmoji";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PortalHost } from "@rn-primitives/portal";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -46,7 +46,7 @@ const Layout = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <GestureHandlerRootView style={{ flex: 1 }}>
-                <KeyboardProvider>
+                <KeyboardProvider statusBarTranslucent={true} navigationBarTranslucent={true} preserveEdgeToEdge={true}>
                     <BottomSheetModalProvider>
                         <Stack
                             screenOptions={{
@@ -77,29 +77,33 @@ const Layout = () => {
                                 name="(tabs)"
                                 options={{
                                     header: () => (
-                                        <View className="bg-gray-100">
-                                            <View
-                                                className="flex flex-row items-center justify-between px-6 pb-6 bg-white rounded-b-3xl"
-                                                style={{
-                                                    paddingTop: insets.top + 12,
-                                                }}
-                                            >
-                                                <Text
-                                                    className="font-bold text-primary m-0"
-                                                    variant="h1"
-                                                >
+                                        <View
+                                            className="bg-white flex-row items-center justify-between rounded-b-[32px] shadow-xl shadow-black/10"
+                                            style={{
+                                                paddingTop: insets.top + 16,
+                                                paddingBottom: 24,
+                                                paddingHorizontal: 24,
+                                                zIndex: 100,
+                                                elevation: 20,
+                                            }}
+                                        >
+                                            <View className="flex-col gap-0 items-start">
+                                                <Text className="font-extrabold text-primary text-4xl">
                                                     Hope
                                                 </Text>
-                                                <TouchableOpacity
-                                                    onPress={() => router.push("/profile")}
-                                                >
-                                                    <Boxicon
-                                                        name="bxs-user-circle"
-                                                        size={38}
-                                                        color="#61b346"
-                                                    />
-                                                </TouchableOpacity>
+                                                <View className="flex-row items-center gap-1.5 mt-1">
+                                                    <Text className="text-gray-500 font-medium text-base">
+                                                        Hola, {"Usuario"}
+                                                    </Text>
+                                                    <FluentEmoji emoji="👋" className="text-lg" />
+                                                </View>
                                             </View>
+                                            <TouchableOpacity
+                                                onPress={() => router.push("/profile")}
+                                                className="bg-gray-50 p-1.5 rounded-full"
+                                            >
+                                                <Boxicon name="bxs-user-circle" size={42} color="#61b346" />
+                                            </TouchableOpacity>
                                         </View>
                                     ),
                                 }}
@@ -109,6 +113,15 @@ const Layout = () => {
                                 name="visit-detail/[id]"
                                 options={{
                                     headerTitle: "Visita",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="visit-close/[id]"
+                                options={{
+                                    headerTitle: "Finalizar Visita",
                                     headerShadowVisible: false,
                                     headerBackTitle: "Atras",
                                 }}
@@ -126,7 +139,17 @@ const Layout = () => {
                             <Stack.Screen
                                 name="new-family-profile/[id]"
                                 options={{
-                                    headerTitle: "Nuevo Perfil",
+                                    headerTitle: "Nueva Familia",
+                                    headerTitleAlign: "center",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="edit-family-profile/[id]"
+                                options={{
+                                    headerTitle: "Editar Familia",
                                     headerTitleAlign: "center",
                                     headerShadowVisible: false,
                                     headerBackTitle: "Atras",
@@ -136,16 +159,57 @@ const Layout = () => {
                             <Stack.Screen
                                 name="family-profile/[id]"
                                 options={{
-                                    headerTitle: "Perfil",
+                                    headerTitle: "Perfil Familiar",
+                                    headerTitleAlign: "center",
                                     headerShadowVisible: false,
                                     headerBackTitle: "Atras",
                                 }}
                             />
 
                             <Stack.Screen
-                                name="new-staff-profile/[id]"
+                                name="new-note/[id]"
+                                options={{
+                                    headerTitle: "Nueva Nota",
+                                    headerTitleAlign: "center",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="new-document/[id]"
+                                options={{
+                                    headerTitle: "Nuevo Documento",
+                                    headerTitleAlign: "center",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="new-testimony/[id]"
+                                options={{
+                                    headerTitle: "Nuevo Testimonio",
+                                    headerTitleAlign: "center",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="new-staff-profile"
                                 options={{
                                     headerTitle: "Nuevo Staff",
+                                    headerTitleAlign: "center",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+
+                            <Stack.Screen
+                                name="edit-staff-profile/[id]"
+                                options={{
+                                    headerTitle: "Editar Staff",
                                     headerTitleAlign: "center",
                                     headerShadowVisible: false,
                                     headerBackTitle: "Atras",
@@ -156,6 +220,32 @@ const Layout = () => {
                                 name="staff-profile/[id]"
                                 options={{
                                     headerTitle: "Staff",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+                            <Stack.Screen
+                                name="family-member/[id]"
+                                options={{
+                                    headerTitle: "Familiar",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+                            <Stack.Screen
+                                name="edit-family-member/[id]"
+                                options={{
+                                    headerTitle: "Editar Familiar",
+                                    headerTitleAlign: "center",
+                                    headerShadowVisible: false,
+                                    headerBackTitle: "Atras",
+                                }}
+                            />
+                            <Stack.Screen
+                                name="new-family-member/[id]"
+                                options={{
+                                    headerTitle: "Nuevo Familiar",
+                                    headerTitleAlign: "center",
                                     headerShadowVisible: false,
                                     headerBackTitle: "Atras",
                                 }}
