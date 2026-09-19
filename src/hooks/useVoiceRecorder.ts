@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert, Linking } from "react-native";
 import {
     useAudioRecorder,
@@ -6,8 +6,6 @@ import {
     AudioModule,
     RecordingPresets,
     setAudioModeAsync,
-    useAudioPlayer,
-    useAudioPlayerStatus,
 } from "expo-audio";
 import { deleteFile } from "@/lib/utils";
 
@@ -17,8 +15,6 @@ export const useVoiceRecorder = () => {
 
     const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
     const recorderState = useAudioRecorderState(audioRecorder);
-    const player = useAudioPlayer(recordedUri);
-    const playerStatus = useAudioPlayerStatus(player);
 
     const startRecording = async () => {
         const permissionResult = await AudioModule.requestRecordingPermissionsAsync();
@@ -35,7 +31,6 @@ export const useVoiceRecorder = () => {
         setAudioModeAsync({
             playsInSilentMode: true,
             allowsRecording: true,
-            allowsBackgroundRecording: true,
             interruptionModeAndroid: "doNotMix",
         });
 
@@ -49,22 +44,6 @@ export const useVoiceRecorder = () => {
         setRecordedUri(audioRecorder.uri);
     };
 
-    const togglePlayback = () => {
-        if (!player) return;
-        player.playing ? player.pause() : player.play();
-
-        if (player.currentTime >= player.duration - 100) {
-            player.seekTo(0);
-        }
-    };
-
-    const resetPlayback = () => {
-        if (player) {
-            player.seekTo(0);
-            player.pause();
-        }
-    }
-
     const discardRecording = () => {
         if (recordedUri) {
             deleteFile(recordedUri);
@@ -73,22 +52,17 @@ export const useVoiceRecorder = () => {
         }
     };
 
-    const currentDuration = recorderState.isRecording
+    const recordingDuration = recorderState.isRecording
         ? recorderState.durationMillis
         : duration;
 
     return {
         recordedUri,
         isRecording: recorderState.isRecording,
-        duration: Math.round(currentDuration / 1000),
+        duration: Math.round(recordingDuration / 1000),
         startRecording,
         stopRecording,
         discardRecording,
-        
-        progress: playerStatus.duration > 0 ? (playerStatus.currentTime / playerStatus.duration) * 100 : 0,
-        currentTime: Math.round(playerStatus.currentTime),
-        isPlaying: playerStatus.playing,
-        togglePlayback,
-        resetPlayback,
+        setRecordedUri,
     };
 };

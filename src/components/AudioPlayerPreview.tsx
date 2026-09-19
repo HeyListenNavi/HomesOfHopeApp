@@ -5,10 +5,12 @@ import { Text } from "@/components/ui/text";
 
 const AudioPlayerPreview = ({
     uri,
-    onClear, 
+    onClear,
+    title = "Nota de voz",
 }: {
     uri: string;
     onClear: () => void;
+    title?: string;
 }) => {
     const player = useAudioPlayer(uri);
     const status = useAudioPlayerStatus(player);
@@ -23,10 +25,10 @@ const AudioPlayerPreview = ({
     };
 
     return (
-        <View className="flex-row items-center bg-white border border-gray-100 p-3 rounded-xl shadow-sm gap-3">
+        <View className="flex-row items-center bg-white p-3 rounded-2xl shadow-md shadow-black/5 gap-3">
             <TouchableOpacity
                 onPress={handlePlayPause}
-                className="bg-[#9BD189]/10 h-10 w-10 rounded-full items-center justify-center"
+                className="bg-primary/10 h-12 w-12 rounded-full items-center justify-center"
             >
                 <Boxicon
                     name={player.playing ? "bxs-pause" : "bxs-play"}
@@ -36,7 +38,7 @@ const AudioPlayerPreview = ({
             </TouchableOpacity>
 
             <View className="flex-1">
-                <Text className="font-bold text-gray-700">Nota de voz</Text>
+                <Text className="font-bold text-gray-700">{title}</Text>
                 <Text className="text-sm text-gray-400">
                     {status.duration
                         ? `${status.duration.toFixed(0)}s`
