@@ -1,63 +1,75 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Linking } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import Boxicon from "@/components/Boxicons";
 import BrandBoxicon from "@/components/BrandBoxicons";
 import { useRouter } from "expo-router";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Staff } from "@/app/staff-profile/[id]";
+import { UserResource } from "@/services/generated/apiTypes";
 
 interface StaffCardProps {
-    staff: Staff;
+    user: UserResource;
 }
 
-export const StaffCard = ({ staff }: StaffCardProps) => {
+const StaffCard = ({ user }: StaffCardProps) => {
     const router = useRouter();
+    
+    const roleLabels = (user.roles ?? []).map(String);
+
+    const rolesString = roleLabels.join(", ");
+    const accessibilityLabel = `${user.name}, ${rolesString}, ${user.email}`;
 
     return (
         <TouchableOpacity
-            className="bg-white p-4 rounded-2xl flex-row items-center gap-4 active:bg-gray-50"
-            onPress={() => router.push(`/staff-profile/${staff.id}`)}
+            className="bg-white px-4 py-6 rounded-3xl flex-row items-center shadow-md shadow-black/5 active:bg-gray-100 gap-4"
+            onPress={() => router.push(`/staff-profile/${user.id}`)}
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel}
         >
-            <Avatar className="w-14 h-14" alt={""}>
-                {staff.photoUrl ? (
-                    <AvatarImage source={{ uri: staff.photoUrl }} />
-                ) : (
-                    <AvatarFallback className="bg-tranparent items-center justify-center">
-                        <Boxicon
-                            name="bxs-user-circle"
-                            size={50}
-                            color="#61b346"
-                        />
-                    </AvatarFallback>
-                )}
-            </Avatar>
+            <View
+                className="h-16 w-16 rounded-2xl bg-gray-100 items-center justify-center shrink-0"
+            >
+                <Boxicon
+                    name="bxs-user"
+                    size={28}
+                    color="#6b7280"
+                />
+            </View>
 
-            <View className="flex-1">
+            <View className="flex-1 gap-1">
                 <Text
-                    className="font-bold text-lg text-gray-800"
+                    className="font-bold text-gray-800 text-xl leading-tight"
                     numberOfLines={1}
                 >
-                    {staff.name}
+                    {user.name}
                 </Text>
 
-                <Text className="text-gray-400 text-sm" numberOfLines={1}>
-                    {staff.email}
+                <Text
+                    className="text-gray-500 text-base font-medium"
+                    numberOfLines={1}
+                >
+                    {user.email}
                 </Text>
 
-                <View className="flex-row mt-2">
-                    <Badge>
-                        <Text className="font-medium">{staff.role}</Text>
-                    </Badge>
+                <View className="flex-row items-center gap-1.5 mt-1 flex-wrap">
+                    {roleLabels.map((label, idx) => (
+                        <Badge
+                            key={`${label}-${idx}`}
+                            className="bg-primary/10 border-transparent px-3 py-1.5 rounded-full flex-row items-center gap-1"
+                        >
+                            <Text className="text-primary text-sm font-bold">
+                                {label}
+                            </Text>
+                        </Badge>
+                    ))}
                 </View>
             </View>
 
-            {staff.phoneNumber ? (
-                <TouchableOpacity className="bg-[#9BD189]/10 p-3 rounded-full">
-                    <BrandBoxicon name="bx-whatsapp" size={26} color="#61b346" />
-                </TouchableOpacity>
-            ) : null}
+            <Boxicon name="bx-chevron-right" size={32} color="#d1d5db" />
         </TouchableOpacity>
     );
 };
+
+export default StaffCard;
+
+
