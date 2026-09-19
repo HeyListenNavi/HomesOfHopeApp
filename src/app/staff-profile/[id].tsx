@@ -1,149 +1,174 @@
 import React from "react";
-import { View, ScrollView, TouchableOpacity, Linking, ActivityIndicator } from "react-native";
+import {
+    View,
+    ScrollView,
+    TouchableOpacity,
+    Linking,
+    ActivityIndicator,
+    RefreshControl,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
-import { Badge } from "@/components/ui/badge";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import DetailSectionCard from "@/components/DetailSectionCard";
 import InfoRow from "@/components/InfoRow";
-import { useUser } from "@/hooks/useUsers";
+import SectionHeader from "@/components/SectionHeader";
+import FluentEmoji from "@/components/FluentEmoji";
+import RoleChip, { formatRoleLabel } from "@/components/RoleChip";
+import { formatDate, formatDateTime } from "@/lib/utils";
+import { useUserShow } from "@/services/generated/apiEndpoints";
+import { useScreenTopPadding } from "@/lib/layout";
+import EmptyState from "@/components/EmptyState";
 
-export interface Staff {
-    id: string;
-    name: string;
-    role: string;
-    phoneNumber: string;
-    email: string;
-    photoUrl?: string | null;
-    status?: string;
-    phone?: string;
-    joinedAt?: string;
-    visitsThisMonth?: number;
-    interviewsThisMonth?: number;
-}
-
-const Page = () => {
+export default function StaffProfilePage() {
     const router = useRouter();
     const { id } = useLocalSearchParams<{ id: string }>();
+    const topPadding = useScreenTopPadding();
+
     const userId = Number(id);
+    const {
+        data: user,
+        isPending,
+        isError,
+        refetch,
+        isFetching,
+    } = useUserShow(userId, {
+        query: {
+            enabled: !isNaN(userId) && userId > 0,
+        },
+    });
 
-    const { data: user, isLoading, isError } = useUser(userId);
+    console.log(user);
 
-    if (isLoading) {
+    if (isPending) {
         return (
-            <View className="flex-1 bg-gray-100 items-center justify-center gap-3">
+            <View
+                className="flex-1 bg-gray-100 items-center justify-center"
+                style={{ paddingTop: topPadding }}
+            >
                 <ActivityIndicator size="large" color="#61b346" />
-                <Text className="text-gray-400">Cargando perfil...</Text>
             </View>
         );
     }
 
     if (isError || !user) {
         return (
-            <View className="flex-1 bg-gray-100 items-center justify-center gap-3 p-8">
-                <Boxicon name="bxs-x-circle" size={40} color="#ef4444" />
-                <Text className="text-gray-700 font-semibold text-center">
-                    No se pudo cargar el perfil del staff
-                </Text>
-                <TouchableOpacity onPress={() => router.back()}>
-                    <Text className="text-primary font-medium">← Volver</Text>
+            <View
+                className="flex-1 bg-gray-100 items-center justify-center p-6 gap-3"
+                style={{ paddingTop: topPadding }}
+            >
+                <EmptyState
+                    emoji="🔍"
+                    title="Staff no encontrado"
+                    subtitle="No se pudieron cargar los datos del miembro del personal."
+                />
+                <TouchableOpacity
+                    onPress={() => router.back()}
+                    className="bg-primary px-6 py-3.5 rounded-2xl mt-4 active:opacity-90"
+                    accessibilityRole="button"
+                    accessibilityLabel="Regresar"
+                >
+                    <Text className="text-white font-bold text-base">Regresar</Text>
                 </TouchableOpacity>
             </View>
         );
     }
 
-    const joinedAt = user.created_at
-        ? new Date(user.created_at).toLocaleDateString("es-MX", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-          })
-        : "N/A";
+    const rolesList = (user?.roles ?? []).map(String);
 
     return (
-        <ScrollView
-            className="flex-1 bg-gray-100"
-            contentContainerClassName="p-4 pb-20 gap-4"
-            showsVerticalScrollIndicator={false}
-        >
-            <View className="bg-white p-6 rounded-2xl gap-5">
-                <View className="flex-row items-center gap-4">
-                    <Avatar className="w-20 h-20" alt={""}>
-                        <AvatarFallback className="bg-transparent items-center justify-center">
-                            <Boxicon
-                                name="bxs-user-circle"
-                                size={50}
-                                color="#61b346"
-                            />
-                        </AvatarFallback>
-                    </Avatar>
+        <View className="flex-1 bg-gray-100">
+            <ScrollView
+                className="flex-1 bg-gray-100"
+                contentContainerClassName="p-6 pb-28 gap-6"
+                contentContainerStyle={{ paddingTop: topPadding }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isFetching}
+                        onRefresh={refetch}
+                        tintColor="#61b346"
+                        colors={["#61b346"]}
+                    />
+                }
+            >
+                {}
+                <View className="bg-white rounded-3xl p-6 shadow-md shadow-black/5 items-center gap-5 relative">
+                    <TouchableOpacity
+                        onPress={() => router.push(`/edit-staff-profile/${user.id}` as any)}
+                        activeOpacity={0.8}
+                        className="absolute top-5 right-5 h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20 z-10"
+                        accessibilityRole="button"
+                        accessibilityLabel="Editar Staff"
+                    >
+                        <Boxicon name="bxs-edit" size={22} color="#61b346" />
+                    </TouchableOpacity>
 
-                    <View className="flex-1 gap-1">
-                        <Text variant="h3" className="font-bold text-gray-800">
-                            {user.name}
-                        </Text>
-                        <Text className="text-gray-500">{user.email}</Text>
-
-                        <View className="flex-row gap-2 mt-1">
-                            <Badge>
-                                <Text className="text-white">Activo</Text>
-                            </Badge>
-                        </View>
+                    <View className="h-24 w-24 rounded-full bg-primary/10 items-center justify-center border-2 border-primary/20 mt-1">
+                        <FluentEmoji emoji="👤" className="text-5xl" />
                     </View>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <TouchableOpacity className="p-1">
-                                <Boxicon
-                                    name="bxs-dots-vertical-rounded"
-                                    size={24}
-                                    color="#9ca3af"
-                                />
-                            </TouchableOpacity>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            className="bg-white rounded-2xl border-transparent shadow-lg shadow-black/40"
+                    <View className="items-center gap-2">
+                        <Text className="text-2xl font-bold text-gray-800 text-center leading-tight">
+                            {user.name}
+                        </Text>
+
+                        {}
+                        {rolesList.length > 0 && (
+                            <View className="flex-row items-center justify-center gap-2 flex-wrap">
+                                {rolesList.map((role, idx) => (
+                                    <RoleChip key={idx} role={role} />
+                                ))}
+                            </View>
+                        )}
+                    </View>
+
+                    {}
+                    <View className="w-full pt-4 border-t border-gray-100 flex-row items-center gap-3">
+                        <TouchableOpacity
+                            onPress={() => Linking.openURL(`mailto:${user.email}`)}
+                            className="flex-1 bg-primary py-4 rounded-2xl flex-row items-center justify-center gap-2 shadow-lg shadow-primary/30 active:opacity-90"
+                            accessibilityRole="button"
+                            accessibilityLabel={`Enviar correo a ${user.email}`}
                         >
-                            <DropdownMenuItem
-                                onPress={() =>
-                                    router.push(`/new-staff-profile/${user.id}`)
-                                }
-                                className="flex-row gap-2 p-3"
-                            >
-                                <Boxicon name="bxs-edit" size={18} />
-                                <Text>Editar</Text>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                            <Boxicon name="bxs-envelope" size={20} color="#ffffff" />
+                            <Text className="text-white font-bold text-base">Enviar Correo</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View className="flex-row gap-2">
-                    <TouchableOpacity
-                        onPress={() =>
-                            Linking.openURL(`mailto:${user.email}`)
-                        }
-                        className="flex-1 bg-primary py-4 rounded-2xl flex-row items-center justify-center gap-2"
-                    >
-                        <Boxicon name="bxs-envelope" size={16} color="#ffffff" />
-                        <Text className="text-white font-bold">Contactar</Text>
-                    </TouchableOpacity>
+                {}
+                <View className="bg-white rounded-3xl shadow-md shadow-black/5 p-6 gap-5">
+                    <SectionHeader emoji="👤" title="Información General" />
+                    <View className="gap-3">
+                        <InfoRow label="Correo Electrónico" value={user.email} />
+                        <InfoRow
+                            label="Fecha de Registro"
+                            value={user.created_at ? formatDate(user.created_at) : "No registrada"}
+                        />
+                    </View>
                 </View>
-            </View>
 
-            <DetailSectionCard title="Información General" icon="bxs-user">
-                <InfoRow label="Correo" value={user.email} />
-                <InfoRow label="Fecha de Ingreso" value={joinedAt} />
-            </DetailSectionCard>
-        </ScrollView>
+                {}
+                <View className="bg-white rounded-3xl shadow-md shadow-black/5 p-6 gap-5">
+                    <SectionHeader emoji="🛡️" title="Roles y Accesos" />
+                    <View className="gap-3">
+                        <InfoRow
+                            label="ID de Usuario"
+                            value={`#${user.id}`}
+                        />
+                        <InfoRow
+                            label="Roles Asignados"
+                            value={rolesList.length > 0 ? rolesList.map((r) => formatRoleLabel(r)).join(", ") : "Sin roles asignados"}
+                        />
+                        {user.updated_at && (
+                            <InfoRow
+                                label="Última Actualización"
+                                value={formatDateTime(user.updated_at)}
+                            />
+                        )}
+                    </View>
+                </View>
+            </ScrollView>
+        </View>
     );
-};
-
-export default Page;
+}
