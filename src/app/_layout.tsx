@@ -6,6 +6,7 @@ import { Text } from "@/components/ui/text";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import Boxicon from "@/components/Boxicons";
+import { FluentEmoji } from "@/components/FluentEmoji";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PortalHost } from "@rn-primitives/portal";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -29,6 +30,7 @@ const Layout = () => {
         BrandBoxicons: require("@/assets/fonts/boxicons-brands.ttf"),
         "Inter-Regular": Inter_400Regular,
         "Inter-Bold": Inter_700Bold,
+        "FluentEmoji": require("@/assets/fonts/FluentEmoji.ttf"),
     });
 
     useEffect(() => {
