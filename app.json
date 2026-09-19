@@ -6,19 +6,25 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "icon": "./src/assets/images/icon.png",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.veronica.homesofhope"
     },
     "android": {
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
+        "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "edgeToEdgeEnabled": true,
       "package": "com.veronica.homesofhope"
     },
     "web": {},
     "plugins": [
       "expo-router",
+      "expo-image",
       "expo-audio",
       [
         "expo-font",
@@ -34,12 +40,19 @@
       [
         "expo-splash-screen",
         {
+          "image": "./src/assets/images/splash.png",
           "backgroundColor": "#ffffff",
           "resizeMode": "contain"
         }
       ],
       "expo-status-bar",
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "97282c8c-b55e-44cd-9e56-379809db8bb1"
+      }
+    }
   }
 }
