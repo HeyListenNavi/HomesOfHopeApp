@@ -1,116 +1,120 @@
 import React from "react";
-import { View } from "react-native";
+import { ActivityIndicator, RefreshControl, ScrollView, View } from "react-native";
 import StatCard from "@/components/StatCard";
-import { Text } from "@/components/ui/text";
-import { useRouter } from "expo-router";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import QuickActionButton from "@/components/QuickActionButton";
+import VisitCard from "@/components/VisitCard";
+import InterviewCard from "@/components/InterviewCard";
+import EmptyState from "@/components/EmptyState";
+import SectionHeader from "@/components/SectionHeader";
+import { useTabBarClearance } from "@/lib/layout";
+import { useFamilyProfileIndex, useGroupIndex, useVisitIndex } from "@/services/generated/apiEndpoints";
+import { VisitStatus } from "@/services/generated/apiTypes";
+import { toLocalDateString } from "@/lib/utils";
+import { sumBy } from "lodash";
 
 const Page = () => {
-    const router = useRouter();
+    const tabBarClearance = useTabBarClearance();
+
+    const today = toLocalDateString();
+
+    const visits = useVisitIndex({ date: today, status: VisitStatus.scheduled });
+    const groups = useGroupIndex({ date: today });
+    const families = useFamilyProfileIndex();
+    
+    const loading = visits.isPending || groups.isPending || families.isPending;
+    const refreshing = visits.isFetching || groups.isFetching || families.isFetching;
+
+    const todayVisits = visits.data?.data || [];
+    const todayInterviews = groups.data?.data || [];
+    const totalInterviewMembers = sumBy(todayInterviews, (i) => i.current_members_count ?? 0);
 
     return (
-        <KeyboardAwareScrollView
+        <ScrollView
             className="flex-1 bg-gray-100"
-            contentContainerClassName="p-6 gap-8"
+            contentContainerClassName="p-6 gap-6"
+            contentContainerStyle={{ paddingBottom: tabBarClearance }}
             showsVerticalScrollIndicator={false}
-        >
-            <View className="gap-4">
-                <View className="gap-1">
-                    <Text className="text-gray-500 text-sm">
-                        Resumen general
-                    </Text>
-                    <Text variant="h3" className="font-bold text-gray-800">
-                        Inicio
-                    </Text>
-                </View>
-
-                <StatCard
-                    size="full"
-                    value={123}
-                    label="Familias Registradas"
-                    iconName="bxs-group"
-                    iconColor="#2563eb"
-                    iconBgColor="bg-blue-100"
-                    trend={{
-                        value: "+12",
-                        label: "Este mes",
-                        color: "#61b346",
-                        bgColor: "bg-[#9BD189]/10",
-                        iconName: "bxs-trending-up",
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        visits.refetch();
+                        groups.refetch();
+                        families.refetch();
                     }}
+                    tintColor="#61b346"
+                    colors={["#61b346"]}
                 />
-
-                <View className="flex-row gap-4">
-                    <StatCard
-                        size="half"
-                        value={18}
-                        label="En entrevista"
-                        iconName="bxs-file-detail"
-                        iconColor="#f97316"
-                        iconBgColor="bg-orange-100"
-                    />
-                    <StatCard
-                        size="half"
-                        value={9}
-                        label="En visitas"
-                        iconName="bxs-location"
-                        iconColor="#9333ea"
-                        iconBgColor="bg-purple-100"
-                    />
+            }
+        >
+            {loading ? (
+                <View className="items-center justify-center py-24">
+                    <ActivityIndicator size="large" color="#61b346" />
                 </View>
-            </View>
+            ) : (
+                <>
+                    <View className="gap-4">
+                        <SectionHeader emoji="📅" title="Hoy" />
 
-            <View className="gap-4">
-                <Text variant="h3" className="font-bold text-gray-800">
-                    Acciones rápidas
-                </Text>
-
-                <View className="bg-white rounded-2xl px-4 py-6">
-                    <View className="flex-row flex-wrap gap-y-6">
-                        <QuickActionButton
-                            label="Crear Familia"
-                            iconName="bxs-user-plus"
-                            className="w-1/3 items-center"
-                            onPress={() =>
-                                router.push("/new-family-profile/123")
-                            }
-                        />
-                        <QuickActionButton
-                            label="Crear Staff"
-                            iconName="bxs-user-id-card"
-                            className="w-1/3 items-center"
-                            onPress={() =>
-                                router.push("/new-staff-profile/123")
-                            }
-                        />
-                        <QuickActionButton
-                            label="Panel"
-                            iconName="bxs-dashboard"
-                            className="w-1/3 items-center"
-                        />
-                        <QuickActionButton
-                            label="Entrevista Hoy"
-                            iconName="bxs-calendar-check"
-                            className="w-1/3 items-center"
-                            onPress={() => router.push("/interview-detail/123")}
-                        />
-                        <QuickActionButton
-                            label="Visitas"
-                            iconName="bxs-group"
-                            className="w-1/3 items-center"
-                            onPress={() => router.push("/(tabs)/visits")}
-                        />
-                        <QuickActionButton
-                            label="Entrevistas"
-                            iconName="bxs-message-circle-dots-2"
-                            className="w-1/3 items-center"
-                            onPress={() => router.push("/(tabs)/interviews")}
-                        />
+                        {todayVisits.length > 0 || todayInterviews.length > 0 ? (
+                            <View className="gap-3">
+                                {todayVisits.map((visit) => (
+                                    <VisitCard
+                                        key={visit.id}
+                                        visit={visit}
+                                        variant="summary"
+                                    />
+                                ))}
+                                {todayInterviews.map((interview) => (
+                                    <InterviewCard
+                                        key={interview.id}
+                                        interview={interview}
+                                        variant="summary"
+                                    />
+                                ))}
+                            </View>
+                        ) : (
+                            <EmptyState
+                                emoji="🤔"
+                                title="No hay actividades hoy"
+                                subtitle="Vuelve a revisar más tarde."
+                            />
+                        )}
                     </View>
-                </View>
-            </View>
-        </KeyboardAwareScrollView>
+
+                    <View className="gap-4">
+                        <SectionHeader emoji="📊" title="Resumen" />
+
+                        <StatCard
+                            size="full"
+                            value={families.data?.meta.total ?? 0}
+                            label="Familias Registradas"
+                            iconName="bxs-group"
+                            iconColor="#2563eb"
+                            iconBgColor="bg-blue-100"
+                        />
+
+                        <View className="flex-row gap-4">
+                            <StatCard
+                                size="half"
+                                value={totalInterviewMembers}
+                                label="En entrevista"
+                                iconName="bxs-file-detail"
+                                iconColor="#f97316"
+                                iconBgColor="bg-orange-100"
+                            />
+                            <StatCard
+                                size="half"
+                                value={visits.data?.meta.total ?? 0}
+                                label="Visitas hoy"
+                                iconName="bxs-location"
+                                iconColor="#9333ea"
+                                iconBgColor="bg-purple-100"
+                            />
+                        </View>
+                    </View>
+                </>
+            )}
+        </ScrollView>
     );
 };
 

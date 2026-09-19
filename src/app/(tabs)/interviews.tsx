@@ -1,102 +1,119 @@
-import React from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
+import { View, RefreshControl, ListRenderItem, ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Interview, InterviewCard } from "@/components/InterviewCard";
-import Boxicon from "@/components/Boxicons";
-import { useRouter } from "expo-router";
-
-const todayInterview: Interview = {
-    id: "1",
-    title: "Entrevista de Hoy",
-    date: "01 de mes de 1234",
-    time: "12:34 AM",
-    familyCount: 123,
-    locationName: "Lugar",
-};
-
-const upcomingInterviews: Interview[] = [
-    {
-        id: "2",
-        title: "Entrevista 2",
-        date: "01 de mes de 1234",
-        time: "12:34 AM",
-        familyCount: 123,
-        locationName: "Lugar",
-    },
-    {
-        id: "3",
-        title: "Entrevista 3",
-        date: "01 de mes de 1234",
-        time: "12:34 AM",
-        familyCount: 123,
-        locationName: "Lugar",
-    },
-    {
-        id: "4",
-        title: "Entrevista 4",
-        date: "01 de mes de 1234",
-        time: "12:34 AM",
-        familyCount: 123,
-        locationName: "Lugar",
-    },
-];
+import InterviewCard from "@/components/InterviewCard";
+import FluentEmoji from "@/components/FluentEmoji";
+import { useTabBarClearance } from "@/lib/layout";
+import { useGroupIndex, useGroupIndexInfinite } from "@/services/generated/apiEndpoints";
+import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import { GroupResource } from "@/services/generated/apiTypes";
+import EmptyState from "@/components/EmptyState";
+import { toLocalDateString, getTomorrowLocalDateString } from "@/lib/utils";
 
 const Page = () => {
-    const router = useRouter();
+    const tabBarClearance = useTabBarClearance();
+    const today = toLocalDateString();
+    const tomorrow = getTomorrowLocalDateString();
 
-    return (
-        <ScrollView
-            className="flex-1 bg-gray-100"
-            contentContainerClassName="p-6 gap-8"
-            showsVerticalScrollIndicator={false}
-        >
-            <View className="gap-1">
-                <Text className="text-gray-500 text-sm">
-                    Seguimiento y programación
-                </Text>
-                <Text variant="h3" className="font-bold text-gray-800">
+    const todayInterviews = useGroupIndex({ date: today });
+    const interviews = useGroupIndexInfinite({ min_date: tomorrow }, {
+        query: {
+            getNextPageParam: (group) => {
+                const currentPage = group.meta.current_page;
+                const lastPage = group.meta.last_page;
+                return currentPage < lastPage ? currentPage + 1 : undefined;
+            },
+            initialPageParam: 1
+        }
+    })
+
+    const refreshing = todayInterviews.isFetching || (interviews.isFetching && !interviews.isFetchingNextPage);
+
+    const renderItem: ListRenderItem<GroupResource> = ({ item }) => (
+        <View className="mb-3">
+            <InterviewCard interview={item} />
+        </View>
+    );
+
+    const ListHeaderComponent = (
+        <View className="gap-6 mb-2">
+            <View className="flex-row items-center gap-2">
+                <FluentEmoji emoji="💬" className="text-4xl" />
+                <Text className="font-bold text-gray-800 text-3xl">
                     Entrevistas
                 </Text>
             </View>
 
-            <InterviewCard interview={todayInterview} variant="full" />
-
-            <View className="gap-4">
-                <View className="flex-row justify-between items-center">
-                    <Text className="font-semibold text-gray-500">
-                        Próximas Entrevistas
-                    </Text>
-                    <TouchableOpacity>
-                        <Text className="text-primary text-sm font-medium">
-                            Ver todas
-                        </Text>
-                    </TouchableOpacity>
+            {(todayInterviews.data?.data.length ?? 0) > 0 ? (
+                <View className="gap-3 mb-6">
+                    {todayInterviews.data?.data.map((interview) => (
+                        <InterviewCard key={interview.id} interview={interview} variant="full" />
+                    ))}
                 </View>
+            ) : (
+                <EmptyState
+                    emoji="🤔"
+                    title="No hay entrevistas para hoy"
+                />
+            )}
 
-                {upcomingInterviews.length === 0 ? (
-                    <View className="bg-white p-6 rounded-2xl items-center gap-2">
-                        <Boxicon
-                            name="bxs-message-x"
-                            size={32}
-                            color="#9ca3af"
-                        />
-                        <Text className="text-gray-500">
-                            No hay entrevistas programadas
-                        </Text>
-                    </View>
-                ) : (
-                    <View className="gap-3">
-                        {upcomingInterviews.map((interview) => (
-                            <InterviewCard
-                                key={interview.id}
-                                interview={interview}
-                                variant="summary"
-                            />
-                        ))}
-                    </View>
-                )}
+            <View className="flex-row justify-between items-center mb-4">
+                <Text className="text-gray-500">Próximas Entrevistas</Text>
             </View>
-        </ScrollView>
+        </View>
+
+    );
+
+    const ListFooterComponent = interviews.isFetchingNextPage ? (
+        <View className="pt-4 pb-16 items-center">
+            <ActivityIndicator size="small" color="#61b346" />
+        </View>
+    ) : null;
+
+    const ListEmptyComponent = interviews.isPending ? (
+        <View className="py-12 items-center justify-center">
+            <ActivityIndicator size="large" color="#61b346" />
+        </View>
+    ) : (
+        <View className="pt-10">
+            <EmptyState
+                emoji="🔍"
+                title="No se encontraron entrevistas"
+            />
+        </View>
+    );
+
+    return (
+        <View className="flex-1 bg-gray-100 relative">
+            <KeyboardAwareFlatList
+                data={interviews.data?.pages.flatMap((page) => page.data ?? [])}
+                renderItem={renderItem}
+                ListHeaderComponent={ListHeaderComponent}
+                ListEmptyComponent={ListEmptyComponent}
+                ListFooterComponent={ListFooterComponent}
+                contentContainerClassName="p-6"
+                contentContainerStyle={{ paddingBottom: tabBarClearance }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                enableOnAndroid={true}
+                onEndReached={() => {
+                    if (interviews.hasNextPage && !interviews.isFetching) {
+                        interviews.fetchNextPage();
+                    }
+                }}
+                onEndReachedThreshold={0.5}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={() => {
+                            todayInterviews.refetch();
+                            interviews.refetch();
+                        }}
+                        tintColor="#61b346"
+                        colors={["#61b346"]}
+                    />
+                }
+            />
+        </View>
     );
 };
 

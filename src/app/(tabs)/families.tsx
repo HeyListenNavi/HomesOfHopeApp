@@ -1,188 +1,131 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
     View,
     TouchableOpacity,
-    ActivityIndicator,
+    ListRenderItem,
     RefreshControl,
-    ListRenderItem
+    ActivityIndicator,
 } from "react-native";
-import { FamilyCard } from "@/components/FamilyCard";
+import FamilyCard from "@/components/FamilyCard";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
 import { useRouter } from "expo-router";
-import StatCard from "@/components/StatCard";
+import { FamilyProfileResource } from "@/services/generated/apiTypes";
+import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import FluentEmoji from "@/components/FluentEmoji";
+import { useTabBarClearance } from "@/lib/layout";
+import { useFamilyProfileIndexInfinite } from "@/services/generated/apiEndpoints";
+import EmptyState from "@/components/EmptyState";
 import Input from "@/components/Input";
-import { useFamilyList } from "@/hooks/useFamilies";
-import { FamilyProfile } from "@/types/api";
-import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 const Page = () => {
     const router = useRouter();
-    const [search, setSearch] = useState("");
+    const tabBarClearance = useTabBarClearance();
 
-    const {
-        data,
-        isLoading,
-        isError,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        refetch,
-        isRefetching
-    } = useFamilyList(search);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const allFamilies = useMemo(() => {
-        return data?.pages.flatMap(page => page.data) || [];
-    }, [data]);
+    const families = useFamilyProfileIndexInfinite(
+        { family_name: searchQuery.trim() || undefined },
+        {
+            query: {
+                getNextPageParam: (family) => {
+                    const currentPage = family.meta.current_page;
+                    const lastPage = family.meta.last_page;
+                    return currentPage < lastPage ? currentPage + 1 : undefined;
+                },
+                initialPageParam: 1,
+            },
+        }
+    );
 
-    const renderItem: ListRenderItem<FamilyProfile> = ({ item }) => (
+    const refreshing = families.isFetching && !families.isFetchingNextPage;
+
+    const renderItem: ListRenderItem<FamilyProfileResource> = ({ item }) => (
         <View className="mb-3">
             <FamilyCard family={item} />
         </View>
     );
 
     const ListHeaderComponent = (
-        <View className="gap-8 mb-4">
-            <View className="flex-row items-center justify-between">
-                <View className="gap-1">
-                    <Text className="text-gray-500 text-sm">
-                        Gestión de perfiles familiares
-                    </Text>
-                    <Text variant="h3" className="font-bold text-gray-800">
-                        Familias
-                    </Text>
-                </View>
+        <View className="gap-6 mb-6">
+            <View className="flex-row items-center gap-2">
+                <FluentEmoji emoji="🏠" className="text-4xl" />
+                <Text className="font-bold text-gray-800 text-3xl">
+                    Familias
+                </Text>
 
                 <TouchableOpacity
-                    className="flex-row gap-2 bg-primary py-2 px-4 rounded-xl"
-                    onPress={() => router.push("/new-family-profile/123")}
+                    activeOpacity={0.9}
+                    className="ml-auto flex-row items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-2 shadow-lg shadow-primary/30"
+                    onPress={() => router.push("/new-family-profile" as any)}
                 >
-                    <Text className="text-white">
-                        <Boxicon name="bxs-plus" size={18} />
-                    </Text>
-                    <Text className="text-white text-center font-bold">
-                        Añadir
-                    </Text>
+                    <Boxicon name="bxs-plus" size={18} color="white" />
+                    <Text className="text-white font-bold">Crear</Text>
                 </TouchableOpacity>
             </View>
 
-            <View className="gap-4">
-                <View className="flex-row justify-between">
-                    <StatCard
-                        size="half"
-                        value={123}
-                        label="Familias"
-                        iconName="bxs-group"
-                        iconColor="#61b346"
-                        iconBgColor="bg-[#61b346]/10"
-                    />
-                    <StatCard
-                        size="half"
-                        value={123}
-                        label="Construidas"
-                        iconName="bxs-check-circle"
-                        iconColor="#16a34a"
-                        iconBgColor="bg-green-500/10"
-                    />
-                </View>
-                <StatCard
-                    size="full"
-                    value={123}
-                    label="Atendidas este mes"
-                    iconName="bxs-calendar-check"
-                    iconColor="#2563eb"
-                    iconBgColor="bg-blue-500/10"
-                    trend={{
-                        value: "+8",
-                        label: "Este mes",
-                        color: "#2563eb",
-                        bgColor: "bg-blue-500/10",
-                        iconName: "bxs-trending-up",
-                    }}
-                />
-            </View>
-
-            <View className="gap-4">
-                <View className="flex-row justify-between items-center">
-                    <Text variant="h3" className="font-bold text-gray-800">
-                        Lista de Familias
+            <Input
+                debounce
+                prefix={(
+                    <Text className="text-primary">
+                        <Boxicon name="bx-search" size={24}/>
                     </Text>
-                </View>
-
-                <View className="bg-white flex-row items-center px-4 rounded-2xl">
-                    <Boxicon size={18} color="#9ca3af" name="bx-search" />
-                    <Input
-                        placeholder="Buscar familia..."
-                        debounce={true}
-                        debounceDelay={500}
-                        onChangeText={setSearch}
-                        value={search}
-                        className="flex-1"
-                        inputClassName="bg-white"
-                    />
-                </View>
-            </View>
+                )}
+                placeholder="Buscar familia..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                inputClassName="bg-white border-0"
+            />
         </View>
     );
 
-    const ListFooterComponent = () => {
-        if (isFetchingNextPage) {
-            return (
-                <View className="py-6 items-center">
-                    <ActivityIndicator size="small" color="#61b346" />
-                    <Text className="text-xs text-gray-400 mt-2">Cargando más...</Text>
-                </View>
-            );
-        }
-        return <View className="h-10" />;
-    };
+    const ListFooterComponent = families.isFetchingNextPage ? (
+        <View className="pt-4 pb-16 items-center">
+            <ActivityIndicator size="small" color="#61b346" />
+        </View>
+    ) : null;
 
-    const ListEmptyComponent = () => {
-        if (isLoading) {
-            return (
-                <View className="items-center py-20">
-                    <ActivityIndicator size="large" color="#61b346" />
-                    <Text className="text-gray-400 mt-4">Cargando...</Text>
-                </View>
-            );
-        }
-
-        return (
-            <View className="bg-white px-6 py-8 rounded-2xl items-center gap-2">
-                <Boxicon name="bx-search" size={48} color="#d1d5db" />
-                <Text className="text-gray-500">No se encontraron familias.</Text>
-            </View>
-        );
-    }
+    const ListEmptyComponent = families.isPending ? (
+        <View className="py-12 items-center justify-center">
+            <ActivityIndicator size="large" color="#61b346" />
+        </View>
+    ) : (
+        <View className="pt-10">
+            <EmptyState
+                emoji="🔍"
+                title="No se encontraron familias"
+                subtitle="Intenta buscar con otro nombre."
+            />
+        </View>
+    );
 
     return (
-        <View className="flex-1 bg-gray-100">
+        <View className="flex-1 bg-gray-100 relative">
             <KeyboardAwareFlatList
-                data={allFamilies}
+                data={families.data?.pages.flatMap((page: any) => page?.data ?? [])}
                 renderItem={renderItem}
-
+                ListHeaderComponent={ListHeaderComponent}
+                ListEmptyComponent={ListEmptyComponent}
+                ListFooterComponent={ListFooterComponent}
+                contentContainerClassName="p-6"
+                contentContainerStyle={{ paddingBottom: tabBarClearance }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                enableOnAndroid={true}
                 onEndReached={() => {
-                    if (hasNextPage) fetchNextPage();
+                    if (families.hasNextPage && !families.isFetching) {
+                        families.fetchNextPage();
+                    }
                 }}
                 onEndReachedThreshold={0.5}
-
-                ListHeaderComponent={ListHeaderComponent}
-                ListFooterComponent={ListFooterComponent}
-                ListEmptyComponent={ListEmptyComponent}
-
-                contentContainerClassName="p-6"
-                showsVerticalScrollIndicator={false}
-
                 refreshControl={
                     <RefreshControl
-                        refreshing={isRefetching && !isFetchingNextPage}
-                        onRefresh={refetch}
+                        refreshing={refreshing}
+                        onRefresh={families.refetch}
+                        tintColor="#61b346"
                         colors={["#61b346"]}
                     />
                 }
-
-                keyboardShouldPersistTaps="handled"
-                enableOnAndroid={true}
             />
         </View>
     );

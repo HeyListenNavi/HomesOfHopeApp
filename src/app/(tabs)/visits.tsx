@@ -1,166 +1,119 @@
-import React, { useMemo } from "react";
-import {
-    View,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-    ListRenderItem,
-    TouchableOpacity,
-} from "react-native";
+import { View, RefreshControl, ListRenderItem, ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
-import { VisitCard } from "@/components/VisitCard";
-import Boxicon from "@/components/Boxicons";
-import { Visit } from "@/types/api";
-import { useVisitList } from "@/hooks/useVisits";
+import VisitCard from "@/components/VisitCard";
+import FluentEmoji from "@/components/FluentEmoji";
+import { useTabBarClearance } from "@/lib/layout";
+import { useVisitIndex, useVisitIndexInfinite } from "@/services/generated/apiEndpoints";
+import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import { VisitResource, VisitStatus } from "@/services/generated/apiTypes";
+import EmptyState from "@/components/EmptyState";
+import { toLocalDateString, getTomorrowLocalDateString } from "@/lib/utils";
 
-export default function VisitsScreen() {
-    const todayDate = new Date();
+const Page = () => {
+    const tabBarClearance = useTabBarClearance();
+    const today = toLocalDateString();
+    const tomorrow = getTomorrowLocalDateString();
 
-    const tomorrowDate = new Date(todayDate);
-    tomorrowDate.setDate(todayDate.getDate() + 1);
-
-    const todayQuery = useVisitList({
-        status: "scheduled",
-        date: todayDate.toISOString().split('T')[0],
+    const todayVisits = useVisitIndex({ date: today, status: VisitStatus.scheduled });
+    const visits = useVisitIndexInfinite({ min_date: tomorrow, status: VisitStatus.scheduled }, {
+        query: {
+            getNextPageParam: (visitPage) => {
+                const currentPage = visitPage.meta.current_page;
+                const lastPage = visitPage.meta.last_page;
+                return currentPage < lastPage ? currentPage + 1 : undefined;
+            },
+            initialPageParam: 1
+        }
     });
 
-    const futureQuery = useVisitList({
-        status: "scheduled",
-        min_date: tomorrowDate.toISOString().split('T')[0],
-    });
+    const refreshing = todayVisits.isFetching || (visits.isFetching && !visits.isFetchingNextPage);
 
-    const todayVisits = useMemo(() => {
-        return todayQuery.data?.pages.flatMap((page) => page.data) || [];
-    }, [todayQuery.data]);
-
-    const futureVisits = useMemo(() => {
-        return futureQuery.data?.pages.flatMap((page) => page.data) || [];
-    }, [futureQuery.data]);
-
-    const isInitialLoading = todayQuery.isLoading || futureQuery.isLoading;
-
-    const handleRefresh = async () => {
-        await Promise.all([
-            todayQuery.refetch(),
-            futureQuery.refetch()
-        ]);
-    };
-
-    const renderItem: ListRenderItem<Visit> = ({ item }) => (
+    const renderItem: ListRenderItem<VisitResource> = ({ item }) => (
         <View className="mb-3">
             <VisitCard visit={item} variant="summary" />
         </View>
     );
 
-    const ListHeaderComponent = () => (
-        <View className="mb-4 mt-2">
-            <View className="mb-6">
-                <Text className="text-gray-500 text-sm">Gestión y seguimiento</Text>
-                <Text variant="h3" className="font-bold text-gray-800">Visitas</Text>
+    const ListHeaderComponent = (
+        <View className="gap-6 mb-2">
+            <View className="flex-row items-center gap-2">
+                <FluentEmoji emoji="🚗" className="text-4xl" />
+                <Text className="font-bold text-gray-800 text-3xl">
+                    Visitas
+                </Text>
             </View>
 
-            {todayVisits.length > 0 ? (
-                <View className="gap-3 mb-2">
-                    {todayVisits.map((visit) => (
+            {(todayVisits.data?.data.length ?? 0) > 0 ? (
+                <View className="gap-3 mb-6">
+                    {todayVisits.data?.data.map((visit) => (
                         <VisitCard key={visit.id} visit={visit} variant="full" />
                     ))}
                 </View>
             ) : (
-                <View className="bg-white px-6 py-12 rounded-2xl items-center gap-2 mb-6">
-                    {todayQuery.isLoading ? (
-                         <ActivityIndicator size="small" color="#61b346" />
-                    ) : (
-                        <>
-                            <Boxicon name="bxs-calendar-x" size={32} color="#9ca3af" />
-                            <Text className="text-gray-500">No hay visitas para hoy</Text>
-                        </>
-                    )}
-                </View>
+                <EmptyState
+                    emoji="🤔"
+                    title="No hay visitas para hoy"
+                />
             )}
 
-            {todayQuery.hasNextPage && (
-                <View className="my-6 items-center">
-                    <TouchableOpacity 
-                        onPress={() => todayQuery.fetchNextPage()}
-                        disabled={todayQuery.isFetchingNextPage}
-                        className="py-2 px-4 bg-gray-200 rounded-full"
-                    >
-                        {todayQuery.isFetchingNextPage ? (
-                            <ActivityIndicator size="small" color="#4b5563" />
-                        ) : (
-                            <Text className="text-gray-600 font-medium text-sm">
-                                Ver más visitas de hoy
-                            </Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            <View className="flex-row justify-between items-center mb-4 mt-2">
+            <View className="flex-row justify-between items-center mb-4">
                 <Text className="text-gray-500">Próximas Visitas</Text>
             </View>
         </View>
     );
 
-    const ListFooterComponent = () => {
-        if (futureQuery.isFetchingNextPage) {
-            return (
-                <View className="py-6 items-center">
-                    <ActivityIndicator size="small" color="#61b346" />
-                    <Text className="text-xs text-gray-400 mt-2">Cargando más...</Text>
-                </View>
-            );
-        }
-        return <View className="h-10" />;
-    };
+    const ListFooterComponent = visits.isFetchingNextPage ? (
+        <View className="pt-4 pb-16 items-center">
+            <ActivityIndicator size="small" color="#61b346" />
+        </View>
+    ) : null;
 
-    const ListEmptyComponent = () => {
-        if (isInitialLoading) {
-            return (
-                <View className="items-center py-20">
-                    <ActivityIndicator size="large" color="#61b346" />
-                    <Text className="text-gray-400 mt-4">Cargando...</Text>
-                </View>
-            );
-        }
-
-        return (
-            <View className="bg-white px-6 py-8 rounded-2xl items-center gap-2">
-                <Boxicon name="bxs-calendar" size={32} color="#9ca3af" />
-                <Text className="text-gray-500">No hay visitas futuras.</Text>
-            </View>
-        );
-    };
+    const ListEmptyComponent = visits.isPending ? (
+        <View className="py-12 items-center justify-center">
+            <ActivityIndicator size="large" color="#61b346" />
+        </View>
+    ) : (
+        <View className="pt-10">
+            <EmptyState
+                emoji="🔍"
+                title="No se encontraron visitas"
+            />
+        </View>
+    );
 
     return (
-        <View className="flex-1 bg-gray-100">
-            <FlatList
-                data={futureVisits}
+        <View className="flex-1 bg-gray-100 relative">
+            <KeyboardAwareFlatList
+                data={visits.data?.pages.flatMap((page) => page.data ?? [])}
                 renderItem={renderItem}
-                
+                ListHeaderComponent={ListHeaderComponent}
+                ListEmptyComponent={ListEmptyComponent}
+                ListFooterComponent={ListFooterComponent}
+                contentContainerClassName="p-6"
+                contentContainerStyle={{ paddingBottom: tabBarClearance }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                enableOnAndroid={true}
                 onEndReached={() => {
-                    if (futureQuery.hasNextPage) futureQuery.fetchNextPage();
+                    if (visits.hasNextPage && !visits.isFetching) {
+                        visits.fetchNextPage();
+                    }
                 }}
                 onEndReachedThreshold={0.5}
-
-                ListHeaderComponent={ListHeaderComponent}
-                ListFooterComponent={ListFooterComponent}
-                ListEmptyComponent={ListEmptyComponent}
-
-                contentContainerClassName="p-4"
-                showsVerticalScrollIndicator={false}
-
                 refreshControl={
                     <RefreshControl
-                        refreshing={
-                            (todayQuery.isRefetching && !todayQuery.isFetchingNextPage) || 
-                            (futureQuery.isRefetching && !futureQuery.isFetchingNextPage)
-                        }
-                        onRefresh={handleRefresh}
+                        refreshing={refreshing}
+                        onRefresh={() => {
+                            todayVisits.refetch();
+                            visits.refetch();
+                        }}
+                        tintColor="#61b346"
                         colors={["#61b346"]}
                     />
                 }
             />
         </View>
     );
-}
+};
+
+export default Page;
