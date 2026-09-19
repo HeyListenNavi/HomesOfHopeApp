@@ -12,9 +12,8 @@ import { Text } from "@/components/ui/text";
 import { useRouter } from "expo-router";
 import Boxicon from "@/components/Boxicons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import api from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
-import { AxiosError } from "axios";
+import { authLogin } from "@/services/generated/apiEndpoints";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -36,35 +35,15 @@ export default function LoginScreen() {
         Keyboard.dismiss();
 
         try {
-            const response = await api.post("/login", {
-                email,
-                password,
-            });
-
-            const token = response.data.token;
-            const user = response.data.user;
-
-            if (token) {
-                authStore.setToken(token);
-                if (user) {
-                    authStore.setUser(user);
-                }
+            const response = await authLogin({ email, password });
+            
+            if (response.token) {
+                authStore.setToken(response.token);
+                authStore.setUser(response.user);
                 router.replace("/(tabs)");
             }
         } catch (error) {
-            const err = error as AxiosError;
-
-            if (!err.response) {
-                Alert.alert("Sin conexión", "Revisa tu internet");
-                return;
-            }
-
-            if (err.response.status === 401 || err.response.status === 422) {
-                Alert.alert("Acceso denegado", "Credenciales incorrectas");
-                return;
-            }
-
-            Alert.alert("Error", "Algo salió mal. Intenta de nuevo más tarde");
+            Alert.alert("Error", "Credenciales incorrectas");
         } finally {
             setIsLoading(false);
         }
@@ -86,10 +65,7 @@ export default function LoginScreen() {
 
                     <View className="gap-8">
                         <View className="gap-4">
-                            <View
-                                style={{ height: 60 }}
-                                className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3"
-                            >
+                            <View className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3 min-h-[60px]">
                                 <Boxicon
                                     color="#9ca3af"
                                     size={20}
@@ -107,10 +83,7 @@ export default function LoginScreen() {
                                 />
                             </View>
 
-                            <View
-                                style={{ height: 60 }}
-                                className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3"
-                            >
+                            <View className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-3 min-h-[60px]">
                                 <Boxicon
                                     color="#9ca3af"
                                     size={20}
@@ -149,9 +122,8 @@ export default function LoginScreen() {
                         </View>
 
                         <TouchableOpacity
-                            className={`bg-[#61b346] h-[56px] py-4 rounded-2xl flex-row justify-center items-center gap-1 ${
-                                isLoading ? "opacity-70" : ""
-                            }`}
+                            className="bg-primary h-[56px] py-4 rounded-2xl flex-row justify-center items-center gap-2 shadow-lg shadow-primary/30"
+                            style={{ opacity: isLoading ? 0.7 : 1 }}
                             onPress={handleLogin}
                             disabled={isLoading}
                         >

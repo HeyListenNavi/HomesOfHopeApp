@@ -1,138 +1,248 @@
-import React from "react";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useRef, useEffect } from "react";
+import {
+    View,
+    ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+    RefreshControl,
+} from "react-native";
 import { useRouter } from "expo-router";
 import Boxicon from "@/components/Boxicons";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import { useAuthStore } from "@/store/authStore";
-import { useCurrentUser } from "@/hooks/useAuth";
+import { useScreenTopPadding } from "@/lib/layout";
+import FluentEmoji from "@/components/FluentEmoji";
+import SectionHeader from "@/components/SectionHeader";
+import InfoRow from "@/components/InfoRow";
+import RoleChip, { formatRoleLabel } from "@/components/RoleChip";
+import { formatDate } from "@/lib/utils";
+import BottomSheet from "@/components/BottomSheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useGetUser, useAuthLogout } from "@/services/generated/apiEndpoints";
+import EmptyState from "@/components/EmptyState";
 
-const Page = () => {
+export default function ProfilePage() {
     const router = useRouter();
     const authStore = useAuthStore();
+    const topPadding = useScreenTopPadding();
+    const logoutSheetRef = useRef<BottomSheetModal>(null);
 
-    // Use the cached user from the store first; refresh with the API in background
-    const storedUser = authStore.user;
-    const { data: fetchedUser, isLoading } = useCurrentUser(!!authStore.token);
-    const user = fetchedUser ?? storedUser;
+    const {
+        data: backendUser,
+        isPending,
+        isError,
+        refetch,
+        isFetching,
+    } = useGetUser();
 
-    const handleLogout = () => {
-        authStore.logout();
-        router.replace("/login");
+    const logoutMutation = useAuthLogout();
+
+    
+    useEffect(() => {
+        if (backendUser) {
+            authStore.setUser(backendUser);
+        }
+    }, [backendUser]);
+
+    const user = backendUser ?? authStore.user;
+
+    const handleOpenLogout = () => {
+        logoutSheetRef.current?.present();
     };
 
-    const formatDate = (dateStr?: string | null) => {
-        if (!dateStr) return "N/A";
-        return new Date(dateStr).toLocaleDateString("es-MX", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
+    const handleConfirmLogout = async () => {
+        logoutSheetRef.current?.dismiss();
+        try {
+            await logoutMutation.mutateAsync();
+        } catch (e) {
+            console.log("Backend logout error:", e);
+        } finally {
+            authStore.logout();
+            router.replace("/login");
+        }
     };
+
+    if (isPending && !user) {
+        return (
+            <View
+                className="flex-1 bg-gray-100 items-center justify-center"
+                style={{ paddingTop: topPadding }}
+            >
+                <ActivityIndicator size="large" color="#61b346" />
+            </View>
+        );
+    }
+
+    if (isError && !user) {
+        return (
+            <View
+                className="flex-1 bg-gray-100 items-center justify-center p-6 gap-3"
+                style={{ paddingTop: topPadding }}
+            >
+                <EmptyState
+                    emoji="⚠️"
+                    title="Error al cargar perfil"
+                    subtitle="No se pudieron obtener los datos de la cuenta."
+                />
+                <TouchableOpacity
+                    onPress={() => refetch()}
+                    className="bg-primary px-6 py-3.5 rounded-2xl mt-4 active:opacity-90"
+                    accessibilityRole="button"
+                    accessibilityLabel="Reintentar"
+                >
+                    <Text className="text-white font-bold text-base">Reintentar</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    const rolesList: string[] = (user?.roles ?? []).map(String);
 
     return (
-        <View className="flex-1 bg-slate-50">
-            <View className="px-4 z-10">
-                <View className="bg-white rounded-3xl gap-4 p-6 items-center">
-                    <View className="relative">
-                        <View className="p-1.5 bg-white rounded-full">
-                            <Avatar className="w-28 h-28" alt={""}>
-                                <AvatarFallback className="items-center justify-center">
-                                    <Boxicon
-                                        name="bxs-user"
-                                        size={48}
-                                        color="#61b346"
-                                    />
-                                </AvatarFallback>
-                            </Avatar>
-                        </View>
+        <View className="flex-1 bg-gray-100">
+            <ScrollView
+                className="flex-1 bg-gray-100"
+                contentContainerClassName="p-6 pb-28 gap-6"
+                contentContainerStyle={{ paddingTop: topPadding }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isFetching}
+                        onRefresh={refetch}
+                        tintColor="#61b346"
+                        colors={["#61b346"]}
+                    />
+                }
+            >
+                {}
+                <View className="bg-white rounded-3xl p-6 shadow-md shadow-black/5 items-center gap-5 relative">
+                    <View className="h-24 w-24 rounded-full bg-primary/10 items-center justify-center border-2 border-primary/20 mt-1">
+                        <FluentEmoji emoji="👤" className="text-5xl" />
                     </View>
 
-                    <View>
-                        {isLoading && !user ? (
-                            <ActivityIndicator color="#61b346" />
-                        ) : (
-                            <>
-                                <Text className="text-center text-xl font-bold text-slate-800">
-                                    {user?.name ?? "—"}
-                                </Text>
-                                <Text className="text-center text-slate-500">
-                                    {user?.email ?? "—"}
-                                </Text>
-                            </>
+                    <View className="items-center gap-2">
+                        <Text className="text-2xl font-bold text-gray-800 text-center leading-tight">
+                            {user?.name ?? "Usuario"}
+                        </Text>
+
+                        {}
+                        {rolesList.length > 0 && (
+                            <View className="flex-row items-center justify-center gap-2 flex-wrap">
+                                {rolesList.map((role, idx) => (
+                                    <RoleChip key={idx} role={role} />
+                                ))}
+                            </View>
                         )}
                     </View>
+                </View>
 
-                    <View className="flex-row items-center gap-2 px-3 py-1.5 rounded-full bg-[#f0fdf4]">
-                        <View className="w-2 h-2 rounded-full bg-[#16a34a]" />
-                        <Text className="text-sm font-medium text-[#16a34a]">
-                            Activo
-                        </Text>
+                {}
+                <View className="bg-white rounded-3xl shadow-md shadow-black/5 p-6 gap-5">
+                    <SectionHeader emoji="👤" title="Información de la Cuenta" />
+                    <View className="gap-3">
+                        <InfoRow label="Nombre Completo" value={user?.name ?? "—"} />
+                        <InfoRow label="Correo Electrónico" value={user?.email ?? "—"} />
+                        <InfoRow
+                            label="Roles Asignados"
+                            value={rolesList.length > 0 ? rolesList.map((r) => formatRoleLabel(r)).join(", ") : "Sin roles asignados"}
+                        />
+                        <InfoRow
+                            label="Miembro Desde"
+                            value={user?.created_at ? formatDate(user.created_at) : "No registrada"}
+                        />
+                        <InfoRow label="ID de Usuario" value={`#${user?.id ?? "—"}`} />
                     </View>
                 </View>
-            </View>
 
-            <View className="px-4 mt-6">
-                <View className="bg-white rounded-3xl overflow-hidden">
-                    <View className="flex-row items-center gap-4 px-5 py-4 border-b border-slate-50">
-                        <View className="w-10 h-10 rounded-full bg-slate-50 items-center justify-center">
-                            <Boxicon
-                                name="bxs-envelope"
-                                size={18}
-                                color="#64748b"
-                            />
-                        </View>
-                        <View className="flex-1">
-                            <Text className="text-xs uppercase tracking-wide text-slate-400">
-                                Email
-                            </Text>
-                            <Text className="font-medium text-slate-800">
-                                {user?.email ?? "—"}
-                            </Text>
-                        </View>
-                    </View>
-
-                    <View className="flex-row items-center gap-4 px-5 py-4">
-                        <View className="w-10 h-10 rounded-full bg-slate-50 items-center justify-center">
-                            <Boxicon
-                                name="bxs-calendar"
-                                size={18}
-                                color="#64748b"
-                            />
-                        </View>
-                        <View className="flex-1">
-                            <Text className="text-xs uppercase tracking-wide text-slate-400">
-                                Miembro desde
-                            </Text>
-                            <Text className="font-medium text-slate-800">
-                                {formatDate(user?.created_at)}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-
-            <View className="px-4 mt-6 gap-3">
+                {}
                 <TouchableOpacity
-                    className="flex-row items-center justify-between bg-white rounded-2xl px-5 py-4"
-                    onPress={handleLogout}
+                    className="flex-row items-center gap-4 bg-white border border-red-200 rounded-3xl p-5 shadow-md shadow-black/5 active:bg-red-50"
+                    onPress={handleOpenLogout}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel="Cerrar Sesión"
                 >
-                    <View className="flex-row items-center gap-4">
-                        <View className="w-10 h-10 rounded-full bg-red-50 items-center justify-center">
-                            <Boxicon
-                                name="bxs-arrow-out-right-square-half"
-                                size={18}
-                                color="#dc2626"
-                            />
-                        </View>
-                        <Text className="flex-1 font-medium text-red-600">
+                    <View className="w-12 h-12 rounded-2xl bg-red-100 items-center justify-center shrink-0">
+                        <Boxicon
+                            name="bxs-arrow-in-left-square-half"
+                            size={24}
+                            color="#dc2626"
+                        />
+                    </View>
+                    <View className="gap-0.5">
+                        <Text className="font-bold text-red-600 text-lg">
                             Cerrar Sesión
+                        </Text>
+                        <Text className="text-gray-400 text-sm font-medium">
+                            Finalizar la sesión actual en este dispositivo
                         </Text>
                     </View>
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
+
+            {}
+            <BottomSheet
+                ref={logoutSheetRef}
+                scrollable={false}
+            >
+                <View className="px-6 pb-6 gap-6 pt-2 items-center">
+                    <View className="w-20 h-20 rounded-3xl bg-red-100 items-center justify-center">
+                        <Boxicon
+                            name="bxs-arrow-in-left-square-half"
+                            size={38}
+                            color="#dc2626"
+                        />
+                    </View>
+
+                    <View className="items-center gap-1.5">
+                        <Text className="font-black text-gray-800 text-2xl text-center leading-tight">
+                            ¿Cerrar Sesión?
+                        </Text>
+                        <Text className="text-gray-500 text-base font-medium text-center leading-relaxed">
+                            ¿Estás seguro de que deseas salir de tu cuenta en este dispositivo?
+                        </Text>
+                    </View>
+
+                    <View className="w-full gap-3 mt-2">
+                        <TouchableOpacity
+                            onPress={handleConfirmLogout}
+                            activeOpacity={0.85}
+                            disabled={logoutMutation.isPending}
+                            className="w-full h-14 bg-red-600 rounded-2xl flex-row items-center justify-center gap-2 shadow-lg shadow-red-500/30 active:opacity-90"
+                            accessibilityRole="button"
+                            accessibilityLabel="Confirmar Cerrar Sesión"
+                        >
+                            {logoutMutation.isPending ? (
+                                <ActivityIndicator color="#ffffff" size="small" />
+                            ) : (
+                                <>
+                                    <Boxicon
+                                        name="bxs-arrow-in-left-square-half"
+                                        size={22}
+                                        color="#ffffff"
+                                    />
+                                    <Text className="text-white font-bold text-lg">
+                                        Cerrar Sesión
+                                    </Text>
+                                </>
+                            )}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => logoutSheetRef.current?.dismiss()}
+                            activeOpacity={0.85}
+                            disabled={logoutMutation.isPending}
+                            className="w-full h-14 bg-gray-100 rounded-2xl items-center justify-center active:bg-gray-200"
+                            accessibilityRole="button"
+                            accessibilityLabel="Cancelar"
+                        >
+                            <Text className="text-gray-700 font-bold text-base">
+                                Cancelar
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </BottomSheet>
         </View>
     );
-};
-
-export default Page;
+}
