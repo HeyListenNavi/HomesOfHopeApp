@@ -4,12 +4,12 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
+import type { UserIndex200DataItem } from './userIndex200DataItem';
 import type { UserIndex200Links } from './userIndex200Links';
 import type { UserIndex200Meta } from './userIndex200Meta';
-import type { UserResource } from './userResource';
 
 export type UserIndex200 = {
-  data: UserResource[];
+  data: UserIndex200DataItem[];
   links: UserIndex200Links;
   meta: UserIndex200Meta;
 };

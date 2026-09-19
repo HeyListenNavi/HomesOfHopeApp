@@ -5,6 +5,6 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type DocumentDownload404 = {
-  message: 'File not found on disk';
+export type EvidenceDestroy200 = {
+  message: 'Evidence deleted successfully';
 };

@@ -5,18 +5,23 @@
  * OpenAPI spec version: 0.0.1
  */
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -34,13 +39,16 @@ import type {
   AuthLogout200,
   AuthenticationExceptionResponse,
   DocumentDestroy200,
-  DocumentDownload404,
   DocumentResource,
   DocumentStore201,
   DocumentStore400,
   DocumentStoreBody,
+  EvidenceDestroy200,
+  EvidenceResource,
+  EvidenceStoreBody,
   FamilyMemberDestroy200,
   FamilyMemberIndex200,
+  FamilyMemberIndexParams,
   FamilyMemberShow200,
   FamilyMemberStore201,
   FamilyMemberStoreBody,
@@ -49,41 +57,58 @@ import type {
   FamilyProfileDestroy200,
   FamilyProfileIndex200,
   FamilyProfileIndexParams,
-  FamilyProfileResource,
+  FamilyProfileShow200,
   FamilyProfileStore201,
   FamilyProfileStoreBody,
   FamilyProfileUpdate200,
   FamilyProfileUpdateBody,
   GroupApplicants200,
+  GroupApplicantsParams,
+  GroupCloseAttendance200,
   GroupIndex200,
   GroupIndexParams,
+  GroupResource,
   ModelNotFoundExceptionResponse,
   NoteDestroy200,
   NoteDestroy403,
   NoteIndex200,
   NoteIndexParams,
-  NoteResource,
+  NoteShow200,
   NoteStore201,
   NoteStore400,
   NoteStoreBody,
   NoteUpdate200,
   NoteUpdate403,
   NoteUpdateBody,
+  RoleIndexParams,
+  RoleResource,
   TaskDestroy200,
   TaskIndex200,
-  TaskResource,
+  TaskIndexParams,
+  TaskShow200,
   TaskStore201,
   TaskStoreBody,
   TaskUpdate200,
   TaskUpdateBody,
+  Testimony,
+  TestimonyDestroy200,
+  TestimonyIndex200,
+  TestimonyIndexParams,
+  TestimonyStore201,
+  TestimonyStoreBody,
+  TestimonyUpdate200,
+  TestimonyUpdateBody,
   UserIndex200,
+  UserIndexParams,
   UserResource,
+  UserShow200,
   UserStoreBody,
   UserUpdateBody,
   ValidationExceptionResponse,
   VisitDestroy200,
   VisitIndex200,
-  VisitResource,
+  VisitIndexParams,
+  VisitShow200,
   VisitStore201,
   VisitStoreBody,
   VisitUpdate200,
@@ -91,6 +116,7 @@ import type {
 } from './apiTypes';
 
 import { customInstance } from '../api';
+import type { ErrorType , BodyType } from '../api';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -112,44 +138,17 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type getUserResponse200 = {
-  data: UserResource
-  status: 200
-}
+export const getUser = (
 
-export type getUserResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type getUserResponseSuccess = (getUserResponse200) & {
-  headers: Headers;
-};
-export type getUserResponseError = (getUserResponse401) & {
-  headers: Headers;
-};
-
-export type getUserResponse = (getUserResponseSuccess | getUserResponseError)
-
-export const getGetUserUrl = () => {
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-
-
-  return `/user`
-}
-
-export const getUser = async ( options?: Parameters<typeof customInstance>[1]): Promise<getUserResponse> => {
-
-  return customInstance<getUserResponse>(getGetUserUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+      return customInstance<UserResource>(
+      {url: `/user`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
@@ -161,7 +160,7 @@ export const getGetUserQueryKey = () => {
     }
 
 
-export const getGetUserQueryOptions = <TData = Awaited<ReturnType<typeof getUser>>, TError = AuthenticationExceptionResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGetUserQueryOptions = <TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<AuthenticationExceptionResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -170,20 +169,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUser>>> = ({ signal }) => getUser({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUser>>> = ({ signal }) => getUser(requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type GetUserQueryResult = NonNullable<Awaited<ReturnType<typeof getUser>>>
-export type GetUserQueryError = AuthenticationExceptionResponse
+export type GetUserQueryError = ErrorType<AuthenticationExceptionResponse>
 
 
-export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = AuthenticationExceptionResponse>(
+export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<AuthenticationExceptionResponse>>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUser>>,
@@ -193,7 +192,7 @@ export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError =
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = AuthenticationExceptionResponse>(
+export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<AuthenticationExceptionResponse>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUser>>,
@@ -203,12 +202,12 @@ export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError =
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = AuthenticationExceptionResponse>(
+export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<AuthenticationExceptionResponse>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = AuthenticationExceptionResponse>(
+export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError = ErrorType<AuthenticationExceptionResponse>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUser>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -226,64 +225,29 @@ export function useGetUser<TData = Awaited<ReturnType<typeof getUser>>, TError =
 
 
 
-export type attendanceScanResponse200 = {
-  data: AttendanceScan200
-  status: 200
-}
-
-export type attendanceScanResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type attendanceScanResponse404 = {
-  data: AttendanceScan404
-  status: 404
-}
-
-export type attendanceScanResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type attendanceScanResponseSuccess = (attendanceScanResponse200) & {
-  headers: Headers;
-};
-export type attendanceScanResponseError = (attendanceScanResponse401 | attendanceScanResponse404 | attendanceScanResponse422) & {
-  headers: Headers;
-};
-
-export type attendanceScanResponse = (attendanceScanResponseSuccess | attendanceScanResponseError)
-
-export const getAttendanceScanUrl = () => {
-
-
-
-
-  return `/attendance/scan`
-}
-
 /**
  * @summary Scan QR code payload to mark attendance
  */
-export const attendanceScan = async (attendanceScanBody: AttendanceScanBody, options?: Parameters<typeof customInstance>[1]): Promise<attendanceScanResponse> => {
-
-  return customInstance<attendanceScanResponse>(getAttendanceScanUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(attendanceScanBody)
-  }
-);}
+export const attendanceScan = (
+    attendanceScanBody: BodyType<AttendanceScanBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
+      return customInstance<AttendanceScan200>(
+      {url: `/attendance/scan`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: attendanceScanBody, signal
+    },
+      options);
+    }
 
 
 
-export const getAttendanceScanMutationOptions = <TError = AuthenticationExceptionResponse | AttendanceScan404 | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceScan>>, TError,{data: AttendanceScanBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof attendanceScan>>, TError,{data: AttendanceScanBody}, TContext> => {
+
+export const getAttendanceScanMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AttendanceScan404 | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceScan>>, TError,{data: BodyType<AttendanceScanBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof attendanceScan>>, TError,{data: BodyType<AttendanceScanBody>}, TContext> => {
 
 const mutationKey = ['attendanceScan'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -295,7 +259,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof attendanceScan>>, {data: AttendanceScanBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof attendanceScan>>, {data: BodyType<AttendanceScanBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  attendanceScan(data,requestOptions)
@@ -309,77 +273,47 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AttendanceScanMutationResult = NonNullable<Awaited<ReturnType<typeof attendanceScan>>>
-    export type AttendanceScanMutationBody = AttendanceScanBody
-    export type AttendanceScanMutationError = AuthenticationExceptionResponse | AttendanceScan404 | ValidationExceptionResponse
+    export type AttendanceScanMutationBody = BodyType<AttendanceScanBody>
+    export type AttendanceScanMutationError = ErrorType<AuthenticationExceptionResponse | AttendanceScan404 | ValidationExceptionResponse>
 
     /**
  * @summary Scan QR code payload to mark attendance
  */
-export const useAttendanceScan = <TError = AuthenticationExceptionResponse | AttendanceScan404 | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceScan>>, TError,{data: AttendanceScanBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useAttendanceScan = <TError = ErrorType<AuthenticationExceptionResponse | AttendanceScan404 | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceScan>>, TError,{data: BodyType<AttendanceScanBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof attendanceScan>>,
         TError,
-        {data: AttendanceScanBody},
+        {data: BodyType<AttendanceScanBody>},
         TContext
       > => {
       return useMutation(getAttendanceScanMutationOptions(options), queryClient);
     }
 
-export type attendanceUpdateResponse200 = {
-  data: AttendanceUpdate200
-  status: 200
-}
-
-export type attendanceUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type attendanceUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type attendanceUpdateResponseSuccess = (attendanceUpdateResponse200) & {
-  headers: Headers;
-};
-export type attendanceUpdateResponseError = (attendanceUpdateResponse401 | attendanceUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type attendanceUpdateResponse = (attendanceUpdateResponseSuccess | attendanceUpdateResponseError)
-
-export const getAttendanceUpdateUrl = (id: string,) => {
-
-
-
-
-  return `/attendance/${id}`
-}
-
 /**
  * @summary Manually update attendance status by ID
  */
-export const attendanceUpdate = async (id: string,
-    attendanceUpdateBody: AttendanceUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<attendanceUpdateResponse> => {
-
-  return customInstance<attendanceUpdateResponse>(getAttendanceUpdateUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(attendanceUpdateBody)
-  }
-);}
+export const attendanceUpdate = (
+    id: string,
+    attendanceUpdateBody: BodyType<AttendanceUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
+      return customInstance<AttendanceUpdate200>(
+      {url: `/attendance/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: attendanceUpdateBody, signal
+    },
+      options);
+    }
 
 
 
-export const getAttendanceUpdateMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: AttendanceUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: AttendanceUpdateBody}, TContext> => {
+
+export const getAttendanceUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: BodyType<AttendanceUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: BodyType<AttendanceUpdateBody>}, TContext> => {
 
 const mutationKey = ['attendanceUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -391,7 +325,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof attendanceUpdate>>, {id: string;data: AttendanceUpdateBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof attendanceUpdate>>, {id: string;data: BodyType<AttendanceUpdateBody>}> = (props) => {
           const {id,data} = props ?? {};
 
           return  attendanceUpdate(id,data,requestOptions)
@@ -405,68 +339,43 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AttendanceUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof attendanceUpdate>>>
-    export type AttendanceUpdateMutationBody = AttendanceUpdateBody
-    export type AttendanceUpdateMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type AttendanceUpdateMutationBody = BodyType<AttendanceUpdateBody>
+    export type AttendanceUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Manually update attendance status by ID
  */
-export const useAttendanceUpdate = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: AttendanceUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useAttendanceUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: BodyType<AttendanceUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof attendanceUpdate>>,
         TError,
-        {id: string;data: AttendanceUpdateBody},
+        {id: string;data: BodyType<AttendanceUpdateBody>},
         TContext
       > => {
       return useMutation(getAttendanceUpdateMutationOptions(options), queryClient);
     }
 
-export type authLoginResponse200 = {
-  data: AuthLogin200
-  status: 200
-}
+export const authLogin = (
+    authLoginBody: BodyType<AuthLoginBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type authLoginResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
 
-export type authLoginResponseSuccess = (authLoginResponse200) & {
-  headers: Headers;
-};
-export type authLoginResponseError = (authLoginResponse422) & {
-  headers: Headers;
-};
-
-export type authLoginResponse = (authLoginResponseSuccess | authLoginResponseError)
-
-export const getAuthLoginUrl = () => {
+      return customInstance<AuthLogin200>(
+      {url: `/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: authLoginBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/login`
-}
-
-export const authLogin = async (authLoginBody: AuthLoginBody, options?: Parameters<typeof customInstance>[1]): Promise<authLoginResponse> => {
-
-  return customInstance<authLoginResponse>(getAuthLoginUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(authLoginBody)
-  }
-);}
-
-
-
-
-
-export const getAuthLoginMutationOptions = <TError = ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: AuthLoginBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: AuthLoginBody}, TContext> => {
+export const getAuthLoginMutationOptions = <TError = ErrorType<ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: BodyType<AuthLoginBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: BodyType<AuthLoginBody>}, TContext> => {
 
 const mutationKey = ['authLogin'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -478,7 +387,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogin>>, {data: AuthLoginBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogin>>, {data: BodyType<AuthLoginBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  authLogin(data,requestOptions)
@@ -492,63 +401,36 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authLogin>>>
-    export type AuthLoginMutationBody = AuthLoginBody
-    export type AuthLoginMutationError = ValidationExceptionResponse
+    export type AuthLoginMutationBody = BodyType<AuthLoginBody>
+    export type AuthLoginMutationError = ErrorType<ValidationExceptionResponse>
 
-    export const useAuthLogin = <TError = ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: AuthLoginBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useAuthLogin = <TError = ErrorType<ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: BodyType<AuthLoginBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authLogin>>,
         TError,
-        {data: AuthLoginBody},
+        {data: BodyType<AuthLoginBody>},
         TContext
       > => {
       return useMutation(getAuthLoginMutationOptions(options), queryClient);
     }
 
-export type authLogoutResponse200 = {
-  data: AuthLogout200
-  status: 200
-}
+export const authLogout = (
 
-export type authLogoutResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type authLogoutResponseSuccess = (authLogoutResponse200) & {
-  headers: Headers;
-};
-export type authLogoutResponseError = (authLogoutResponse401) & {
-  headers: Headers;
-};
 
-export type authLogoutResponse = (authLogoutResponseSuccess | authLogoutResponseError)
-
-export const getAuthLogoutUrl = () => {
+      return customInstance<AuthLogout200>(
+      {url: `/logout`, method: 'POST', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/logout`
-}
-
-export const authLogout = async ( options?: Parameters<typeof customInstance>[1]): Promise<authLogoutResponse> => {
-
-  return customInstance<authLogoutResponse>(getAuthLogoutUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-);}
-
-
-
-
-
-export const getAuthLogoutMutationOptions = <TError = AuthenticationExceptionResponse,
+export const getAuthLogoutMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError,void, TContext> => {
 
@@ -577,9 +459,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type AuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authLogout>>>
 
-    export type AuthLogoutMutationError = AuthenticationExceptionResponse
+    export type AuthLogoutMutationError = ErrorType<AuthenticationExceptionResponse>
 
-    export const useAuthLogout = <TError = AuthenticationExceptionResponse,
+    export const useAuthLogout = <TError = ErrorType<AuthenticationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authLogout>>,
@@ -590,69 +472,34 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getAuthLogoutMutationOptions(options), queryClient);
     }
 
-export type documentStoreResponse201 = {
-  data: DocumentStore201
-  status: 201
-}
-
-export type documentStoreResponse400 = {
-  data: DocumentStore400
-  status: 400
-}
-
-export type documentStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type documentStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type documentStoreResponseSuccess = (documentStoreResponse201) & {
-  headers: Headers;
-};
-export type documentStoreResponseError = (documentStoreResponse400 | documentStoreResponse401 | documentStoreResponse422) & {
-  headers: Headers;
-};
-
-export type documentStoreResponse = (documentStoreResponseSuccess | documentStoreResponseError)
-
-export const getDocumentStoreUrl = () => {
-
-
-
-
-  return `/documents`
-}
-
 /**
  * @summary Store a newly created document in storage
  */
-export const documentStore = async (documentStoreBody: DocumentStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<documentStoreResponse> => {
-    const formData = new FormData();
+export const documentStore = (
+    documentStoreBody: BodyType<DocumentStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+      const formData = new FormData();
 formData.append(`documentable_id`, documentStoreBody.documentable_id.toString())
 formData.append(`documentable_type`, documentStoreBody.documentable_type);
 formData.append(`document_type`, documentStoreBody.document_type);
 formData.append(`file`, documentStoreBody.file);
 
-  return customInstance<documentStoreResponse>(getDocumentStoreUrl(),
-  {
-    ...options,
-    method: 'POST'
-    ,
-    body: formData
-  }
-);}
+      return customInstance<DocumentStore201>(
+      {url: `/documents`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getDocumentStoreMutationOptions = <TError = DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: DocumentStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: DocumentStoreBody}, TContext> => {
+export const getDocumentStoreMutationOptions = <TError = ErrorType<DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: BodyType<DocumentStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: BodyType<DocumentStoreBody>}, TContext> => {
 
 const mutationKey = ['documentStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -664,7 +511,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof documentStore>>, {data: DocumentStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof documentStore>>, {data: BodyType<DocumentStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  documentStore(data,requestOptions)
@@ -678,99 +525,72 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type DocumentStoreMutationResult = NonNullable<Awaited<ReturnType<typeof documentStore>>>
-    export type DocumentStoreMutationBody = DocumentStoreBody
-    export type DocumentStoreMutationError = DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type DocumentStoreMutationBody = BodyType<DocumentStoreBody>
+    export type DocumentStoreMutationError = ErrorType<DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Store a newly created document in storage
  */
-export const useDocumentStore = <TError = DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: DocumentStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDocumentStore = <TError = ErrorType<DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: BodyType<DocumentStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof documentStore>>,
         TError,
-        {data: DocumentStoreBody},
+        {data: BodyType<DocumentStoreBody>},
         TContext
       > => {
       return useMutation(getDocumentStoreMutationOptions(options), queryClient);
     }
 
-export type documentShowResponse200 = {
-  data: DocumentResource
-  status: 200
-}
-
-export type documentShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type documentShowResponseSuccess = (documentShowResponse200) & {
-  headers: Headers;
-};
-export type documentShowResponseError = (documentShowResponse401) & {
-  headers: Headers;
-};
-
-export type documentShowResponse = (documentShowResponseSuccess | documentShowResponseError)
-
-export const getDocumentShowUrl = (id: string,) => {
-
-
-
-
-  return `/documents/${id}`
-}
-
 /**
  * @summary Display the specified resource
  */
-export const documentShow = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<documentShowResponse> => {
-
-  return customInstance<documentShowResponse>(getDocumentShowUrl(id),
-  {
-    ...options,
-    method: 'GET'
+export const documentShow = (
+    document: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<DocumentResource>(
+      {url: `/documents/${document}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getDocumentShowQueryKey = (id: string,) => {
+export const getDocumentShowQueryKey = (document: number,) => {
     return [
-    `/documents/${id}`
+    `/documents/${document}`
     ] as const;
     }
 
 
-export const getDocumentShowQueryOptions = <TData = Awaited<ReturnType<typeof documentShow>>, TError = AuthenticationExceptionResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getDocumentShowQueryOptions = <TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getDocumentShowQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getDocumentShowQueryKey(document);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentShow>>> = ({ signal }) => documentShow(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentShow>>> = ({ signal }) => documentShow(document, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: document !== null && document !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type DocumentShowQueryResult = NonNullable<Awaited<ReturnType<typeof documentShow>>>
-export type DocumentShowQueryError = AuthenticationExceptionResponse
+export type DocumentShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = AuthenticationExceptionResponse>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>> & Pick<
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentShow>>,
           TError,
@@ -779,8 +599,8 @@ export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = AuthenticationExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>> & Pick<
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentShow>>,
           TError,
@@ -789,20 +609,20 @@ export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = AuthenticationExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Display the specified resource
  */
 
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = AuthenticationExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getDocumentShowQueryOptions(id,options)
+  const queryOptions = getDocumentShowQueryOptions(document,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -815,54 +635,27 @@ export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>
 
 
 
-export type documentDestroyResponse200 = {
-  data: DocumentDestroy200
-  status: 200
-}
-
-export type documentDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type documentDestroyResponseSuccess = (documentDestroyResponse200) & {
-  headers: Headers;
-};
-export type documentDestroyResponseError = (documentDestroyResponse401) & {
-  headers: Headers;
-};
-
-export type documentDestroyResponse = (documentDestroyResponseSuccess | documentDestroyResponseError)
-
-export const getDocumentDestroyUrl = (id: string,) => {
-
-
-
-
-  return `/documents/${id}`
-}
-
 /**
  * @summary Remove the specified resource from storage
  */
-export const documentDestroy = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<documentDestroyResponse> => {
-
-  return customInstance<documentDestroyResponse>(getDocumentDestroyUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
+export const documentDestroy = (
+    document: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<DocumentDestroy200>(
+      {url: `/documents/${document}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getDocumentDestroyMutationOptions = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{id: string}, TContext> => {
+export const getDocumentDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{document: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{document: number}, TContext> => {
 
 const mutationKey = ['documentDestroy'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -874,10 +667,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof documentDestroy>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof documentDestroy>>, {document: number}> = (props) => {
+          const {document} = props ?? {};
 
-          return  documentDestroy(id,requestOptions)
+          return  documentDestroy(document,requestOptions)
         }
 
 
@@ -889,103 +682,72 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DocumentDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof documentDestroy>>>
 
-    export type DocumentDestroyMutationError = AuthenticationExceptionResponse
+    export type DocumentDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
     /**
  * @summary Remove the specified resource from storage
  */
-export const useDocumentDestroy = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useDocumentDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{document: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof documentDestroy>>,
         TError,
-        {id: string},
+        {document: number},
         TContext
       > => {
       return useMutation(getDocumentDestroyMutationOptions(options), queryClient);
     }
 
-export type documentDownloadResponse200 = {
-  data: Blob
-  status: 200
-}
-
-export type documentDownloadResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type documentDownloadResponse404 = {
-  data: DocumentDownload404
-  status: 404
-}
-
-export type documentDownloadResponseSuccess = (documentDownloadResponse200) & {
-  headers: Headers;
-};
-export type documentDownloadResponseError = (documentDownloadResponse401 | documentDownloadResponse404) & {
-  headers: Headers;
-};
-
-export type documentDownloadResponse = (documentDownloadResponseSuccess | documentDownloadResponseError)
-
-export const getDocumentDownloadUrl = (id: string,) => {
-
-
-
-
-  return `/documents/${id}/download`
-}
-
 /**
  * @summary Download the file
  */
-export const documentDownload = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<documentDownloadResponse> => {
-
-  return customInstance<documentDownloadResponse>(getDocumentDownloadUrl(id),
-  {
-    ...options,
-    method: 'GET'
+export const documentDownload = (
+    document: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<Blob>(
+      {url: `/documents/${document}/download`, method: 'GET',
+        responseType: 'blob', signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getDocumentDownloadQueryKey = (id: string,) => {
+export const getDocumentDownloadQueryKey = (document: number,) => {
     return [
-    `/documents/${id}/download`
+    `/documents/${document}/download`
     ] as const;
     }
 
 
-export const getDocumentDownloadQueryOptions = <TData = Awaited<ReturnType<typeof documentDownload>>, TError = AuthenticationExceptionResponse | DocumentDownload404>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getDocumentDownloadQueryOptions = <TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getDocumentDownloadQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getDocumentDownloadQueryKey(document);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentDownload>>> = ({ signal }) => documentDownload(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentDownload>>> = ({ signal }) => documentDownload(document, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: document !== null && document !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type DocumentDownloadQueryResult = NonNullable<Awaited<ReturnType<typeof documentDownload>>>
-export type DocumentDownloadQueryError = AuthenticationExceptionResponse | DocumentDownload404
+export type DocumentDownloadQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = AuthenticationExceptionResponse | DocumentDownload404>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>> & Pick<
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentDownload>>,
           TError,
@@ -994,8 +756,8 @@ export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDo
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = AuthenticationExceptionResponse | DocumentDownload404>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>> & Pick<
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentDownload>>,
           TError,
@@ -1004,20 +766,20 @@ export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDo
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = AuthenticationExceptionResponse | DocumentDownload404>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Download the file
  */
 
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = AuthenticationExceptionResponse | DocumentDownload404>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getDocumentDownloadQueryOptions(id,options)
+  const queryOptions = getDocumentDownloadQueryOptions(document,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1030,79 +792,350 @@ export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDo
 
 
 
-export type familyMemberIndexResponse200 = {
-  data: FamilyMemberIndex200
-  status: 200
-}
+/**
+ * @summary Store new evidence (Upload media)
+ */
+export const evidenceStore = (
+    evidenceStoreBody: BodyType<EvidenceStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type familyMemberIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
+      const formData = new FormData();
+formData.append(`visit_id`, evidenceStoreBody.visit_id.toString())
+formData.append(`file`, evidenceStoreBody.file);
+if(evidenceStoreBody.description !== undefined && evidenceStoreBody.description !== null) {
+ formData.append(`description`, evidenceStoreBody.description);
+ }
 
-export type familyMemberIndexResponseSuccess = (familyMemberIndexResponse200) & {
-  headers: Headers;
-};
-export type familyMemberIndexResponseError = (familyMemberIndexResponse401) & {
-  headers: Headers;
-};
-
-export type familyMemberIndexResponse = (familyMemberIndexResponseSuccess | familyMemberIndexResponseError)
-
-export const getFamilyMemberIndexUrl = () => {
-
-
-
-
-  return `/family-members`
-}
-
-export const familyMemberIndex = async ( options?: Parameters<typeof customInstance>[1]): Promise<familyMemberIndexResponse> => {
-
-  return customInstance<familyMemberIndexResponse>(getFamilyMemberIndexUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
+      return customInstance<EvidenceResource>(
+      {url: `/evidence`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
 
 
 
 
+export const getEvidenceStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceStore>>, TError,{data: BodyType<EvidenceStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof evidenceStore>>, TError,{data: BodyType<EvidenceStoreBody>}, TContext> => {
 
-export const getFamilyMemberIndexQueryKey = () => {
+const mutationKey = ['evidenceStore'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof evidenceStore>>, {data: BodyType<EvidenceStoreBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  evidenceStore(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EvidenceStoreMutationResult = NonNullable<Awaited<ReturnType<typeof evidenceStore>>>
+    export type EvidenceStoreMutationBody = BodyType<EvidenceStoreBody>
+    export type EvidenceStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+    /**
+ * @summary Store new evidence (Upload media)
+ */
+export const useEvidenceStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceStore>>, TError,{data: BodyType<EvidenceStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof evidenceStore>>,
+        TError,
+        {data: BodyType<EvidenceStoreBody>},
+        TContext
+      > => {
+      return useMutation(getEvidenceStoreMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Show a specific evidence
+ */
+export const evidenceShow = (
+    evidence: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<EvidenceResource>(
+      {url: `/evidence/${evidence}`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getEvidenceShowQueryKey = (evidence: number,) => {
     return [
-    `/family-members`
+    `/evidence/${evidence}`
     ] as const;
     }
 
 
-export const getFamilyMemberIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = AuthenticationExceptionResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getEvidenceShowQueryOptions = <TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFamilyMemberIndexQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getEvidenceShowQueryKey(evidence);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyMemberIndex>>> = ({ signal }) => familyMemberIndex({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof evidenceShow>>> = ({ signal }) => evidenceShow(evidence, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: evidence !== null && evidence !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EvidenceShowQueryResult = NonNullable<Awaited<ReturnType<typeof evidenceShow>>>
+export type EvidenceShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+
+
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ evidence: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof evidenceShow>>,
+          TError,
+          Awaited<ReturnType<typeof evidenceShow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof evidenceShow>>,
+          TError,
+          Awaited<ReturnType<typeof evidenceShow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Show a specific evidence
+ */
+
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEvidenceShowQueryOptions(evidence,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+/**
+ * @summary Delete evidence
+ */
+export const evidenceDestroy = (
+    evidence: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<EvidenceDestroy200>(
+      {url: `/evidence/${evidence}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getEvidenceDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceDestroy>>, TError,{evidence: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof evidenceDestroy>>, TError,{evidence: number}, TContext> => {
+
+const mutationKey = ['evidenceDestroy'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof evidenceDestroy>>, {evidence: number}> = (props) => {
+          const {evidence} = props ?? {};
+
+          return  evidenceDestroy(evidence,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EvidenceDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof evidenceDestroy>>>
+
+    export type EvidenceDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+
+    /**
+ * @summary Delete evidence
+ */
+export const useEvidenceDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceDestroy>>, TError,{evidence: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof evidenceDestroy>>,
+        TError,
+        {evidence: number},
+        TContext
+      > => {
+      return useMutation(getEvidenceDestroyMutationOptions(options), queryClient);
+    }
+
+export const familyMemberIndex = (
+    params?: FamilyMemberIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<FamilyMemberIndex200>(
+      {url: `/family-members`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getFamilyMemberIndexInfiniteQueryKey = (params?: FamilyMemberIndexParams,) => {
+    return [
+    'infinite', `/family-members`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getFamilyMemberIndexQueryKey = (params?: FamilyMemberIndexParams,) => {
+    return [
+    `/family-members`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getFamilyMemberIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyMemberIndexInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyMemberIndex>>, QueryKey, FamilyMemberIndexParams['page']> = ({ signal, pageParam }) => familyMemberIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyMemberIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof familyMemberIndex>>>
+export type FamilyMemberIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  FamilyMemberIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyMemberIndex>>,
+          TError,
+          Awaited<ReturnType<typeof familyMemberIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyMemberIndex>>,
+          TError,
+          Awaited<ReturnType<typeof familyMemberIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyMemberIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getFamilyMemberIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyMemberIndexQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyMemberIndex>>> = ({ signal }) => familyMemberIndex(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type FamilyMemberIndexQueryResult = NonNullable<Awaited<ReturnType<typeof familyMemberIndex>>>
-export type FamilyMemberIndexQueryError = AuthenticationExceptionResponse
+export type FamilyMemberIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = AuthenticationExceptionResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>> & Pick<
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  FamilyMemberIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberIndex>>,
           TError,
@@ -1111,8 +1144,8 @@ export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMem
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>> & Pick<
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberIndex>>,
           TError,
@@ -1121,17 +1154,17 @@ export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMem
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFamilyMemberIndexQueryOptions(options)
+  const queryOptions = getFamilyMemberIndexQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1144,56 +1177,26 @@ export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMem
 
 
 
-export type familyMemberStoreResponse201 = {
-  data: FamilyMemberStore201
-  status: 201
-}
+export const familyMemberStore = (
+    familyMemberStoreBody: BodyType<FamilyMemberStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type familyMemberStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type familyMemberStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type familyMemberStoreResponseSuccess = (familyMemberStoreResponse201) & {
-  headers: Headers;
-};
-export type familyMemberStoreResponseError = (familyMemberStoreResponse401 | familyMemberStoreResponse422) & {
-  headers: Headers;
-};
-
-export type familyMemberStoreResponse = (familyMemberStoreResponseSuccess | familyMemberStoreResponseError)
-
-export const getFamilyMemberStoreUrl = () => {
+      return customInstance<FamilyMemberStore201>(
+      {url: `/family-members`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: familyMemberStoreBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/family-members`
-}
-
-export const familyMemberStore = async (familyMemberStoreBody: FamilyMemberStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<familyMemberStoreResponse> => {
-
-  return customInstance<familyMemberStoreResponse>(getFamilyMemberStoreUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(familyMemberStoreBody)
-  }
-);}
-
-
-
-
-
-export const getFamilyMemberStoreMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: FamilyMemberStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: FamilyMemberStoreBody}, TContext> => {
+export const getFamilyMemberStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: BodyType<FamilyMemberStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: BodyType<FamilyMemberStoreBody>}, TContext> => {
 
 const mutationKey = ['familyMemberStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1205,7 +1208,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyMemberStore>>, {data: FamilyMemberStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyMemberStore>>, {data: BodyType<FamilyMemberStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  familyMemberStore(data,requestOptions)
@@ -1219,63 +1222,31 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type FamilyMemberStoreMutationResult = NonNullable<Awaited<ReturnType<typeof familyMemberStore>>>
-    export type FamilyMemberStoreMutationBody = FamilyMemberStoreBody
-    export type FamilyMemberStoreMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type FamilyMemberStoreMutationBody = BodyType<FamilyMemberStoreBody>
+    export type FamilyMemberStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
-    export const useFamilyMemberStore = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: FamilyMemberStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useFamilyMemberStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: BodyType<FamilyMemberStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyMemberStore>>,
         TError,
-        {data: FamilyMemberStoreBody},
+        {data: BodyType<FamilyMemberStoreBody>},
         TContext
       > => {
       return useMutation(getFamilyMemberStoreMutationOptions(options), queryClient);
     }
 
-export type familyMemberShowResponse200 = {
-  data: FamilyMemberShow200
-  status: 200
-}
-
-export type familyMemberShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type familyMemberShowResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type familyMemberShowResponseSuccess = (familyMemberShowResponse200) & {
-  headers: Headers;
-};
-export type familyMemberShowResponseError = (familyMemberShowResponse401 | familyMemberShowResponse404) & {
-  headers: Headers;
-};
-
-export type familyMemberShowResponse = (familyMemberShowResponseSuccess | familyMemberShowResponseError)
-
-export const getFamilyMemberShowUrl = (familyMember: number,) => {
+export const familyMemberShow = (
+    familyMember: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-
-
-  return `/family-members/${familyMember}`
-}
-
-export const familyMemberShow = async (familyMember: number, options?: Parameters<typeof customInstance>[1]): Promise<familyMemberShowResponse> => {
-
-  return customInstance<familyMemberShowResponse>(getFamilyMemberShowUrl(familyMember),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+      return customInstance<FamilyMemberShow200>(
+      {url: `/family-members/${familyMember}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
@@ -1287,7 +1258,7 @@ export const getFamilyMemberShowQueryKey = (familyMember: number,) => {
     }
 
 
-export const getFamilyMemberShowQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyMemberShowQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1296,20 +1267,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyMemberShow>>> = ({ signal }) => familyMemberShow(familyMember, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyMemberShow>>> = ({ signal }) => familyMemberShow(familyMember, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: familyMember !== null && familyMember !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: familyMember !== null && familyMember !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type FamilyMemberShowQueryResult = NonNullable<Awaited<ReturnType<typeof familyMemberShow>>>
-export type FamilyMemberShowQueryError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type FamilyMemberShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberShow>>,
@@ -1319,7 +1290,7 @@ export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemb
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberShow>>,
@@ -1329,12 +1300,12 @@ export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemb
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1352,62 +1323,27 @@ export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemb
 
 
 
-export type familyMemberUpdateResponse200 = {
-  data: FamilyMemberUpdate200
-  status: 200
-}
+export const familyMemberUpdate = (
+    familyMember: number,
+    familyMemberUpdateBody?: BodyType<FamilyMemberUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type familyMemberUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type familyMemberUpdateResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type familyMemberUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type familyMemberUpdateResponseSuccess = (familyMemberUpdateResponse200) & {
-  headers: Headers;
-};
-export type familyMemberUpdateResponseError = (familyMemberUpdateResponse401 | familyMemberUpdateResponse404 | familyMemberUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type familyMemberUpdateResponse = (familyMemberUpdateResponseSuccess | familyMemberUpdateResponseError)
-
-export const getFamilyMemberUpdateUrl = (familyMember: number,) => {
+      return customInstance<FamilyMemberUpdate200>(
+      {url: `/family-members/${familyMember}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: familyMemberUpdateBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/family-members/${familyMember}`
-}
-
-export const familyMemberUpdate = async (familyMember: number,
-    familyMemberUpdateBody?: FamilyMemberUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<familyMemberUpdateResponse> => {
-
-  return customInstance<familyMemberUpdateResponse>(getFamilyMemberUpdateUrl(familyMember),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(familyMemberUpdateBody)
-  }
-);}
-
-
-
-
-
-export const getFamilyMemberUpdateMutationOptions = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: FamilyMemberUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: FamilyMemberUpdateBody}, TContext> => {
+export const getFamilyMemberUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}, TContext> => {
 
 const mutationKey = ['familyMemberUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1419,7 +1355,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyMemberUpdate>>, {familyMember: number;data?: FamilyMemberUpdateBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyMemberUpdate>>, {familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}> = (props) => {
           const {familyMember,data} = props ?? {};
 
           return  familyMemberUpdate(familyMember,data,requestOptions)
@@ -1433,68 +1369,36 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type FamilyMemberUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof familyMemberUpdate>>>
-    export type FamilyMemberUpdateMutationBody = FamilyMemberUpdateBody | undefined
-    export type FamilyMemberUpdateMutationError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+    export type FamilyMemberUpdateMutationBody = BodyType<FamilyMemberUpdateBody> | undefined
+    export type FamilyMemberUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useFamilyMemberUpdate = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: FamilyMemberUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useFamilyMemberUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyMemberUpdate>>,
         TError,
-        {familyMember: number;data?: FamilyMemberUpdateBody},
+        {familyMember: number;data?: BodyType<FamilyMemberUpdateBody>},
         TContext
       > => {
       return useMutation(getFamilyMemberUpdateMutationOptions(options), queryClient);
     }
 
-export type familyMemberDestroyResponse200 = {
-  data: FamilyMemberDestroy200
-  status: 200
-}
+export const familyMemberDestroy = (
+    familyMember: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type familyMemberDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type familyMemberDestroyResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type familyMemberDestroyResponseSuccess = (familyMemberDestroyResponse200) & {
-  headers: Headers;
-};
-export type familyMemberDestroyResponseError = (familyMemberDestroyResponse401 | familyMemberDestroyResponse404) & {
-  headers: Headers;
-};
-
-export type familyMemberDestroyResponse = (familyMemberDestroyResponseSuccess | familyMemberDestroyResponseError)
-
-export const getFamilyMemberDestroyUrl = (familyMember: number,) => {
+      return customInstance<FamilyMemberDestroy200>(
+      {url: `/family-members/${familyMember}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/family-members/${familyMember}`
-}
-
-export const familyMemberDestroy = async (familyMember: number, options?: Parameters<typeof customInstance>[1]): Promise<familyMemberDestroyResponse> => {
-
-  return customInstance<familyMemberDestroyResponse>(getFamilyMemberDestroyUrl(familyMember),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
-
-
-
-
-export const getFamilyMemberDestroyMutationOptions = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+export const getFamilyMemberDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberDestroy>>, TError,{familyMember: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyMemberDestroy>>, TError,{familyMember: number}, TContext> => {
 
@@ -1523,9 +1427,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyMemberDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof familyMemberDestroy>>>
 
-    export type FamilyMemberDestroyMutationError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+    export type FamilyMemberDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useFamilyMemberDestroy = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+    export const useFamilyMemberDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberDestroy>>, TError,{familyMember: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyMemberDestroy>>,
@@ -1535,40 +1439,6 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getFamilyMemberDestroyMutationOptions(options), queryClient);
     }
-
-export type familyProfileIndexResponse200 = {
-  data: FamilyProfileIndex200
-  status: 200
-}
-
-export type familyProfileIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type familyProfileIndexResponseSuccess = (familyProfileIndexResponse200) & {
-  headers: Headers;
-};
-export type familyProfileIndexResponseError = (familyProfileIndexResponse401) & {
-  headers: Headers;
-};
-
-export type familyProfileIndexResponse = (familyProfileIndexResponseSuccess | familyProfileIndexResponseError)
-
-export const getFamilyProfileIndexUrl = (params?: FamilyProfileIndexParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/family-profiles?${stringifiedParams}` : `/family-profiles`
-}
 
 /**
  * Ejemplos de uso:
@@ -1592,20 +1462,27 @@ export const getFamilyProfileIndexUrl = (params?: FamilyProfileIndexParams,) => 
  * GET /api/family-profiles?family_name=Gomez&responsible_name=Juan
  * @summary Listar perfiles de familia con filtros avanzados y relaciones
  */
-export const familyProfileIndex = async (params?: FamilyProfileIndexParams, options?: Parameters<typeof customInstance>[1]): Promise<familyProfileIndexResponse> => {
-
-  return customInstance<familyProfileIndexResponse>(getFamilyProfileIndexUrl(params),
-  {
-    ...options,
-    method: 'GET'
+export const familyProfileIndex = (
+    params?: FamilyProfileIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<FamilyProfileIndex200>(
+      {url: `/family-profiles`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
 
 
 
 
+export const getFamilyProfileIndexInfiniteQueryKey = (params?: FamilyProfileIndexParams,) => {
+    return [
+    'infinite', `/family-profiles`, ...(params ? [params] : [])
+    ] as const;
+    }
 
 export const getFamilyProfileIndexQueryKey = (params?: FamilyProfileIndexParams,) => {
     return [
@@ -1614,7 +1491,74 @@ export const getFamilyProfileIndexQueryKey = (params?: FamilyProfileIndexParams,
     }
 
 
-export const getFamilyProfileIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = AuthenticationExceptionResponse>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyProfileIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyProfileIndexInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyProfileIndex>>, QueryKey, FamilyProfileIndexParams['page']> = ({ signal, pageParam }) => familyProfileIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyProfileIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof familyProfileIndex>>>
+export type FamilyProfileIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  FamilyProfileIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyProfileIndex>>,
+          TError,
+          Awaited<ReturnType<typeof familyProfileIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyProfileIndex>>,
+          TError,
+          Awaited<ReturnType<typeof familyProfileIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Listar perfiles de familia con filtros avanzados y relaciones
+ */
+
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyProfileIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getFamilyProfileIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1623,20 +1567,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyProfileIndex>>> = ({ signal }) => familyProfileIndex(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyProfileIndex>>> = ({ signal }) => familyProfileIndex(params, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type FamilyProfileIndexQueryResult = NonNullable<Awaited<ReturnType<typeof familyProfileIndex>>>
-export type FamilyProfileIndexQueryError = AuthenticationExceptionResponse
+export type FamilyProfileIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = AuthenticationExceptionResponse>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  FamilyProfileIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileIndex>>,
@@ -1646,7 +1590,7 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = AuthenticationExceptionResponse>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileIndex>>,
@@ -1656,7 +1600,7 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = AuthenticationExceptionResponse>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1664,7 +1608,7 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
  * @summary Listar perfiles de familia con filtros avanzados y relaciones
  */
 
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = AuthenticationExceptionResponse>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1682,59 +1626,29 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
 
 
 
-export type familyProfileStoreResponse201 = {
-  data: FamilyProfileStore201
-  status: 201
-}
-
-export type familyProfileStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type familyProfileStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type familyProfileStoreResponseSuccess = (familyProfileStoreResponse201) & {
-  headers: Headers;
-};
-export type familyProfileStoreResponseError = (familyProfileStoreResponse401 | familyProfileStoreResponse422) & {
-  headers: Headers;
-};
-
-export type familyProfileStoreResponse = (familyProfileStoreResponseSuccess | familyProfileStoreResponseError)
-
-export const getFamilyProfileStoreUrl = () => {
-
-
-
-
-  return `/family-profiles`
-}
-
 /**
  * @summary Store a newly created resource in storage
  */
-export const familyProfileStore = async (familyProfileStoreBody: FamilyProfileStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<familyProfileStoreResponse> => {
-
-  return customInstance<familyProfileStoreResponse>(getFamilyProfileStoreUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(familyProfileStoreBody)
-  }
-);}
+export const familyProfileStore = (
+    familyProfileStoreBody: BodyType<FamilyProfileStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
+      return customInstance<FamilyProfileStore201>(
+      {url: `/family-profiles`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: familyProfileStoreBody, signal
+    },
+      options);
+    }
 
 
 
-export const getFamilyProfileStoreMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: FamilyProfileStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: FamilyProfileStoreBody}, TContext> => {
+
+export const getFamilyProfileStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: BodyType<FamilyProfileStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: BodyType<FamilyProfileStoreBody>}, TContext> => {
 
 const mutationKey = ['familyProfileStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1746,7 +1660,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyProfileStore>>, {data: FamilyProfileStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyProfileStore>>, {data: BodyType<FamilyProfileStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  familyProfileStore(data,requestOptions)
@@ -1760,104 +1674,72 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type FamilyProfileStoreMutationResult = NonNullable<Awaited<ReturnType<typeof familyProfileStore>>>
-    export type FamilyProfileStoreMutationBody = FamilyProfileStoreBody
-    export type FamilyProfileStoreMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type FamilyProfileStoreMutationBody = BodyType<FamilyProfileStoreBody>
+    export type FamilyProfileStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Store a newly created resource in storage
  */
-export const useFamilyProfileStore = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: FamilyProfileStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useFamilyProfileStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: BodyType<FamilyProfileStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyProfileStore>>,
         TError,
-        {data: FamilyProfileStoreBody},
+        {data: BodyType<FamilyProfileStoreBody>},
         TContext
       > => {
       return useMutation(getFamilyProfileStoreMutationOptions(options), queryClient);
     }
 
-export type familyProfileShowResponse200 = {
-  data: FamilyProfileResource
-  status: 200
-}
-
-export type familyProfileShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type familyProfileShowResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type familyProfileShowResponseSuccess = (familyProfileShowResponse200) & {
-  headers: Headers;
-};
-export type familyProfileShowResponseError = (familyProfileShowResponse401 | familyProfileShowResponse404) & {
-  headers: Headers;
-};
-
-export type familyProfileShowResponse = (familyProfileShowResponseSuccess | familyProfileShowResponseError)
-
-export const getFamilyProfileShowUrl = (id: string,) => {
-
-
-
-
-  return `/family-profiles/${id}`
-}
-
 /**
  * @summary Display the specified resource
  */
-export const familyProfileShow = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<familyProfileShowResponse> => {
-
-  return customInstance<familyProfileShowResponse>(getFamilyProfileShowUrl(id),
-  {
-    ...options,
-    method: 'GET'
+export const familyProfileShow = (
+    familyProfile: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<FamilyProfileShow200>(
+      {url: `/family-profiles/${familyProfile}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getFamilyProfileShowQueryKey = (id: string,) => {
+export const getFamilyProfileShowQueryKey = (familyProfile: number,) => {
     return [
-    `/family-profiles/${id}`
+    `/family-profiles/${familyProfile}`
     ] as const;
     }
 
 
-export const getFamilyProfileShowQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyProfileShowQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFamilyProfileShowQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getFamilyProfileShowQueryKey(familyProfile);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyProfileShow>>> = ({ signal }) => familyProfileShow(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyProfileShow>>> = ({ signal }) => familyProfileShow(familyProfile, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: familyProfile !== null && familyProfile !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type FamilyProfileShowQueryResult = NonNullable<Awaited<ReturnType<typeof familyProfileShow>>>
-export type FamilyProfileShowQueryError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type FamilyProfileShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>> & Pick<
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ familyProfile: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileShow>>,
           TError,
@@ -1866,8 +1748,8 @@ export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyPro
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>> & Pick<
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileShow>>,
           TError,
@@ -1876,20 +1758,20 @@ export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyPro
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Display the specified resource
  */
 
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFamilyProfileShowQueryOptions(id,options)
+  const queryOptions = getFamilyProfileShowQueryOptions(familyProfile,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1902,60 +1784,30 @@ export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyPro
 
 
 
-export type familyProfileUpdateResponse200 = {
-  data: FamilyProfileUpdate200
-  status: 200
-}
-
-export type familyProfileUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type familyProfileUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type familyProfileUpdateResponseSuccess = (familyProfileUpdateResponse200) & {
-  headers: Headers;
-};
-export type familyProfileUpdateResponseError = (familyProfileUpdateResponse401 | familyProfileUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type familyProfileUpdateResponse = (familyProfileUpdateResponseSuccess | familyProfileUpdateResponseError)
-
-export const getFamilyProfileUpdateUrl = (id: string,) => {
-
-
-
-
-  return `/family-profiles/${id}`
-}
-
 /**
  * @summary Update the specified resource in storage
  */
-export const familyProfileUpdate = async (id: string,
-    familyProfileUpdateBody?: FamilyProfileUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<familyProfileUpdateResponse> => {
-
-  return customInstance<familyProfileUpdateResponse>(getFamilyProfileUpdateUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(familyProfileUpdateBody)
-  }
-);}
+export const familyProfileUpdate = (
+    familyProfile: number,
+    familyProfileUpdateBody?: BodyType<FamilyProfileUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
+      return customInstance<FamilyProfileUpdate200>(
+      {url: `/family-profiles/${familyProfile}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: familyProfileUpdateBody, signal
+    },
+      options);
+    }
 
 
 
-export const getFamilyProfileUpdateMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{id: string;data?: FamilyProfileUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{id: string;data?: FamilyProfileUpdateBody}, TContext> => {
+
+export const getFamilyProfileUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}, TContext> => {
 
 const mutationKey = ['familyProfileUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1967,10 +1819,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyProfileUpdate>>, {id: string;data?: FamilyProfileUpdateBody}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyProfileUpdate>>, {familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}> = (props) => {
+          const {familyProfile,data} = props ?? {};
 
-          return  familyProfileUpdate(id,data,requestOptions)
+          return  familyProfileUpdate(familyProfile,data,requestOptions)
         }
 
 
@@ -1981,71 +1833,44 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type FamilyProfileUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof familyProfileUpdate>>>
-    export type FamilyProfileUpdateMutationBody = FamilyProfileUpdateBody | undefined
-    export type FamilyProfileUpdateMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type FamilyProfileUpdateMutationBody = BodyType<FamilyProfileUpdateBody> | undefined
+    export type FamilyProfileUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Update the specified resource in storage
  */
-export const useFamilyProfileUpdate = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{id: string;data?: FamilyProfileUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useFamilyProfileUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyProfileUpdate>>,
         TError,
-        {id: string;data?: FamilyProfileUpdateBody},
+        {familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>},
         TContext
       > => {
       return useMutation(getFamilyProfileUpdateMutationOptions(options), queryClient);
     }
 
-export type familyProfileDestroyResponse200 = {
-  data: FamilyProfileDestroy200
-  status: 200
-}
-
-export type familyProfileDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type familyProfileDestroyResponseSuccess = (familyProfileDestroyResponse200) & {
-  headers: Headers;
-};
-export type familyProfileDestroyResponseError = (familyProfileDestroyResponse401) & {
-  headers: Headers;
-};
-
-export type familyProfileDestroyResponse = (familyProfileDestroyResponseSuccess | familyProfileDestroyResponseError)
-
-export const getFamilyProfileDestroyUrl = (id: string,) => {
-
-
-
-
-  return `/family-profiles/${id}`
-}
-
 /**
  * @summary Remove the specified resource from storage
  */
-export const familyProfileDestroy = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<familyProfileDestroyResponse> => {
-
-  return customInstance<familyProfileDestroyResponse>(getFamilyProfileDestroyUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
+export const familyProfileDestroy = (
+    familyProfile: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<FamilyProfileDestroy200>(
+      {url: `/family-profiles/${familyProfile}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getFamilyProfileDestroyMutationOptions = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{id: string}, TContext> => {
+export const getFamilyProfileDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{familyProfile: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{familyProfile: number}, TContext> => {
 
 const mutationKey = ['familyProfileDestroy'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -2057,10 +1882,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyProfileDestroy>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof familyProfileDestroy>>, {familyProfile: number}> = (props) => {
+          const {familyProfile} = props ?? {};
 
-          return  familyProfileDestroy(id,requestOptions)
+          return  familyProfileDestroy(familyProfile,requestOptions)
         }
 
 
@@ -2072,73 +1897,46 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyProfileDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof familyProfileDestroy>>>
 
-    export type FamilyProfileDestroyMutationError = AuthenticationExceptionResponse
+    export type FamilyProfileDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
     /**
  * @summary Remove the specified resource from storage
  */
-export const useFamilyProfileDestroy = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useFamilyProfileDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{familyProfile: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyProfileDestroy>>,
         TError,
-        {id: string},
+        {familyProfile: number},
         TContext
       > => {
       return useMutation(getFamilyProfileDestroyMutationOptions(options), queryClient);
     }
 
-export type groupIndexResponse200 = {
-  data: GroupIndex200
-  status: 200
-}
-
-export type groupIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type groupIndexResponseSuccess = (groupIndexResponse200) & {
-  headers: Headers;
-};
-export type groupIndexResponseError = (groupIndexResponse401) & {
-  headers: Headers;
-};
-
-export type groupIndexResponse = (groupIndexResponseSuccess | groupIndexResponseError)
-
-export const getGroupIndexUrl = (params?: GroupIndexParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/groups?${stringifiedParams}` : `/groups`
-}
-
 /**
  * @summary Get a list of active and future groups
  */
-export const groupIndex = async (params?: GroupIndexParams, options?: Parameters<typeof customInstance>[1]): Promise<groupIndexResponse> => {
-
-  return customInstance<groupIndexResponse>(getGroupIndexUrl(params),
-  {
-    ...options,
-    method: 'GET'
+export const groupIndex = (
+    params?: GroupIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<GroupIndex200>(
+      {url: `/groups`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
 
 
 
 
+export const getGroupIndexInfiniteQueryKey = (params?: GroupIndexParams,) => {
+    return [
+    'infinite', `/groups`, ...(params ? [params] : [])
+    ] as const;
+    }
 
 export const getGroupIndexQueryKey = (params?: GroupIndexParams,) => {
     return [
@@ -2147,7 +1945,74 @@ export const getGroupIndexQueryKey = (params?: GroupIndexParams,) => {
     }
 
 
-export const getGroupIndexQueryOptions = <TData = Awaited<ReturnType<typeof groupIndex>>, TError = AuthenticationExceptionResponse>(params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGroupIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGroupIndexInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupIndex>>, QueryKey, GroupIndexParams['page']> = ({ signal, pageParam }) => groupIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GroupIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof groupIndex>>>
+export type GroupIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  GroupIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupIndex>>,
+          TError,
+          Awaited<ReturnType<typeof groupIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupIndex>>,
+          TError,
+          Awaited<ReturnType<typeof groupIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a list of active and future groups
+ */
+
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGroupIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getGroupIndexQueryOptions = <TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2156,20 +2021,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupIndex>>> = ({ signal }) => groupIndex(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupIndex>>> = ({ signal }) => groupIndex(params, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type GroupIndexQueryResult = NonNullable<Awaited<ReturnType<typeof groupIndex>>>
-export type GroupIndexQueryError = AuthenticationExceptionResponse
+export type GroupIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = AuthenticationExceptionResponse>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  GroupIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupIndex>>,
@@ -2179,7 +2044,7 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = AuthenticationExceptionResponse>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupIndex>>,
@@ -2189,7 +2054,7 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = AuthenticationExceptionResponse>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -2197,7 +2062,7 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
  * @summary Get a list of active and future groups
  */
 
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = AuthenticationExceptionResponse>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2215,114 +2080,87 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
 
 
 
-export type groupApplicantsResponse200 = {
-  data: GroupApplicants200
-  status: 200
-}
-
-export type groupApplicantsResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type groupApplicantsResponseSuccess = (groupApplicantsResponse200) & {
-  headers: Headers;
-};
-export type groupApplicantsResponseError = (groupApplicantsResponse401) & {
-  headers: Headers;
-};
-
-export type groupApplicantsResponse = (groupApplicantsResponseSuccess | groupApplicantsResponseError)
-
-export const getGroupApplicantsUrl = (id: string,) => {
-
-
-
-
-  return `/groups/${id}/applicants`
-}
-
 /**
- * @summary Get the applicants for a specific group, including their attendance status
+ * @summary Get a specific group details
  */
-export const groupApplicants = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<groupApplicantsResponse> => {
-
-  return customInstance<groupApplicantsResponse>(getGroupApplicantsUrl(id),
-  {
-    ...options,
-    method: 'GET'
+export const groupShow = (
+    group: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<GroupResource>(
+      {url: `/groups/${group}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getGroupApplicantsQueryKey = (id: string,) => {
+export const getGroupShowQueryKey = (group: number,) => {
     return [
-    `/groups/${id}/applicants`
+    `/groups/${group}`
     ] as const;
     }
 
 
-export const getGroupApplicantsQueryOptions = <TData = Awaited<ReturnType<typeof groupApplicants>>, TError = AuthenticationExceptionResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGroupShowQueryOptions = <TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGroupApplicantsQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGroupShowQueryKey(group);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupApplicants>>> = ({ signal }) => groupApplicants(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupShow>>> = ({ signal }) => groupShow(group, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: group !== null && group !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GroupApplicantsQueryResult = NonNullable<Awaited<ReturnType<typeof groupApplicants>>>
-export type GroupApplicantsQueryError = AuthenticationExceptionResponse
+export type GroupShowQueryResult = NonNullable<Awaited<ReturnType<typeof groupShow>>>
+export type GroupShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = AuthenticationExceptionResponse>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>> & Pick<
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ group: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof groupApplicants>>,
+          Awaited<ReturnType<typeof groupShow>>,
           TError,
-          Awaited<ReturnType<typeof groupApplicants>>
+          Awaited<ReturnType<typeof groupShow>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = AuthenticationExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>> & Pick<
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof groupApplicants>>,
+          Awaited<ReturnType<typeof groupShow>>,
           TError,
-          Awaited<ReturnType<typeof groupApplicants>>
+          Awaited<ReturnType<typeof groupShow>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = AuthenticationExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Get the applicants for a specific group, including their attendance status
+ * @summary Get a specific group details
  */
 
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = AuthenticationExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGroupApplicantsQueryOptions(id,options)
+  const queryOptions = getGroupShowQueryOptions(group,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -2335,57 +2173,273 @@ export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplic
 
 
 
-export type noteIndexResponse200 = {
-  data: NoteIndex200
-  status: 200
-}
+/**
+ * @summary Get the applicants for a specific group, including their attendance status
+ */
+export const groupApplicants = (
+    group: number,
+    params?: GroupApplicantsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type noteIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type noteIndexResponseSuccess = (noteIndexResponse200) & {
-  headers: Headers;
-};
-export type noteIndexResponseError = (noteIndexResponse401) & {
-  headers: Headers;
-};
-
-export type noteIndexResponse = (noteIndexResponseSuccess | noteIndexResponseError)
-
-export const getNoteIndexUrl = (params?: NoteIndexParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
+      return customInstance<GroupApplicants200>(
+      {url: `/groups/${group}/applicants`, method: 'GET',
+        params, signal
+    },
+      options);
     }
-  });
 
-  const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/notes?${stringifiedParams}` : `/notes`
+
+
+export const getGroupApplicantsInfiniteQueryKey = (group: number,
+    params?: GroupApplicantsParams,) => {
+    return [
+    'infinite', `/groups/${group}/applicants`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getGroupApplicantsQueryKey = (group: number,
+    params?: GroupApplicantsParams,) => {
+    return [
+    `/groups/${group}/applicants`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGroupApplicantsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGroupApplicantsInfiniteQueryKey(group,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupApplicants>>, QueryKey, GroupApplicantsParams['page']> = ({ signal, pageParam }) => groupApplicants(group,{...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: group !== null && group !== undefined,  staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
+
+export type GroupApplicantsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof groupApplicants>>>
+export type GroupApplicantsInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+
+
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params: undefined |  GroupApplicantsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupApplicants>>,
+          TError,
+          Awaited<ReturnType<typeof groupApplicants>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupApplicants>>,
+          TError,
+          Awaited<ReturnType<typeof groupApplicants>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get the applicants for a specific group, including their attendance status
+ */
+
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGroupApplicantsInfiniteQueryOptions(group,params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getGroupApplicantsQueryOptions = <TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGroupApplicantsQueryKey(group,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof groupApplicants>>> = ({ signal }) => groupApplicants(group,params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: group !== null && group !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GroupApplicantsQueryResult = NonNullable<Awaited<ReturnType<typeof groupApplicants>>>
+export type GroupApplicantsQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+
+
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params: undefined |  GroupApplicantsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupApplicants>>,
+          TError,
+          Awaited<ReturnType<typeof groupApplicants>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof groupApplicants>>,
+          TError,
+          Awaited<ReturnType<typeof groupApplicants>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get the applicants for a specific group, including their attendance status
+ */
+
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+ group: number,
+    params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGroupApplicantsQueryOptions(group,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+/**
+ * @summary Close the attendance for a group, marking pending applicants as absent
+ */
+export const groupCloseAttendance = (
+    group: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<GroupCloseAttendance200>(
+      {url: `/groups/${group}/close-attendance`, method: 'POST', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGroupCloseAttendanceMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof groupCloseAttendance>>, TError,{group: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof groupCloseAttendance>>, TError,{group: number}, TContext> => {
+
+const mutationKey = ['groupCloseAttendance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof groupCloseAttendance>>, {group: number}> = (props) => {
+          const {group} = props ?? {};
+
+          return  groupCloseAttendance(group,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GroupCloseAttendanceMutationResult = NonNullable<Awaited<ReturnType<typeof groupCloseAttendance>>>
+
+    export type GroupCloseAttendanceMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+
+    /**
+ * @summary Close the attendance for a group, marking pending applicants as absent
+ */
+export const useGroupCloseAttendance = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof groupCloseAttendance>>, TError,{group: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof groupCloseAttendance>>,
+        TError,
+        {group: number},
+        TContext
+      > => {
+      return useMutation(getGroupCloseAttendanceMutationOptions(options), queryClient);
+    }
 
 /**
  * @summary List notes. Can filter by noteable_type and noteable_id
  */
-export const noteIndex = async (params?: NoteIndexParams, options?: Parameters<typeof customInstance>[1]): Promise<noteIndexResponse> => {
-
-  return customInstance<noteIndexResponse>(getNoteIndexUrl(params),
-  {
-    ...options,
-    method: 'GET'
+export const noteIndex = (
+    params?: NoteIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<NoteIndex200>(
+      {url: `/notes`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
 
 
 
 
+export const getNoteIndexInfiniteQueryKey = (params?: NoteIndexParams,) => {
+    return [
+    'infinite', `/notes`, ...(params ? [params] : [])
+    ] as const;
+    }
 
 export const getNoteIndexQueryKey = (params?: NoteIndexParams,) => {
     return [
@@ -2394,7 +2448,74 @@ export const getNoteIndexQueryKey = (params?: NoteIndexParams,) => {
     }
 
 
-export const getNoteIndexQueryOptions = <TData = Awaited<ReturnType<typeof noteIndex>>, TError = AuthenticationExceptionResponse>(params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getNoteIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getNoteIndexInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof noteIndex>>, QueryKey, NoteIndexParams['page']> = ({ signal, pageParam }) => noteIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NoteIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof noteIndex>>>
+export type NoteIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  NoteIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof noteIndex>>,
+          TError,
+          Awaited<ReturnType<typeof noteIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof noteIndex>>,
+          TError,
+          Awaited<ReturnType<typeof noteIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List notes. Can filter by noteable_type and noteable_id
+ */
+
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getNoteIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getNoteIndexQueryOptions = <TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2403,20 +2524,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof noteIndex>>> = ({ signal }) => noteIndex(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof noteIndex>>> = ({ signal }) => noteIndex(params, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type NoteIndexQueryResult = NonNullable<Awaited<ReturnType<typeof noteIndex>>>
-export type NoteIndexQueryError = AuthenticationExceptionResponse
+export type NoteIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = AuthenticationExceptionResponse>(
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  NoteIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteIndex>>,
@@ -2426,7 +2547,7 @@ export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = AuthenticationExceptionResponse>(
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteIndex>>,
@@ -2436,7 +2557,7 @@ export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = AuthenticationExceptionResponse>(
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -2444,7 +2565,7 @@ export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TErr
  * @summary List notes. Can filter by noteable_type and noteable_id
  */
 
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = AuthenticationExceptionResponse>(
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
  params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2462,61 +2583,26 @@ export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TErr
 
 
 
-export type noteStoreResponse201 = {
-  data: NoteStore201
-  status: 201
-}
+export const noteStore = (
+    noteStoreBody: BodyType<NoteStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type noteStoreResponse400 = {
-  data: NoteStore400
-  status: 400
-}
 
-export type noteStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type noteStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type noteStoreResponseSuccess = (noteStoreResponse201) & {
-  headers: Headers;
-};
-export type noteStoreResponseError = (noteStoreResponse400 | noteStoreResponse401 | noteStoreResponse422) & {
-  headers: Headers;
-};
-
-export type noteStoreResponse = (noteStoreResponseSuccess | noteStoreResponseError)
-
-export const getNoteStoreUrl = () => {
+      return customInstance<NoteStore201>(
+      {url: `/notes`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: noteStoreBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/notes`
-}
-
-export const noteStore = async (noteStoreBody: NoteStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<noteStoreResponse> => {
-
-  return customInstance<noteStoreResponse>(getNoteStoreUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(noteStoreBody)
-  }
-);}
-
-
-
-
-
-export const getNoteStoreMutationOptions = <TError = NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: NoteStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: NoteStoreBody}, TContext> => {
+export const getNoteStoreMutationOptions = <TError = ErrorType<NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: BodyType<NoteStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: BodyType<NoteStoreBody>}, TContext> => {
 
 const mutationKey = ['noteStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -2528,7 +2614,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noteStore>>, {data: NoteStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noteStore>>, {data: BodyType<NoteStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  noteStore(data,requestOptions)
@@ -2542,98 +2628,66 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type NoteStoreMutationResult = NonNullable<Awaited<ReturnType<typeof noteStore>>>
-    export type NoteStoreMutationBody = NoteStoreBody
-    export type NoteStoreMutationError = NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type NoteStoreMutationBody = BodyType<NoteStoreBody>
+    export type NoteStoreMutationError = ErrorType<NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>
 
-    export const useNoteStore = <TError = NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: NoteStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useNoteStore = <TError = ErrorType<NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: BodyType<NoteStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof noteStore>>,
         TError,
-        {data: NoteStoreBody},
+        {data: BodyType<NoteStoreBody>},
         TContext
       > => {
       return useMutation(getNoteStoreMutationOptions(options), queryClient);
     }
 
-export type noteShowResponse200 = {
-  data: NoteResource
-  status: 200
-}
+export const noteShow = (
+    note: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type noteShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type noteShowResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type noteShowResponseSuccess = (noteShowResponse200) & {
-  headers: Headers;
-};
-export type noteShowResponseError = (noteShowResponse401 | noteShowResponse404) & {
-  headers: Headers;
-};
-
-export type noteShowResponse = (noteShowResponseSuccess | noteShowResponseError)
-
-export const getNoteShowUrl = (id: string,) => {
+      return customInstance<NoteShow200>(
+      {url: `/notes/${note}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/notes/${id}`
-}
-
-export const noteShow = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<noteShowResponse> => {
-
-  return customInstance<noteShowResponse>(getNoteShowUrl(id),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getNoteShowQueryKey = (id: string,) => {
+export const getNoteShowQueryKey = (note: number,) => {
     return [
-    `/notes/${id}`
+    `/notes/${note}`
     ] as const;
     }
 
 
-export const getNoteShowQueryOptions = <TData = Awaited<ReturnType<typeof noteShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getNoteShowQueryOptions = <TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getNoteShowQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getNoteShowQueryKey(note);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof noteShow>>> = ({ signal }) => noteShow(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof noteShow>>> = ({ signal }) => noteShow(note, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: note !== null && note !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type NoteShowQueryResult = NonNullable<Awaited<ReturnType<typeof noteShow>>>
-export type NoteShowQueryError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type NoteShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>> & Pick<
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ note: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteShow>>,
           TError,
@@ -2642,8 +2696,8 @@ export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>> & Pick<
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteShow>>,
           TError,
@@ -2652,17 +2706,17 @@ export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getNoteShowQueryOptions(id,options)
+  const queryOptions = getNoteShowQueryOptions(note,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -2675,62 +2729,27 @@ export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError
 
 
 
-export type noteUpdateResponse200 = {
-  data: NoteUpdate200
-  status: 200
-}
+export const noteUpdate = (
+    note: number,
+    noteUpdateBody?: BodyType<NoteUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type noteUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type noteUpdateResponse403 = {
-  data: NoteUpdate403
-  status: 403
-}
-
-export type noteUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type noteUpdateResponseSuccess = (noteUpdateResponse200) & {
-  headers: Headers;
-};
-export type noteUpdateResponseError = (noteUpdateResponse401 | noteUpdateResponse403 | noteUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type noteUpdateResponse = (noteUpdateResponseSuccess | noteUpdateResponseError)
-
-export const getNoteUpdateUrl = (id: string,) => {
+      return customInstance<NoteUpdate200>(
+      {url: `/notes/${note}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: noteUpdateBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/notes/${id}`
-}
-
-export const noteUpdate = async (id: string,
-    noteUpdateBody?: NoteUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<noteUpdateResponse> => {
-
-  return customInstance<noteUpdateResponse>(getNoteUpdateUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(noteUpdateBody)
-  }
-);}
-
-
-
-
-
-export const getNoteUpdateMutationOptions = <TError = AuthenticationExceptionResponse | NoteUpdate403 | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{id: string;data?: NoteUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{id: string;data?: NoteUpdateBody}, TContext> => {
+export const getNoteUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | NoteUpdate403 | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{note: number;data?: BodyType<NoteUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{note: number;data?: BodyType<NoteUpdateBody>}, TContext> => {
 
 const mutationKey = ['noteUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -2742,10 +2761,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noteUpdate>>, {id: string;data?: NoteUpdateBody}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noteUpdate>>, {note: number;data?: BodyType<NoteUpdateBody>}> = (props) => {
+          const {note,data} = props ?? {};
 
-          return  noteUpdate(id,data,requestOptions)
+          return  noteUpdate(note,data,requestOptions)
         }
 
 
@@ -2756,70 +2775,38 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type NoteUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof noteUpdate>>>
-    export type NoteUpdateMutationBody = NoteUpdateBody | undefined
-    export type NoteUpdateMutationError = AuthenticationExceptionResponse | NoteUpdate403 | ValidationExceptionResponse
+    export type NoteUpdateMutationBody = BodyType<NoteUpdateBody> | undefined
+    export type NoteUpdateMutationError = ErrorType<AuthenticationExceptionResponse | NoteUpdate403 | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useNoteUpdate = <TError = AuthenticationExceptionResponse | NoteUpdate403 | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{id: string;data?: NoteUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useNoteUpdate = <TError = ErrorType<AuthenticationExceptionResponse | NoteUpdate403 | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{note: number;data?: BodyType<NoteUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof noteUpdate>>,
         TError,
-        {id: string;data?: NoteUpdateBody},
+        {note: number;data?: BodyType<NoteUpdateBody>},
         TContext
       > => {
       return useMutation(getNoteUpdateMutationOptions(options), queryClient);
     }
 
-export type noteDestroyResponse200 = {
-  data: NoteDestroy200
-  status: 200
-}
+export const noteDestroy = (
+    note: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type noteDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type noteDestroyResponse403 = {
-  data: NoteDestroy403
-  status: 403
-}
-
-export type noteDestroyResponseSuccess = (noteDestroyResponse200) & {
-  headers: Headers;
-};
-export type noteDestroyResponseError = (noteDestroyResponse401 | noteDestroyResponse403) & {
-  headers: Headers;
-};
-
-export type noteDestroyResponse = (noteDestroyResponseSuccess | noteDestroyResponseError)
-
-export const getNoteDestroyUrl = (id: string,) => {
+      return customInstance<NoteDestroy200>(
+      {url: `/notes/${note}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/notes/${id}`
-}
-
-export const noteDestroy = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<noteDestroyResponse> => {
-
-  return customInstance<noteDestroyResponse>(getNoteDestroyUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
-
-
-
-
-export const getNoteDestroyMutationOptions = <TError = AuthenticationExceptionResponse | NoteDestroy403,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{id: string}, TContext> => {
+export const getNoteDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | NoteDestroy403 | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{note: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{note: number}, TContext> => {
 
 const mutationKey = ['noteDestroy'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -2831,10 +2818,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noteDestroy>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof noteDestroy>>, {note: number}> = (props) => {
+          const {note} = props ?? {};
 
-          return  noteDestroy(id,requestOptions)
+          return  noteDestroy(note,requestOptions)
         }
 
 
@@ -2846,127 +2833,101 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type NoteDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof noteDestroy>>>
 
-    export type NoteDestroyMutationError = AuthenticationExceptionResponse | NoteDestroy403
+    export type NoteDestroyMutationError = ErrorType<AuthenticationExceptionResponse | NoteDestroy403 | ModelNotFoundExceptionResponse>
 
-    export const useNoteDestroy = <TError = AuthenticationExceptionResponse | NoteDestroy403,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useNoteDestroy = <TError = ErrorType<AuthenticationExceptionResponse | NoteDestroy403 | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{note: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof noteDestroy>>,
         TError,
-        {id: string},
+        {note: number},
         TContext
       > => {
       return useMutation(getNoteDestroyMutationOptions(options), queryClient);
     }
 
-export type taskIndexResponse200 = {
-  data: TaskIndex200
-  status: 200
-}
-
-export type taskIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type taskIndexResponseSuccess = (taskIndexResponse200) & {
-  headers: Headers;
-};
-export type taskIndexResponseError = (taskIndexResponse401) & {
-  headers: Headers;
-};
-
-export type taskIndexResponse = (taskIndexResponseSuccess | taskIndexResponseError)
-
-export const getTaskIndexUrl = () => {
-
-
-
-
-  return `/tasks`
-}
-
 /**
- * @summary List tasks. Filter by visit_id or assignee
+ * @summary Get a list of all system roles
  */
-export const taskIndex = async ( options?: Parameters<typeof customInstance>[1]): Promise<taskIndexResponse> => {
-
-  return customInstance<taskIndexResponse>(getTaskIndexUrl(),
-  {
-    ...options,
-    method: 'GET'
+export const roleIndex = (
+    params?: RoleIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<RoleResource[]>(
+      {url: `/roles`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getTaskIndexQueryKey = () => {
+export const getRoleIndexQueryKey = (params?: RoleIndexParams,) => {
     return [
-    `/tasks`
+    `/roles`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getTaskIndexQueryOptions = <TData = Awaited<ReturnType<typeof taskIndex>>, TError = AuthenticationExceptionResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getRoleIndexQueryOptions = <TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getTaskIndexQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getRoleIndexQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof taskIndex>>> = ({ signal }) => taskIndex({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof roleIndex>>> = ({ signal }) => roleIndex(params, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type TaskIndexQueryResult = NonNullable<Awaited<ReturnType<typeof taskIndex>>>
-export type TaskIndexQueryError = AuthenticationExceptionResponse
+export type RoleIndexQueryResult = NonNullable<Awaited<ReturnType<typeof roleIndex>>>
+export type RoleIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = AuthenticationExceptionResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  RoleIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof taskIndex>>,
+          Awaited<ReturnType<typeof roleIndex>>,
           TError,
-          Awaited<ReturnType<typeof taskIndex>>
+          Awaited<ReturnType<typeof roleIndex>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof taskIndex>>,
+          Awaited<ReturnType<typeof roleIndex>>,
           TError,
-          Awaited<ReturnType<typeof taskIndex>>
+          Awaited<ReturnType<typeof roleIndex>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List tasks. Filter by visit_id or assignee
+ * @summary Get a list of all system roles
  */
 
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getTaskIndexQueryOptions(options)
+  const queryOptions = getRoleIndexQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -2979,56 +2940,193 @@ export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TErr
 
 
 
-export type taskStoreResponse201 = {
-  data: TaskStore201
-  status: 201
+/**
+ * @summary List tasks. Filter by visit_id or assignee
+ */
+export const taskIndex = (
+    params?: TaskIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<TaskIndex200>(
+      {url: `/tasks`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTaskIndexInfiniteQueryKey = (params?: TaskIndexParams,) => {
+    return [
+    'infinite', `/tasks`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getTaskIndexQueryKey = (params?: TaskIndexParams,) => {
+    return [
+    `/tasks`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTaskIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaskIndexInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taskIndex>>, QueryKey, TaskIndexParams['page']> = ({ signal, pageParam }) => taskIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type taskStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
+export type TaskIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof taskIndex>>>
+export type TaskIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  TaskIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taskIndex>>,
+          TError,
+          Awaited<ReturnType<typeof taskIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taskIndex>>,
+          TError,
+          Awaited<ReturnType<typeof taskIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List tasks. Filter by visit_id or assignee
+ */
+
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaskIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type taskStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
+
+
+
+
+
+export const getTaskIndexQueryOptions = <TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaskIndexQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taskIndex>>> = ({ signal }) => taskIndex(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type taskStoreResponseSuccess = (taskStoreResponse201) & {
-  headers: Headers;
-};
-export type taskStoreResponseError = (taskStoreResponse401 | taskStoreResponse422) & {
-  headers: Headers;
-};
-
-export type taskStoreResponse = (taskStoreResponseSuccess | taskStoreResponseError)
-
-export const getTaskStoreUrl = () => {
+export type TaskIndexQueryResult = NonNullable<Awaited<ReturnType<typeof taskIndex>>>
+export type TaskIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  TaskIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taskIndex>>,
+          TError,
+          Awaited<ReturnType<typeof taskIndex>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taskIndex>>,
+          TError,
+          Awaited<ReturnType<typeof taskIndex>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List tasks. Filter by visit_id or assignee
+ */
 
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  return `/tasks`
+  const queryOptions = getTaskIndexQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
 }
 
-export const taskStore = async (taskStoreBody: TaskStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<taskStoreResponse> => {
-
-  return customInstance<taskStoreResponse>(getTaskStoreUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(taskStoreBody)
-  }
-);}
 
 
 
 
 
-export const getTaskStoreMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: TaskStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: TaskStoreBody}, TContext> => {
+
+export const taskStore = (
+    taskStoreBody: BodyType<TaskStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<TaskStore201>(
+      {url: `/tasks`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: taskStoreBody, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTaskStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: BodyType<TaskStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: BodyType<TaskStoreBody>}, TContext> => {
 
 const mutationKey = ['taskStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -3040,7 +3138,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof taskStore>>, {data: TaskStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof taskStore>>, {data: BodyType<TaskStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  taskStore(data,requestOptions)
@@ -3054,98 +3152,66 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type TaskStoreMutationResult = NonNullable<Awaited<ReturnType<typeof taskStore>>>
-    export type TaskStoreMutationBody = TaskStoreBody
-    export type TaskStoreMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type TaskStoreMutationBody = BodyType<TaskStoreBody>
+    export type TaskStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
-    export const useTaskStore = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: TaskStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useTaskStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: BodyType<TaskStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof taskStore>>,
         TError,
-        {data: TaskStoreBody},
+        {data: BodyType<TaskStoreBody>},
         TContext
       > => {
       return useMutation(getTaskStoreMutationOptions(options), queryClient);
     }
 
-export type taskShowResponse200 = {
-  data: TaskResource
-  status: 200
-}
+export const taskShow = (
+    task: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type taskShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type taskShowResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type taskShowResponseSuccess = (taskShowResponse200) & {
-  headers: Headers;
-};
-export type taskShowResponseError = (taskShowResponse401 | taskShowResponse404) & {
-  headers: Headers;
-};
-
-export type taskShowResponse = (taskShowResponseSuccess | taskShowResponseError)
-
-export const getTaskShowUrl = (id: string,) => {
+      return customInstance<TaskShow200>(
+      {url: `/tasks/${task}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/tasks/${id}`
-}
-
-export const taskShow = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<taskShowResponse> => {
-
-  return customInstance<taskShowResponse>(getTaskShowUrl(id),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getTaskShowQueryKey = (id: string,) => {
+export const getTaskShowQueryKey = (task: number,) => {
     return [
-    `/tasks/${id}`
+    `/tasks/${task}`
     ] as const;
     }
 
 
-export const getTaskShowQueryOptions = <TData = Awaited<ReturnType<typeof taskShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getTaskShowQueryOptions = <TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getTaskShowQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getTaskShowQueryKey(task);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof taskShow>>> = ({ signal }) => taskShow(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taskShow>>> = ({ signal }) => taskShow(task, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: task !== null && task !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type TaskShowQueryResult = NonNullable<Awaited<ReturnType<typeof taskShow>>>
-export type TaskShowQueryError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type TaskShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>> & Pick<
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ task: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskShow>>,
           TError,
@@ -3154,8 +3220,8 @@ export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>> & Pick<
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskShow>>,
           TError,
@@ -3164,17 +3230,17 @@ export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getTaskShowQueryOptions(id,options)
+  const queryOptions = getTaskShowQueryOptions(task,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -3187,57 +3253,27 @@ export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError
 
 
 
-export type taskUpdateResponse200 = {
-  data: TaskUpdate200
-  status: 200
-}
+export const taskUpdate = (
+    task: number,
+    taskUpdateBody?: BodyType<TaskUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type taskUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type taskUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type taskUpdateResponseSuccess = (taskUpdateResponse200) & {
-  headers: Headers;
-};
-export type taskUpdateResponseError = (taskUpdateResponse401 | taskUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type taskUpdateResponse = (taskUpdateResponseSuccess | taskUpdateResponseError)
-
-export const getTaskUpdateUrl = (id: string,) => {
+      return customInstance<TaskUpdate200>(
+      {url: `/tasks/${task}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: taskUpdateBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/tasks/${id}`
-}
-
-export const taskUpdate = async (id: string,
-    taskUpdateBody?: TaskUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<taskUpdateResponse> => {
-
-  return customInstance<taskUpdateResponse>(getTaskUpdateUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(taskUpdateBody)
-  }
-);}
-
-
-
-
-
-export const getTaskUpdateMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{id: string;data?: TaskUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{id: string;data?: TaskUpdateBody}, TContext> => {
+export const getTaskUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{task: number;data?: BodyType<TaskUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{task: number;data?: BodyType<TaskUpdateBody>}, TContext> => {
 
 const mutationKey = ['taskUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -3249,10 +3285,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof taskUpdate>>, {id: string;data?: TaskUpdateBody}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof taskUpdate>>, {task: number;data?: BodyType<TaskUpdateBody>}> = (props) => {
+          const {task,data} = props ?? {};
 
-          return  taskUpdate(id,data,requestOptions)
+          return  taskUpdate(task,data,requestOptions)
         }
 
 
@@ -3263,65 +3299,38 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type TaskUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof taskUpdate>>>
-    export type TaskUpdateMutationBody = TaskUpdateBody | undefined
-    export type TaskUpdateMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type TaskUpdateMutationBody = BodyType<TaskUpdateBody> | undefined
+    export type TaskUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useTaskUpdate = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{id: string;data?: TaskUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useTaskUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{task: number;data?: BodyType<TaskUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof taskUpdate>>,
         TError,
-        {id: string;data?: TaskUpdateBody},
+        {task: number;data?: BodyType<TaskUpdateBody>},
         TContext
       > => {
       return useMutation(getTaskUpdateMutationOptions(options), queryClient);
     }
 
-export type taskDestroyResponse200 = {
-  data: TaskDestroy200
-  status: 200
-}
+export const taskDestroy = (
+    task: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type taskDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type taskDestroyResponseSuccess = (taskDestroyResponse200) & {
-  headers: Headers;
-};
-export type taskDestroyResponseError = (taskDestroyResponse401) & {
-  headers: Headers;
-};
-
-export type taskDestroyResponse = (taskDestroyResponseSuccess | taskDestroyResponseError)
-
-export const getTaskDestroyUrl = (id: string,) => {
+      return customInstance<TaskDestroy200>(
+      {url: `/tasks/${task}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/tasks/${id}`
-}
-
-export const taskDestroy = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<taskDestroyResponse> => {
-
-  return customInstance<taskDestroyResponse>(getTaskDestroyUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
-
-
-
-
-export const getTaskDestroyMutationOptions = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{id: string}, TContext> => {
+export const getTaskDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{task: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{task: number}, TContext> => {
 
 const mutationKey = ['taskDestroy'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -3333,10 +3342,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof taskDestroy>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof taskDestroy>>, {task: number}> = (props) => {
+          const {task} = props ?? {};
 
-          return  taskDestroy(id,requestOptions)
+          return  taskDestroy(task,requestOptions)
         }
 
 
@@ -3348,149 +3357,165 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TaskDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof taskDestroy>>>
 
-    export type TaskDestroyMutationError = AuthenticationExceptionResponse
+    export type TaskDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useTaskDestroy = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useTaskDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{task: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof taskDestroy>>,
         TError,
-        {id: string},
+        {task: number},
         TContext
       > => {
       return useMutation(getTaskDestroyMutationOptions(options), queryClient);
     }
 
-export type userIndexResponse200 = {
-  data: UserIndex200
-  status: 200
-}
+export const testimonyIndex = (
+    params?: TestimonyIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type userIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type userIndexResponseSuccess = (userIndexResponse200) & {
-  headers: Headers;
-};
-export type userIndexResponseError = (userIndexResponse401) & {
-  headers: Headers;
-};
-
-export type userIndexResponse = (userIndexResponseSuccess | userIndexResponseError)
-
-export const getUserIndexUrl = () => {
+      return customInstance<TestimonyIndex200>(
+      {url: `/testimonies`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/users`
-}
-
-/**
- * @summary Listar usuarios con filtros opcionales y paginación.
-* Ejemplos de endpoints válidos:
-1. Sin parámetros (Trae la página 1 con configuración por defecto):
-GET /api/users
-* 2. Navegación de paginación (Ir a la página 2):
-GET /api/users?page=2
-* 3. Filtrar solo por nombre:
-GET /api/users?name=Carlos
-* 4. Filtrar solo por correo:
-GET /api/users?email=gmail.com
-* 5. Búsqueda combinada (Nombre O Correo):
-GET /api/users?name=Carlos&email=admin
- */
-export const userIndex = async ( options?: Parameters<typeof customInstance>[1]): Promise<userIndexResponse> => {
-
-  return customInstance<userIndexResponse>(getUserIndexUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getUserIndexQueryKey = () => {
+export const getTestimonyIndexInfiniteQueryKey = (params?: TestimonyIndexParams,) => {
     return [
-    `/users`
+    'infinite', `/testimonies`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getTestimonyIndexQueryKey = (params?: TestimonyIndexParams,) => {
+    return [
+    `/testimonies`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getUserIndexQueryOptions = <TData = Awaited<ReturnType<typeof userIndex>>, TError = AuthenticationExceptionResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getTestimonyIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getUserIndexQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getTestimonyIndexInfiniteQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof userIndex>>> = ({ signal }) => userIndex({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof testimonyIndex>>, QueryKey, TestimonyIndexParams['page']> = ({ signal, pageParam }) => testimonyIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type UserIndexQueryResult = NonNullable<Awaited<ReturnType<typeof userIndex>>>
-export type UserIndexQueryError = AuthenticationExceptionResponse
+export type TestimonyIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof testimonyIndex>>>
+export type TestimonyIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = AuthenticationExceptionResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>> & Pick<
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  TestimonyIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof userIndex>>,
+          Awaited<ReturnType<typeof testimonyIndex>>,
           TError,
-          Awaited<ReturnType<typeof userIndex>>
+          Awaited<ReturnType<typeof testimonyIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof testimonyIndex>>,
+          TError,
+          Awaited<ReturnType<typeof testimonyIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTestimonyIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getTestimonyIndexQueryOptions = <TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTestimonyIndexQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof testimonyIndex>>> = ({ signal }) => testimonyIndex(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TestimonyIndexQueryResult = NonNullable<Awaited<ReturnType<typeof testimonyIndex>>>
+export type TestimonyIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  TestimonyIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof testimonyIndex>>,
+          TError,
+          Awaited<ReturnType<typeof testimonyIndex>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>> & Pick<
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof userIndex>>,
+          Awaited<ReturnType<typeof testimonyIndex>>,
           TError,
-          Awaited<ReturnType<typeof userIndex>>
+          Awaited<ReturnType<typeof testimonyIndex>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Listar usuarios con filtros opcionales y paginación.
-* Ejemplos de endpoints válidos:
-1. Sin parámetros (Trae la página 1 con configuración por defecto):
-GET /api/users
-* 2. Navegación de paginación (Ir a la página 2):
-GET /api/users?page=2
-* 3. Filtrar solo por nombre:
-GET /api/users?name=Carlos
-* 4. Filtrar solo por correo:
-GET /api/users?email=gmail.com
-* 5. Búsqueda combinada (Nombre O Correo):
-GET /api/users?name=Carlos&email=admin
- */
 
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getUserIndexQueryOptions(options)
+  const queryOptions = getTestimonyIndexQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -3503,56 +3528,508 @@ export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TErr
 
 
 
-export type userStoreResponse201 = {
-  data: UserResource
-  status: 201
+export const testimonyStore = (
+    testimonyStoreBody: BodyType<TestimonyStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+      const formData = new FormData();
+formData.append(`family_profile_id`, testimonyStoreBody.family_profile_id.toString())
+formData.append(`language`, testimonyStoreBody.language);
+if(testimonyStoreBody.audio !== undefined && testimonyStoreBody.audio !== null) {
+ formData.append(`audio`, testimonyStoreBody.audio);
+ }
+if(testimonyStoreBody.transcription !== undefined && testimonyStoreBody.transcription !== null) {
+ formData.append(`transcription`, testimonyStoreBody.transcription);
+ }
+if(testimonyStoreBody.summary !== undefined && testimonyStoreBody.summary !== null) {
+ formData.append(`summary`, testimonyStoreBody.summary);
+ }
+formData.append(`recorded_at`, testimonyStoreBody.recorded_at);
+
+      return customInstance<TestimonyStore201>(
+      {url: `/testimonies`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTestimonyStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyStore>>, TError,{data: BodyType<TestimonyStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof testimonyStore>>, TError,{data: BodyType<TestimonyStoreBody>}, TContext> => {
+
+const mutationKey = ['testimonyStore'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof testimonyStore>>, {data: BodyType<TestimonyStoreBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  testimonyStore(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TestimonyStoreMutationResult = NonNullable<Awaited<ReturnType<typeof testimonyStore>>>
+    export type TestimonyStoreMutationBody = BodyType<TestimonyStoreBody>
+    export type TestimonyStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+    export const useTestimonyStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyStore>>, TError,{data: BodyType<TestimonyStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof testimonyStore>>,
+        TError,
+        {data: BodyType<TestimonyStoreBody>},
+        TContext
+      > => {
+      return useMutation(getTestimonyStoreMutationOptions(options), queryClient);
+    }
+
+export const testimonyShow = (
+    testimony: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<Testimony>(
+      {url: `/testimonies/${testimony}`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getTestimonyShowQueryKey = (testimony: number,) => {
+    return [
+    `/testimonies/${testimony}`
+    ] as const;
+    }
+
+
+export const getTestimonyShowQueryOptions = <TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTestimonyShowQueryKey(testimony);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof testimonyShow>>> = ({ signal }) => testimonyShow(testimony, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: testimony !== null && testimony !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type userStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
+export type TestimonyShowQueryResult = NonNullable<Awaited<ReturnType<typeof testimonyShow>>>
+export type TestimonyShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+
+
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ testimony: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof testimonyShow>>,
+          TError,
+          Awaited<ReturnType<typeof testimonyShow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof testimonyShow>>,
+          TError,
+          Awaited<ReturnType<typeof testimonyShow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTestimonyShowQueryOptions(testimony,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type userStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
+
+
+
+
+
+
+export const testimonyUpdate = (
+    testimony: number,
+    testimonyUpdateBody?: BodyType<TestimonyUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<TestimonyUpdate200>(
+      {url: `/testimonies/${testimony}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: testimonyUpdateBody, signal
+    },
+      options);
+    }
+
+
+
+
+export const getTestimonyUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyUpdate>>, TError,{testimony: number;data?: BodyType<TestimonyUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof testimonyUpdate>>, TError,{testimony: number;data?: BodyType<TestimonyUpdateBody>}, TContext> => {
+
+const mutationKey = ['testimonyUpdate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof testimonyUpdate>>, {testimony: number;data?: BodyType<TestimonyUpdateBody>}> = (props) => {
+          const {testimony,data} = props ?? {};
+
+          return  testimonyUpdate(testimony,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TestimonyUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof testimonyUpdate>>>
+    export type TestimonyUpdateMutationBody = BodyType<TestimonyUpdateBody> | undefined
+    export type TestimonyUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+
+    export const useTestimonyUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyUpdate>>, TError,{testimony: number;data?: BodyType<TestimonyUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof testimonyUpdate>>,
+        TError,
+        {testimony: number;data?: BodyType<TestimonyUpdateBody>},
+        TContext
+      > => {
+      return useMutation(getTestimonyUpdateMutationOptions(options), queryClient);
+    }
+
+export const testimonyDestroy = (
+    testimony: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<TestimonyDestroy200>(
+      {url: `/testimonies/${testimony}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getTestimonyDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyDestroy>>, TError,{testimony: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof testimonyDestroy>>, TError,{testimony: number}, TContext> => {
+
+const mutationKey = ['testimonyDestroy'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof testimonyDestroy>>, {testimony: number}> = (props) => {
+          const {testimony} = props ?? {};
+
+          return  testimonyDestroy(testimony,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TestimonyDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof testimonyDestroy>>>
+
+    export type TestimonyDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+
+    export const useTestimonyDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyDestroy>>, TError,{testimony: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof testimonyDestroy>>,
+        TError,
+        {testimony: number},
+        TContext
+      > => {
+      return useMutation(getTestimonyDestroyMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Listar usuarios con filtros opcionales y paginación.
+* Ejemplos de endpoints válidos:
+1. Sin parámetros (Trae la página 1 con configuración por defecto):
+GET /api/users
+* 2. Navegación de paginación (Ir a la página 2):
+GET /api/users?page=2
+* 3. Filtrar solo por nombre:
+GET /api/users?name=Carlos
+* 4. Filtrar solo por correo:
+GET /api/users?email=gmail.com
+* 5. Búsqueda combinada (Nombre O Correo):
+GET /api/users?name=Carlos&email=admin
+* 6. Filtrar por rol:
+GET /api/users?role=admin
+ */
+export const userIndex = (
+    params?: UserIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<UserIndex200>(
+      {url: `/users`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getUserIndexInfiniteQueryKey = (params?: UserIndexParams,) => {
+    return [
+    'infinite', `/users`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getUserIndexQueryKey = (params?: UserIndexParams,) => {
+    return [
+    `/users`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getUserIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserIndexInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userIndex>>, QueryKey, UserIndexParams['page']> = ({ signal, pageParam }) => userIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type userStoreResponseSuccess = (userStoreResponse201) & {
-  headers: Headers;
-};
-export type userStoreResponseError = (userStoreResponse401 | userStoreResponse422) & {
-  headers: Headers;
-};
-
-export type userStoreResponse = (userStoreResponseSuccess | userStoreResponseError)
-
-export const getUserStoreUrl = () => {
+export type UserIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof userIndex>>>
+export type UserIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  UserIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userIndex>>,
+          TError,
+          Awaited<ReturnType<typeof userIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userIndex>>,
+          TError,
+          Awaited<ReturnType<typeof userIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Listar usuarios con filtros opcionales y paginación.
+* Ejemplos de endpoints válidos:
+1. Sin parámetros (Trae la página 1 con configuración por defecto):
+GET /api/users
+* 2. Navegación de paginación (Ir a la página 2):
+GET /api/users?page=2
+* 3. Filtrar solo por nombre:
+GET /api/users?name=Carlos
+* 4. Filtrar solo por correo:
+GET /api/users?email=gmail.com
+* 5. Búsqueda combinada (Nombre O Correo):
+GET /api/users?name=Carlos&email=admin
+* 6. Filtrar por rol:
+GET /api/users?role=admin
+ */
 
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  return `/users`
+  const queryOptions = getUserIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
 }
 
-export const userStore = async (userStoreBody: UserStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<userStoreResponse> => {
-
-  return customInstance<userStoreResponse>(getUserStoreUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(userStoreBody)
-  }
-);}
 
 
 
 
 
-export const getUserStoreMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: UserStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: UserStoreBody}, TContext> => {
+export const getUserIndexQueryOptions = <TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserIndexQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userIndex>>> = ({ signal }) => userIndex(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserIndexQueryResult = NonNullable<Awaited<ReturnType<typeof userIndex>>>
+export type UserIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  UserIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userIndex>>,
+          TError,
+          Awaited<ReturnType<typeof userIndex>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userIndex>>,
+          TError,
+          Awaited<ReturnType<typeof userIndex>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Listar usuarios con filtros opcionales y paginación.
+* Ejemplos de endpoints válidos:
+1. Sin parámetros (Trae la página 1 con configuración por defecto):
+GET /api/users
+* 2. Navegación de paginación (Ir a la página 2):
+GET /api/users?page=2
+* 3. Filtrar solo por nombre:
+GET /api/users?name=Carlos
+* 4. Filtrar solo por correo:
+GET /api/users?email=gmail.com
+* 5. Búsqueda combinada (Nombre O Correo):
+GET /api/users?name=Carlos&email=admin
+* 6. Filtrar por rol:
+GET /api/users?role=admin
+ */
+
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserIndexQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const userStore = (
+    userStoreBody: BodyType<UserStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<UserResource>(
+      {url: `/users`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: userStoreBody, signal
+    },
+      options);
+    }
+
+
+
+
+export const getUserStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: BodyType<UserStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: BodyType<UserStoreBody>}, TContext> => {
 
 const mutationKey = ['userStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -3564,7 +4041,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userStore>>, {data: UserStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userStore>>, {data: BodyType<UserStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  userStore(data,requestOptions)
@@ -3578,63 +4055,31 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UserStoreMutationResult = NonNullable<Awaited<ReturnType<typeof userStore>>>
-    export type UserStoreMutationBody = UserStoreBody
-    export type UserStoreMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type UserStoreMutationBody = BodyType<UserStoreBody>
+    export type UserStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
-    export const useUserStore = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: UserStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useUserStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: BodyType<UserStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof userStore>>,
         TError,
-        {data: UserStoreBody},
+        {data: BodyType<UserStoreBody>},
         TContext
       > => {
       return useMutation(getUserStoreMutationOptions(options), queryClient);
     }
 
-export type userShowResponse200 = {
-  data: UserResource
-  status: 200
-}
-
-export type userShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type userShowResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type userShowResponseSuccess = (userShowResponse200) & {
-  headers: Headers;
-};
-export type userShowResponseError = (userShowResponse401 | userShowResponse404) & {
-  headers: Headers;
-};
-
-export type userShowResponse = (userShowResponseSuccess | userShowResponseError)
-
-export const getUserShowUrl = (user: number,) => {
+export const userShow = (
+    user: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-
-
-  return `/users/${user}`
-}
-
-export const userShow = async (user: number, options?: Parameters<typeof customInstance>[1]): Promise<userShowResponse> => {
-
-  return customInstance<userShowResponse>(getUserShowUrl(user),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+      return customInstance<UserShow200>(
+      {url: `/users/${user}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
@@ -3646,7 +4091,7 @@ export const getUserShowQueryKey = (user: number,) => {
     }
 
 
-export const getUserShowQueryOptions = <TData = Awaited<ReturnType<typeof userShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getUserShowQueryOptions = <TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3655,20 +4100,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof userShow>>> = ({ signal }) => userShow(user, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userShow>>> = ({ signal }) => userShow(user, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: user !== null && user !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: user !== null && user !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type UserShowQueryResult = NonNullable<Awaited<ReturnType<typeof userShow>>>
-export type UserShowQueryError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type UserShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof userShow>>,
@@ -3678,7 +4123,7 @@ export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof userShow>>,
@@ -3688,12 +4133,12 @@ export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -3711,62 +4156,27 @@ export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError
 
 
 
-export type userUpdateResponse200 = {
-  data: UserResource
-  status: 200
-}
+export const userUpdate = (
+    user: number,
+    userUpdateBody?: BodyType<UserUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type userUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type userUpdateResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type userUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type userUpdateResponseSuccess = (userUpdateResponse200) & {
-  headers: Headers;
-};
-export type userUpdateResponseError = (userUpdateResponse401 | userUpdateResponse404 | userUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type userUpdateResponse = (userUpdateResponseSuccess | userUpdateResponseError)
-
-export const getUserUpdateUrl = (user: number,) => {
+      return customInstance<UserResource>(
+      {url: `/users/${user}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: userUpdateBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/users/${user}`
-}
-
-export const userUpdate = async (user: number,
-    userUpdateBody?: UserUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<userUpdateResponse> => {
-
-  return customInstance<userUpdateResponse>(getUserUpdateUrl(user),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(userUpdateBody)
-  }
-);}
-
-
-
-
-
-export const getUserUpdateMutationOptions = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: UserUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: UserUpdateBody}, TContext> => {
+export const getUserUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: BodyType<UserUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: BodyType<UserUpdateBody>}, TContext> => {
 
 const mutationKey = ['userUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -3778,7 +4188,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userUpdate>>, {user: number;data?: UserUpdateBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userUpdate>>, {user: number;data?: BodyType<UserUpdateBody>}> = (props) => {
           const {user,data} = props ?? {};
 
           return  userUpdate(user,data,requestOptions)
@@ -3792,68 +4202,36 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UserUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof userUpdate>>>
-    export type UserUpdateMutationBody = UserUpdateBody | undefined
-    export type UserUpdateMutationError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+    export type UserUpdateMutationBody = BodyType<UserUpdateBody> | undefined
+    export type UserUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useUserUpdate = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: UserUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useUserUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: BodyType<UserUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof userUpdate>>,
         TError,
-        {user: number;data?: UserUpdateBody},
+        {user: number;data?: BodyType<UserUpdateBody>},
         TContext
       > => {
       return useMutation(getUserUpdateMutationOptions(options), queryClient);
     }
 
-export type userDestroyResponse204 = {
-  data: void
-  status: 204
-}
+export const userDestroy = (
+    user: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type userDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type userDestroyResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type userDestroyResponseSuccess = (userDestroyResponse204) & {
-  headers: Headers;
-};
-export type userDestroyResponseError = (userDestroyResponse401 | userDestroyResponse404) & {
-  headers: Headers;
-};
-
-export type userDestroyResponse = (userDestroyResponseSuccess | userDestroyResponseError)
-
-export const getUserDestroyUrl = (user: number,) => {
+      return customInstance<void>(
+      {url: `/users/${user}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/users/${user}`
-}
-
-export const userDestroy = async (user: number, options?: Parameters<typeof customInstance>[1]): Promise<userDestroyResponse> => {
-
-  return customInstance<userDestroyResponse>(getUserDestroyUrl(user),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
-
-
-
-
-export const getUserDestroyMutationOptions = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+export const getUserDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userDestroy>>, TError,{user: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof userDestroy>>, TError,{user: number}, TContext> => {
 
@@ -3882,9 +4260,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UserDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof userDestroy>>>
 
-    export type UserDestroyMutationError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+    export type UserDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useUserDestroy = <TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse,
+    export const useUserDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userDestroy>>, TError,{user: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof userDestroy>>,
@@ -3895,82 +4273,129 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getUserDestroyMutationOptions(options), queryClient);
     }
 
-export type visitIndexResponse200 = {
-  data: VisitIndex200
-  status: 200
-}
-
-export type visitIndexResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
-
-export type visitIndexResponseSuccess = (visitIndexResponse200) & {
-  headers: Headers;
-};
-export type visitIndexResponseError = (visitIndexResponse401) & {
-  headers: Headers;
-};
-
-export type visitIndexResponse = (visitIndexResponseSuccess | visitIndexResponseError)
-
-export const getVisitIndexUrl = () => {
-
-
-
-
-  return `/visits`
-}
-
 /**
  * @summary List visits. Supports filtering by family_profile_id and status
  */
-export const visitIndex = async ( options?: Parameters<typeof customInstance>[1]): Promise<visitIndexResponse> => {
-
-  return customInstance<visitIndexResponse>(getVisitIndexUrl(),
-  {
-    ...options,
-    method: 'GET'
+export const visitIndex = (
+    params?: VisitIndexParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
 
-  }
-);}
+      return customInstance<VisitIndex200>(
+      {url: `/visits`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
 
 
 
 
-
-export const getVisitIndexQueryKey = () => {
+export const getVisitIndexInfiniteQueryKey = (params?: VisitIndexParams,) => {
     return [
-    `/visits`
+    'infinite', `/visits`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getVisitIndexQueryKey = (params?: VisitIndexParams,) => {
+    return [
+    `/visits`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getVisitIndexQueryOptions = <TData = Awaited<ReturnType<typeof visitIndex>>, TError = AuthenticationExceptionResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getVisitIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getVisitIndexQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getVisitIndexInfiniteQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof visitIndex>>> = ({ signal }) => visitIndex({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof visitIndex>>, QueryKey, VisitIndexParams['page']> = ({ signal, pageParam }) => visitIndex({...params, 'page': pageParam ?? params?.['page']}, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VisitIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof visitIndex>>>
+export type VisitIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+
+
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  VisitIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof visitIndex>>,
+          TError,
+          Awaited<ReturnType<typeof visitIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof visitIndex>>,
+          TError,
+          Awaited<ReturnType<typeof visitIndex>>, QueryKey
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List visits. Supports filtering by family_profile_id and status
+ */
+
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVisitIndexInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getVisitIndexQueryOptions = <TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVisitIndexQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof visitIndex>>> = ({ signal }) => visitIndex(params, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn,   staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type VisitIndexQueryResult = NonNullable<Awaited<ReturnType<typeof visitIndex>>>
-export type VisitIndexQueryError = AuthenticationExceptionResponse
+export type VisitIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = AuthenticationExceptionResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>> & Pick<
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params: undefined |  VisitIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitIndex>>,
           TError,
@@ -3979,8 +4404,8 @@ export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>> & Pick<
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitIndex>>,
           TError,
@@ -3989,20 +4414,20 @@ export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List visits. Supports filtering by family_profile_id and status
  */
 
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = AuthenticationExceptionResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+ params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getVisitIndexQueryOptions(options)
+  const queryOptions = getVisitIndexQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -4015,56 +4440,26 @@ export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TE
 
 
 
-export type visitStoreResponse201 = {
-  data: VisitStore201
-  status: 201
-}
+export const visitStore = (
+    visitStoreBody: BodyType<VisitStoreBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type visitStoreResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type visitStoreResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type visitStoreResponseSuccess = (visitStoreResponse201) & {
-  headers: Headers;
-};
-export type visitStoreResponseError = (visitStoreResponse401 | visitStoreResponse422) & {
-  headers: Headers;
-};
-
-export type visitStoreResponse = (visitStoreResponseSuccess | visitStoreResponseError)
-
-export const getVisitStoreUrl = () => {
+      return customInstance<VisitStore201>(
+      {url: `/visits`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: visitStoreBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/visits`
-}
-
-export const visitStore = async (visitStoreBody: VisitStoreBody, options?: Parameters<typeof customInstance>[1]): Promise<visitStoreResponse> => {
-
-  return customInstance<visitStoreResponse>(getVisitStoreUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(visitStoreBody)
-  }
-);}
-
-
-
-
-
-export const getVisitStoreMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: VisitStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: VisitStoreBody}, TContext> => {
+export const getVisitStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: BodyType<VisitStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: BodyType<VisitStoreBody>}, TContext> => {
 
 const mutationKey = ['visitStore'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -4076,7 +4471,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof visitStore>>, {data: VisitStoreBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof visitStore>>, {data: BodyType<VisitStoreBody>}> = (props) => {
           const {data} = props ?? {};
 
           return  visitStore(data,requestOptions)
@@ -4090,98 +4485,66 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type VisitStoreMutationResult = NonNullable<Awaited<ReturnType<typeof visitStore>>>
-    export type VisitStoreMutationBody = VisitStoreBody
-    export type VisitStoreMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type VisitStoreMutationBody = BodyType<VisitStoreBody>
+    export type VisitStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
 
-    export const useVisitStore = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: VisitStoreBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useVisitStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: BodyType<VisitStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof visitStore>>,
         TError,
-        {data: VisitStoreBody},
+        {data: BodyType<VisitStoreBody>},
         TContext
       > => {
       return useMutation(getVisitStoreMutationOptions(options), queryClient);
     }
 
-export type visitShowResponse200 = {
-  data: VisitResource
-  status: 200
-}
+export const visitShow = (
+    visit: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type visitShowResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type visitShowResponse404 = {
-  data: ModelNotFoundExceptionResponse
-  status: 404
-}
-
-export type visitShowResponseSuccess = (visitShowResponse200) & {
-  headers: Headers;
-};
-export type visitShowResponseError = (visitShowResponse401 | visitShowResponse404) & {
-  headers: Headers;
-};
-
-export type visitShowResponse = (visitShowResponseSuccess | visitShowResponseError)
-
-export const getVisitShowUrl = (id: string,) => {
+      return customInstance<VisitShow200>(
+      {url: `/visits/${visit}`, method: 'GET', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/visits/${id}`
-}
-
-export const visitShow = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<visitShowResponse> => {
-
-  return customInstance<visitShowResponse>(getVisitShowUrl(id),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getVisitShowQueryKey = (id: string,) => {
+export const getVisitShowQueryKey = (visit: number,) => {
     return [
-    `/visits/${id}`
+    `/visits/${visit}`
     ] as const;
     }
 
 
-export const getVisitShowQueryOptions = <TData = Awaited<ReturnType<typeof visitShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getVisitShowQueryOptions = <TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getVisitShowQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getVisitShowQueryKey(visit);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof visitShow>>> = ({ signal }) => visitShow(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof visitShow>>> = ({ signal }) => visitShow(visit, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: visit !== null && visit !== undefined,  staleTime: 10000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type VisitShowQueryResult = NonNullable<Awaited<ReturnType<typeof visitShow>>>
-export type VisitShowQueryError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse
+export type VisitShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>> & Pick<
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ visit: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitShow>>,
           TError,
@@ -4190,8 +4553,8 @@ export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>> & Pick<
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitShow>>,
           TError,
@@ -4200,17 +4563,17 @@ export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+ visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getVisitShowQueryOptions(id,options)
+  const queryOptions = getVisitShowQueryOptions(visit,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -4223,57 +4586,27 @@ export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TErr
 
 
 
-export type visitUpdateResponse200 = {
-  data: VisitUpdate200
-  status: 200
-}
+export const visitUpdate = (
+    visit: number,
+    visitUpdateBody?: BodyType<VisitUpdateBody>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type visitUpdateResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type visitUpdateResponse422 = {
-  data: ValidationExceptionResponse
-  status: 422
-}
-
-export type visitUpdateResponseSuccess = (visitUpdateResponse200) & {
-  headers: Headers;
-};
-export type visitUpdateResponseError = (visitUpdateResponse401 | visitUpdateResponse422) & {
-  headers: Headers;
-};
-
-export type visitUpdateResponse = (visitUpdateResponseSuccess | visitUpdateResponseError)
-
-export const getVisitUpdateUrl = (id: string,) => {
+      return customInstance<VisitUpdate200>(
+      {url: `/visits/${visit}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: visitUpdateBody, signal
+    },
+      options);
+    }
 
 
 
 
-  return `/visits/${id}`
-}
-
-export const visitUpdate = async (id: string,
-    visitUpdateBody?: VisitUpdateBody, options?: Parameters<typeof customInstance>[1]): Promise<visitUpdateResponse> => {
-
-  return customInstance<visitUpdateResponse>(getVisitUpdateUrl(id),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(visitUpdateBody)
-  }
-);}
-
-
-
-
-
-export const getVisitUpdateMutationOptions = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{id: string;data?: VisitUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{id: string;data?: VisitUpdateBody}, TContext> => {
+export const getVisitUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{visit: number;data?: BodyType<VisitUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{visit: number;data?: BodyType<VisitUpdateBody>}, TContext> => {
 
 const mutationKey = ['visitUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -4285,10 +4618,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof visitUpdate>>, {id: string;data?: VisitUpdateBody}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof visitUpdate>>, {visit: number;data?: BodyType<VisitUpdateBody>}> = (props) => {
+          const {visit,data} = props ?? {};
 
-          return  visitUpdate(id,data,requestOptions)
+          return  visitUpdate(visit,data,requestOptions)
         }
 
 
@@ -4299,65 +4632,38 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type VisitUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof visitUpdate>>>
-    export type VisitUpdateMutationBody = VisitUpdateBody | undefined
-    export type VisitUpdateMutationError = AuthenticationExceptionResponse | ValidationExceptionResponse
+    export type VisitUpdateMutationBody = BodyType<VisitUpdateBody> | undefined
+    export type VisitUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useVisitUpdate = <TError = AuthenticationExceptionResponse | ValidationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{id: string;data?: VisitUpdateBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useVisitUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{visit: number;data?: BodyType<VisitUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof visitUpdate>>,
         TError,
-        {id: string;data?: VisitUpdateBody},
+        {visit: number;data?: BodyType<VisitUpdateBody>},
         TContext
       > => {
       return useMutation(getVisitUpdateMutationOptions(options), queryClient);
     }
 
-export type visitDestroyResponse200 = {
-  data: VisitDestroy200
-  status: 200
-}
+export const visitDestroy = (
+    visit: number,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
 
-export type visitDestroyResponse401 = {
-  data: AuthenticationExceptionResponse
-  status: 401
-}
 
-export type visitDestroyResponseSuccess = (visitDestroyResponse200) & {
-  headers: Headers;
-};
-export type visitDestroyResponseError = (visitDestroyResponse401) & {
-  headers: Headers;
-};
-
-export type visitDestroyResponse = (visitDestroyResponseSuccess | visitDestroyResponseError)
-
-export const getVisitDestroyUrl = (id: string,) => {
+      return customInstance<VisitDestroy200>(
+      {url: `/visits/${visit}`, method: 'DELETE', signal
+    },
+      options);
+    }
 
 
 
 
-  return `/visits/${id}`
-}
-
-export const visitDestroy = async (id: string, options?: Parameters<typeof customInstance>[1]): Promise<visitDestroyResponse> => {
-
-  return customInstance<visitDestroyResponse>(getVisitDestroyUrl(id),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
-
-
-
-
-export const getVisitDestroyMutationOptions = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{id: string}, TContext> => {
+export const getVisitDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{visit: number}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{visit: number}, TContext> => {
 
 const mutationKey = ['visitDestroy'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -4369,10 +4675,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof visitDestroy>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof visitDestroy>>, {visit: number}> = (props) => {
+          const {visit} = props ?? {};
 
-          return  visitDestroy(id,requestOptions)
+          return  visitDestroy(visit,requestOptions)
         }
 
 
@@ -4384,14 +4690,14 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type VisitDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof visitDestroy>>>
 
-    export type VisitDestroyMutationError = AuthenticationExceptionResponse
+    export type VisitDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useVisitDestroy = <TError = AuthenticationExceptionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useVisitDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{visit: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof visitDestroy>>,
         TError,
-        {id: string},
+        {visit: number},
         TContext
       > => {
       return useMutation(getVisitDestroyMutationOptions(options), queryClient);

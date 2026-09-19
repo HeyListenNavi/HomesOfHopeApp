@@ -4,7 +4,6 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { ApplicantGender } from './applicantGender';
 import type { ApplicantStatus } from './applicantStatus';
 import type { AttendanceResource } from './attendanceResource';
 import type { GroupResource } from './groupResource';
@@ -16,7 +15,8 @@ export interface ApplicantResource {
   applicant_name: string | null;
   /** @nullable */
   curp: string | null;
-  gender: ApplicantGender | null;
+  /** @nullable */
+  gender: string | null;
   /** @nullable */
   current_stage_id: number | null;
   /** @nullable */

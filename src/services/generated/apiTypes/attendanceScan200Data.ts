@@ -4,10 +4,10 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { AttendanceResource } from './attendanceResource';
+import type { Attendance } from './attendance';
 
 export type AttendanceScan200Data = {
-  attendance: AttendanceResource;
+  attendance: Attendance | null;
   /** @nullable */
   applicant_name: string | null;
   group_name: string;

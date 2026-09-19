@@ -6,5 +6,26 @@
  */
 
 export type FamilyProfileIndexParams = {
-limit?: string;
+/**
+ * Number of profiles per page.
+ * @minimum 1
+ */
+limit?: number;
+/**
+ * Search by family name (partial match).
+ */
+family_name?: string;
+/**
+ * Search by responsible member's CURP (partial match).
+ */
+curp?: string;
+/**
+ * Search by responsible member's name or surnames (partial match).
+ */
+responsible_name?: string;
+/**
+ * Page number for paginated results.
+ * @minimum 1
+ */
+page?: number;
 };

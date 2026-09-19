@@ -9,12 +9,14 @@ export type FamilyStatus = typeof FamilyStatus[keyof typeof FamilyStatus];
 
 
 export const FamilyStatus = {
+  pre_profile: 'pre_profile',
   new: 'new',
-  potential: 'potential',
   in_process: 'in_process',
   on_hold: 'on_hold',
+  potential: 'potential',
   approved: 'approved',
-  not_eligible: 'not_eligible',
+  programmed: 'programmed',
   built: 'built',
+  not_eligible: 'not_eligible',
   dont_build: 'dont_build',
 } as const;

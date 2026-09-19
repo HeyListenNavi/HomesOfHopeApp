@@ -4,21 +4,172 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
+import type { Currency } from './currency';
 import type { FamilyStatus } from './familyStatus';
+import type { LandService } from './landService';
+import type { LandSize } from './landSize';
 
 export type FamilyProfileUpdateBody = {
-  /** @maxLength 255 */
+  /**
+     * Basic info
+     * @maxLength 255
+     */
   family_name?: string;
   status?: FamilyStatus;
-  current_address?: string;
-  /** @nullable */
-  construction_address?: string | null;
-  /** @nullable */
-  responsible_member_id?: number | null;
-  /** Validación segura */
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  interviewer_name?: string | null;
   opened_at?: string;
   /** @nullable */
-  closed_at?: string | null;
+  reason?: string | null;
   /** @nullable */
   general_observations?: string | null;
+  /** Booleans */
+  lives_on_land?: boolean;
+  /** @nullable */
+  has_addictions?: boolean | null;
+  /** @nullable */
+  addictions_details?: string | null;
+  /** @nullable */
+  construction_notified?: boolean | null;
+  /**
+     * Home info
+     * @maxLength 255
+     * @nullable
+     */
+  home_city?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  home_colony?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  home_address?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  home_address_link?: string | null;
+  /**
+     * @minimum -90
+     * @maximum 90
+     * @nullable
+     */
+  home_latitude?: number | null;
+  /**
+     * @minimum -180
+     * @maximum 180
+     * @nullable
+     */
+  home_longitude?: number | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  home_ownership_time?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  home_owner_name?: string | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  home_monthly_rent?: number | null;
+  home_monthly_rent_currency?: Currency | null;
+  /** @nullable */
+  home_has_receipts?: boolean | null;
+  /** @nullable */
+  house_description?: string | null;
+  /**
+     * Land info
+     * @maxLength 255
+     * @nullable
+     */
+  land_city?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  land_colony?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  land_address?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  land_address_link?: string | null;
+  /**
+     * @minimum -90
+     * @maximum 90
+     * @nullable
+     */
+  land_latitude?: number | null;
+  /**
+     * @minimum -180
+     * @maximum 180
+     * @nullable
+     */
+  land_longitude?: number | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  land_ownership_time?: string | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  land_total_cost?: number | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  land_down_payment?: number | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  land_monthly_payment?: number | null;
+  land_currency?: Currency | null;
+  /** @nullable */
+  land_last_payment_date?: string | null;
+  /** @nullable */
+  land_is_up_to_date?: boolean | null;
+  /** @nullable */
+  land_is_flat?: boolean | null;
+  land_size?: LandSize | null;
+  /** @nullable */
+  land_services?: LandService[] | null;
+  /**
+     * Construction
+     * @nullable
+     */
+  building_start_date?: string | null;
+  /** @nullable */
+  building_finish_date?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  building_team?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  building_team_color?: string | null;
+  /**
+     * Relationship
+     * @nullable
+     */
+  responsible_member_id?: number | null;
 };

@@ -5,12 +5,9 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface User {
+export interface RoleResource {
   id: number;
   name: string;
-  email: string;
-  /** @nullable */
-  email_verified_at: string | null;
   /** @nullable */
   created_at: string | null;
   /** @nullable */

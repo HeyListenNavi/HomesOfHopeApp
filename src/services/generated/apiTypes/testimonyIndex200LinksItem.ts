@@ -5,7 +5,7 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type FamilyProfileIndex200LinksItem = {
+export type TestimonyIndex200LinksItem = {
   /** @nullable */
   url: string | null;
   label: string;

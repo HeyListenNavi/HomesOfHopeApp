@@ -10,6 +10,7 @@ export type AttendanceStatus = typeof AttendanceStatus[keyof typeof AttendanceSt
 
 export const AttendanceStatus = {
   present: 'present',
+  attended: 'attended',
   absent: 'absent',
   pending: 'pending',
 } as const;

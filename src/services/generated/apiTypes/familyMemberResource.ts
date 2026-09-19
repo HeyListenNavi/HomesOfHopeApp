@@ -17,15 +17,18 @@ import type { Religion } from './religion';
 export interface FamilyMemberResource {
   id: number;
   family_profile_id: number;
-  name: string;
-  paternal_surname: string;
+  /** @nullable */
+  name: string | null;
+  /** @nullable */
+  paternal_surname: string | null;
   /** @nullable */
   maternal_surname: string | null;
   full_name: string;
-  birth_date: string;
+  /** @nullable */
+  birth_date: string | null;
   /** @nullable */
   curp: string | null;
-  relationship: Relationship;
+  relationship: Relationship | null;
   is_responsible: boolean;
   is_land_owner: boolean;
   /** @nullable */

@@ -6,5 +6,22 @@
  */
 
 export type GroupIndexParams = {
-limit?: string;
+/**
+ * Number of groups per page.
+ * @minimum 1
+ */
+limit?: number;
+/**
+ * Page number for paginated results.
+ * @minimum 1
+ */
+page?: number;
+/**
+ * Groups meeting on this exact date.
+ */
+date?: string;
+/**
+ * Visits scheduled on or after this date.
+ */
+min_date?: string;
 };

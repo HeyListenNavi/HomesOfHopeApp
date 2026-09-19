@@ -4,10 +4,12 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { GroupApplicants200ApplicantsItem } from './groupApplicants200ApplicantsItem';
-import type { GroupResource } from './groupResource';
+import type { GroupApplicants200DataItem } from './groupApplicants200DataItem';
+import type { GroupApplicants200Links } from './groupApplicants200Links';
+import type { GroupApplicants200Meta } from './groupApplicants200Meta';
 
 export type GroupApplicants200 = {
-  group: GroupResource;
-  applicants: GroupApplicants200ApplicantsItem[];
+  data: GroupApplicants200DataItem[];
+  links: GroupApplicants200Links;
+  meta: GroupApplicants200Meta;
 };

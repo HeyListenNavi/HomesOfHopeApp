@@ -10,8 +10,6 @@ import type { FamilyMemberResource } from './familyMemberResource';
 import type { FamilyStatus } from './familyStatus';
 import type { HousingStatus } from './housingStatus';
 import type { LandSize } from './landSize';
-import type { NoteResource } from './noteResource';
-import type { VisitResource } from './visitResource';
 
 export interface FamilyProfileResource {
   id: number;
@@ -19,7 +17,7 @@ export interface FamilyProfileResource {
   slug: string;
   status: FamilyStatus;
   /** @nullable */
-  family_photo_path: string | null;
+  family_photo_path: null;
   lives_on_land: boolean;
   /** @nullable */
   interviewer_name: string | null;
@@ -95,16 +93,12 @@ export interface FamilyProfileResource {
   /** @nullable */
   building_start_date: string | null;
   /** @nullable */
-  building_finish_date: string | null;
-  /** @nullable */
   building_team: string | null;
   /** @nullable */
   building_team_color: string | null;
   responsibleMember?: FamilyMemberResource | null;
   members?: FamilyMemberResource[];
   documents?: DocumentResource[];
-  notes?: NoteResource[];
-  visits?: VisitResource[];
   /** @nullable */
   created_at: string | null;
   /** @nullable */

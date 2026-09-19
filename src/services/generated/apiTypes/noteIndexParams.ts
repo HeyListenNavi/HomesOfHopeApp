@@ -6,6 +6,17 @@
  */
 
 export type NoteIndexParams = {
+/**
+ * Type of the object the notes belong to (family_profile, family_member, visit, or a model class name).
+ */
 noteable_type?: string;
-noteable_id?: string;
+/**
+ * ID of the object the notes belong to.
+ */
+noteable_id?: number;
+/**
+ * Page number for paginated results.
+ * @minimum 1
+ */
+page?: number;
 };

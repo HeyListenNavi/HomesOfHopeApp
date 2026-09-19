@@ -9,6 +9,7 @@ export type EducationLevel = typeof EducationLevel[keyof typeof EducationLevel];
 
 
 export const EducationLevel = {
+  preschool: 'preschool',
   none: 'none',
   elementary: 'elementary',
   middle_school: 'middle_school',

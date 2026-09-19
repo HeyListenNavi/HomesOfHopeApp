@@ -5,7 +5,7 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type VisitIndex200LinksItem = {
+export type GroupApplicants200MetaLinksItem = {
   /** @nullable */
   url: string | null;
   label: string;

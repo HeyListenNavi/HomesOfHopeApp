@@ -5,7 +5,7 @@
  * OpenAPI spec version: 0.0.1
  */
 import type { DocumentResource } from './documentResource';
-import type { Evidence } from './evidence';
+import type { EvidenceResource } from './evidenceResource';
 import type { FamilyProfileResource } from './familyProfileResource';
 import type { NoteResource } from './noteResource';
 import type { TaskResource } from './taskResource';
@@ -28,7 +28,7 @@ export interface VisitResource {
   notes?: NoteResource[];
   documents?: DocumentResource[];
   tasks?: TaskResource[];
-  evidences?: Evidence[];
+  evidences?: EvidenceResource[];
   /** @nullable */
   created_at: string | null;
   /** @nullable */

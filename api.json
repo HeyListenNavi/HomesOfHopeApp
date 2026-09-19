@@ -6,30 +6,30 @@
     },
     "servers": [
         {
-            "url": "http:\/\/localhost:8000\/api"
+            "url": "http://localhost:8000/api"
         }
     ],
     "paths": {
-        "\/user": {
+        "/user": {
             "get": {
                 "responses": {
                     "200": {
                         "description": "`UserResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/UserResource"
+                                    "$ref": "#/components/schemas/UserResource"
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/attendance\/scan": {
+        "/attendance/scan": {
             "post": {
                 "operationId": "attendance.scan",
                 "summary": "Scan QR code payload to mark attendance",
@@ -39,7 +39,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -49,7 +49,7 @@
                                     "status": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/AttendanceStatus"
+                                                "$ref": "#/components/schemas/AttendanceStatus"
                                             },
                                             {
                                                 "type": "null"
@@ -68,7 +68,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -80,7 +80,14 @@
                                             "type": "object",
                                             "properties": {
                                                 "attendance": {
-                                                    "$ref": "#\/components\/schemas\/AttendanceResource"
+                                                    "anyOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/Attendance"
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
                                                 },
                                                 "applicant_name": {
                                                     "type": [
@@ -110,7 +117,7 @@
                     "404": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -127,15 +134,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/attendance\/{id}": {
+        "/attendance/{id}": {
             "put": {
                 "operationId": "attendance.update",
                 "summary": "Manually update attendance status by ID",
@@ -155,12 +162,12 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
                                     "status": {
-                                        "$ref": "#\/components\/schemas\/AttendanceStatus"
+                                        "$ref": "#/components/schemas/AttendanceStatus"
                                     }
                                 },
                                 "required": [
@@ -174,7 +181,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -183,17 +190,7 @@
                                             "const": "Attendance updated manually."
                                         },
                                         "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#\/components\/schemas\/AttendanceResource"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "required": [
-                                                        "applicant"
-                                                    ]
-                                                }
-                                            ]
+                                            "$ref": "#/components/schemas/Attendance"
                                         }
                                     },
                                     "required": [
@@ -205,15 +202,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/login": {
+        "/login": {
             "post": {
                 "operationId": "auth.login",
                 "tags": [
@@ -222,7 +219,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -246,7 +243,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -254,7 +251,7 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "$ref": "#\/components\/schemas\/UserResource"
+                                            "$ref": "#/components/schemas/UserResource"
                                         }
                                     },
                                     "required": [
@@ -266,12 +263,12 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "\/logout": {
+        "/logout": {
             "post": {
                 "operationId": "auth.logout",
                 "tags": [
@@ -281,7 +278,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -298,12 +295,12 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/documents": {
+        "/documents": {
             "post": {
                 "operationId": "document.store",
                 "summary": "Store a newly created document in storage",
@@ -313,7 +310,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart\/form-data": {
+                        "multipart/form-data": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -329,7 +326,7 @@
                                     "file": {
                                         "type": "string",
                                         "format": "binary",
-                                        "contentMediaType": "application\/octet-stream",
+                                        "contentMediaType": "application/octet-stream",
                                         "description": "Maximum file size: 10240 kilobytes."
                                     }
                                 },
@@ -347,7 +344,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -356,7 +353,7 @@
                                             "const": "Document uploaded successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/DocumentResource"
+                                            "$ref": "#/components/schemas/DocumentResource"
                                         }
                                     },
                                     "required": [
@@ -370,7 +367,7 @@
                     "400": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -387,15 +384,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/documents\/{id}": {
+        "/documents/{document}": {
             "get": {
                 "operationId": "document.show",
                 "summary": "Display the specified resource",
@@ -404,11 +401,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "document",
                         "in": "path",
                         "required": true,
+                        "description": "The document ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -416,15 +414,18 @@
                     "200": {
                         "description": "`DocumentResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/DocumentResource"
+                                    "$ref": "#/components/schemas/DocumentResource"
                                 }
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -436,11 +437,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "document",
                         "in": "path",
                         "required": true,
+                        "description": "The document ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -448,7 +450,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -464,13 +466,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/documents\/{id}\/download": {
+        "/documents/{document}/download": {
             "get": {
                 "operationId": "document.download",
                 "summary": "Download the file",
@@ -479,11 +484,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "document",
                         "in": "path",
                         "required": true,
+                        "description": "The document ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -491,7 +497,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/octet-stream": {
+                            "application/octet-stream": {
                                 "schema": {
                                     "type": "string",
                                     "format": "binary"
@@ -511,15 +517,138 @@
                         }
                     },
                     "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/evidence": {
+            "post": {
+                "operationId": "evidence.store",
+                "summary": "Store new evidence (Upload media)",
+                "tags": [
+                    "Evidence"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "visit_id": {
+                                        "type": "integer"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "contentMediaType": "application/octet-stream",
+                                        "description": "Maximum file size: 51200 kilobytes."
+                                    },
+                                    "description": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Max 50MB"
+                                    }
+                                },
+                                "required": [
+                                    "visit_id",
+                                    "file"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`EvidenceResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EvidenceResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/evidence/{evidence}": {
+            "get": {
+                "operationId": "evidence.show",
+                "summary": "Show a specific evidence",
+                "tags": [
+                    "Evidence"
+                ],
+                "parameters": [
+                    {
+                        "name": "evidence",
+                        "in": "path",
+                        "required": true,
+                        "description": "The evidence ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`EvidenceResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EvidenceResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "evidence.destroy",
+                "summary": "Delete evidence",
+                "tags": [
+                    "Evidence"
+                ],
+                "parameters": [
+                    {
+                        "name": "evidence",
+                        "in": "path",
+                        "required": true,
+                        "description": "The evidence ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "const": "File not found on disk"
+                                            "const": "Evidence deleted successfully"
                                         }
                                     },
                                     "required": [
@@ -529,30 +658,52 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/family-members": {
+        "/family-members": {
             "get": {
                 "operationId": "familyMember.index",
                 "tags": [
                     "FamilyMember"
                 ],
+                "parameters": [
+                    {
+                        "name": "family_profile_id",
+                        "in": "query",
+                        "description": "Filter members by the family profile they belong to.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `FamilyMemberResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/FamilyMemberResource"
+                                                "$ref": "#/components/schemas/FamilyMemberResource"
                                             }
                                         },
                                         "links": {
@@ -681,8 +832,11 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -694,7 +848,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -724,7 +878,7 @@
                                         ]
                                     },
                                     "relationship": {
-                                        "$ref": "#\/components\/schemas\/Relationship"
+                                        "$ref": "#/components/schemas/Relationship"
                                     },
                                     "is_responsible": {
                                         "type": "boolean"
@@ -741,7 +895,7 @@
                                     "occupation": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/Occupation"
+                                                "$ref": "#/components/schemas/Occupation"
                                             },
                                             {
                                                 "type": "null"
@@ -751,7 +905,7 @@
                                     "marital_status": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/MaritalStatus"
+                                                "$ref": "#/components/schemas/MaritalStatus"
                                             },
                                             {
                                                 "type": "null"
@@ -761,7 +915,7 @@
                                     "education_level": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/EducationLevel"
+                                                "$ref": "#/components/schemas/EducationLevel"
                                             },
                                             {
                                                 "type": "null"
@@ -783,7 +937,7 @@
                                     "religion": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/Religion"
+                                                "$ref": "#/components/schemas/Religion"
                                             },
                                             {
                                                 "type": "null"
@@ -829,7 +983,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -838,7 +992,7 @@
                                             "const": "Family Member created successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/FamilyMemberResource"
+                                            "$ref": "#/components/schemas/FamilyMemberResource"
                                         }
                                     },
                                     "required": [
@@ -850,15 +1004,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/family-members\/{familyMember}": {
+        "/family-members/{familyMember}": {
             "get": {
                 "operationId": "familyMember.show",
                 "tags": [
@@ -879,11 +1033,11 @@
                     "200": {
                         "description": "`FamilyMemberResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "allOf": [
                                         {
-                                            "$ref": "#\/components\/schemas\/FamilyMemberResource"
+                                            "$ref": "#/components/schemas/FamilyMemberResource"
                                         },
                                         {
                                             "type": "object",
@@ -898,10 +1052,10 @@
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -923,7 +1077,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -950,7 +1104,7 @@
                                         ]
                                     },
                                     "relationship": {
-                                        "$ref": "#\/components\/schemas\/Relationship"
+                                        "$ref": "#/components/schemas/Relationship"
                                     },
                                     "is_responsible": {
                                         "type": "boolean"
@@ -967,7 +1121,7 @@
                                     "occupation": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/Occupation"
+                                                "$ref": "#/components/schemas/Occupation"
                                             },
                                             {
                                                 "type": "null"
@@ -977,7 +1131,7 @@
                                     "marital_status": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/MaritalStatus"
+                                                "$ref": "#/components/schemas/MaritalStatus"
                                             },
                                             {
                                                 "type": "null"
@@ -987,7 +1141,7 @@
                                     "education_level": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/EducationLevel"
+                                                "$ref": "#/components/schemas/EducationLevel"
                                             },
                                             {
                                                 "type": "null"
@@ -1009,7 +1163,7 @@
                                     "religion": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/Religion"
+                                                "$ref": "#/components/schemas/Religion"
                                             },
                                             {
                                                 "type": "null"
@@ -1048,7 +1202,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1057,7 +1211,7 @@
                                             "const": "Family Member updated successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/FamilyMemberResource"
+                                            "$ref": "#/components/schemas/FamilyMemberResource"
                                         }
                                     },
                                     "required": [
@@ -1069,13 +1223,13 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1099,7 +1253,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1116,18 +1270,18 @@
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/family-profiles": {
+        "/family-profiles": {
             "get": {
                 "operationId": "familyProfile.index",
-                "description": "Ejemplos de uso:\n\n- General:\nGET \/api\/family-profiles\n\n- Paginaci\u00f3n (50 por p\u00e1gina):\nGET \/api\/family-profiles?limit=50\n\n- Por Nombre de Familia:\nGET \/api\/family-profiles?family_name=Gomez\n\n- Por Responsable (Nombre o Apellidos):\nGET \/api\/family-profiles?responsible_name=Juan\n\n- Por CURP:\nGET \/api\/family-profiles?curp=ABCD123456\n\n- Combinado:\nGET \/api\/family-profiles?family_name=Gomez&responsible_name=Juan",
+                "description": "Ejemplos de uso:\n\n- General:\nGET /api/family-profiles\n\n- Paginaci\u00f3n (50 por p\u00e1gina):\nGET /api/family-profiles?limit=50\n\n- Por Nombre de Familia:\nGET /api/family-profiles?family_name=Gomez\n\n- Por Responsable (Nombre o Apellidos):\nGET /api/family-profiles?responsible_name=Juan\n\n- Por CURP:\nGET /api/family-profiles?curp=ABCD123456\n\n- Combinado:\nGET /api/family-profiles?family_name=Gomez&responsible_name=Juan",
                 "summary": "Listar perfiles de familia con filtros avanzados y relaciones",
                 "tags": [
                     "FamilyProfile"
@@ -1136,9 +1290,43 @@
                     {
                         "name": "limit",
                         "in": "query",
+                        "description": "Number of profiles per page.",
                         "schema": {
-                            "type": "string",
-                            "default": 15
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "family_name",
+                        "in": "query",
+                        "description": "Search by family name (partial match).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "curp",
+                        "in": "query",
+                        "description": "Search by responsible member's CURP (partial match).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "responsible_name",
+                        "in": "query",
+                        "description": "Search by responsible member's name or surnames (partial match).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -1146,14 +1334,14 @@
                     "200": {
                         "description": "Paginated set of `FamilyProfileResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/FamilyProfileResource"
+                                                "$ref": "#/components/schemas/FamilyProfileResource"
                                             }
                                         },
                                         "links": {
@@ -1282,8 +1470,11 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1296,42 +1487,314 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
                                     "family_name": {
                                         "type": "string",
+                                        "description": "Basic info",
                                         "maxLength": 255
                                     },
                                     "status": {
-                                        "$ref": "#\/components\/schemas\/FamilyStatus"
+                                        "$ref": "#/components/schemas/FamilyStatus"
                                     },
-                                    "current_address": {
-                                        "type": "string"
-                                    },
-                                    "construction_address": {
+                                    "interviewer_name": {
                                         "type": [
                                             "string",
                                             "null"
-                                        ]
+                                        ],
+                                        "maxLength": 255
                                     },
                                     "opened_at": {
                                         "type": "string",
                                         "format": "date-time"
+                                    },
+                                    "reason": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "general_observations": {
                                         "type": [
                                             "string",
                                             "null"
                                         ]
+                                    },
+                                    "lives_on_land": {
+                                        "type": "boolean",
+                                        "description": "Booleans"
+                                    },
+                                    "has_addictions": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "addictions_details": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "construction_notified": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "home_city": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Home info",
+                                        "maxLength": 255
+                                    },
+                                    "home_colony": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_address": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_address_link": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 500
+                                    },
+                                    "home_latitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -90,
+                                        "maximum": 90
+                                    },
+                                    "home_longitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -180,
+                                        "maximum": 180
+                                    },
+                                    "home_ownership_time": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_owner_name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_monthly_rent": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "home_monthly_rent_currency": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/components/schemas/Currency"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "home_has_receipts": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "house_description": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "land_city": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Land info",
+                                        "maxLength": 255
+                                    },
+                                    "land_colony": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "land_address": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "land_address_link": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 500
+                                    },
+                                    "land_latitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -90,
+                                        "maximum": 90
+                                    },
+                                    "land_longitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -180,
+                                        "maximum": 180
+                                    },
+                                    "land_ownership_time": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "land_total_cost": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "land_down_payment": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "land_monthly_payment": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "land_currency": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/components/schemas/Currency"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "land_last_payment_date": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "land_is_up_to_date": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "land_is_flat": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "land_size": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/components/schemas/LandSize"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "land_services": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "$ref": "#/components/schemas/LandService"
+                                        }
+                                    },
+                                    "building_start_date": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time",
+                                        "description": "Construction"
+                                    },
+                                    "building_finish_date": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "building_team": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "building_team_color": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "responsible_member_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "description": "Relationship"
                                     }
                                 },
                                 "required": [
                                     "family_name",
                                     "status",
-                                    "current_address",
-                                    "opened_at"
+                                    "opened_at",
+                                    "lives_on_land"
                                 ]
                             }
                         }
@@ -1341,7 +1804,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1350,7 +1813,7 @@
                                             "const": "Family Profile created successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/FamilyProfileResource"
+                                            "$ref": "#/components/schemas/FamilyProfileResource"
                                         }
                                     },
                                     "required": [
@@ -1362,15 +1825,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/family-profiles\/{id}": {
+        "/family-profiles/{familyProfile}": {
             "get": {
                 "operationId": "familyProfile.show",
                 "summary": "Display the specified resource",
@@ -1379,11 +1842,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "familyProfile",
                         "in": "path",
                         "required": true,
+                        "description": "The family profile ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1391,18 +1855,30 @@
                     "200": {
                         "description": "`FamilyProfileResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/FamilyProfileResource"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/FamilyProfileResource"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "responsibleMember",
+                                                "members",
+                                                "documents"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1414,59 +1890,318 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "familyProfile",
                         "in": "path",
                         "required": true,
+                        "description": "The family profile ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
                                     "family_name": {
                                         "type": "string",
+                                        "description": "Basic info",
                                         "maxLength": 255
                                     },
                                     "status": {
-                                        "$ref": "#\/components\/schemas\/FamilyStatus"
+                                        "$ref": "#/components/schemas/FamilyStatus"
                                     },
-                                    "current_address": {
-                                        "type": "string"
-                                    },
-                                    "construction_address": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "responsible_member_id": {
-                                        "type": [
-                                            "integer",
-                                            "null"
-                                        ]
-                                    },
-                                    "opened_at": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "description": "Validaci\u00f3n segura"
-                                    },
-                                    "closed_at": {
+                                    "interviewer_name": {
                                         "type": [
                                             "string",
                                             "null"
                                         ],
+                                        "maxLength": 255
+                                    },
+                                    "opened_at": {
+                                        "type": "string",
                                         "format": "date-time"
+                                    },
+                                    "reason": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     },
                                     "general_observations": {
                                         "type": [
                                             "string",
                                             "null"
                                         ]
+                                    },
+                                    "lives_on_land": {
+                                        "type": "boolean",
+                                        "description": "Booleans"
+                                    },
+                                    "has_addictions": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "addictions_details": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "construction_notified": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "home_city": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Home info",
+                                        "maxLength": 255
+                                    },
+                                    "home_colony": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_address": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_address_link": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 500
+                                    },
+                                    "home_latitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -90,
+                                        "maximum": 90
+                                    },
+                                    "home_longitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -180,
+                                        "maximum": 180
+                                    },
+                                    "home_ownership_time": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_owner_name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "home_monthly_rent": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "home_monthly_rent_currency": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/components/schemas/Currency"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "home_has_receipts": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "house_description": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "land_city": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Land info",
+                                        "maxLength": 255
+                                    },
+                                    "land_colony": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "land_address": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "land_address_link": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 500
+                                    },
+                                    "land_latitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -90,
+                                        "maximum": 90
+                                    },
+                                    "land_longitude": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": -180,
+                                        "maximum": 180
+                                    },
+                                    "land_ownership_time": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "land_total_cost": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "land_down_payment": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "land_monthly_payment": {
+                                        "type": [
+                                            "number",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "land_currency": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/components/schemas/Currency"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "land_last_payment_date": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "land_is_up_to_date": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "land_is_flat": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "land_size": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/components/schemas/LandSize"
+                                            },
+                                            {
+                                                "type": "null"
+                                            }
+                                        ]
+                                    },
+                                    "land_services": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "$ref": "#/components/schemas/LandService"
+                                        }
+                                    },
+                                    "building_start_date": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time",
+                                        "description": "Construction"
+                                    },
+                                    "building_finish_date": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "building_team": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "building_team_color": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "responsible_member_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "description": "Relationship"
                                     }
                                 }
                             }
@@ -1477,7 +2212,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1486,7 +2221,7 @@
                                             "const": "Family Profile updated successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/FamilyProfileResource"
+                                            "$ref": "#/components/schemas/FamilyProfileResource"
                                         }
                                     },
                                     "required": [
@@ -1498,10 +2233,13 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1513,11 +2251,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "familyProfile",
                         "in": "path",
                         "required": true,
+                        "description": "The family profile ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1525,7 +2264,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1541,13 +2280,16 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/groups": {
+        "/groups": {
             "get": {
                 "operationId": "group.index",
                 "summary": "Get a list of active and future groups",
@@ -1558,9 +2300,37 @@
                     {
                         "name": "limit",
                         "in": "query",
+                        "description": "Number of groups per page.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Groups meeting on this exact date.",
                         "schema": {
                             "type": "string",
-                            "default": 20
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "min_date",
+                        "in": "query",
+                        "description": "Visits scheduled on or after this date.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
                         }
                     }
                 ],
@@ -1568,14 +2338,14 @@
                     "200": {
                         "description": "Paginated set of `GroupResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/GroupResource"
+                                                "$ref": "#/components/schemas/GroupResource"
                                             }
                                         },
                                         "links": {
@@ -1704,13 +2474,54 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/groups\/{id}\/applicants": {
+        "/groups/{group}": {
+            "get": {
+                "operationId": "group.show",
+                "summary": "Get a specific group details",
+                "tags": [
+                    "Group"
+                ],
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "required": true,
+                        "description": "The group ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`GroupResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GroupResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/groups/{group}/applicants": {
             "get": {
                 "operationId": "group.applicants",
                 "summary": "Get the applicants for a specific group, including their attendance status",
@@ -1719,31 +2530,55 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "group",
                         "in": "path",
                         "required": true,
+                        "description": "The group ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "Paginated set of `ApplicantResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "group": {
-                                            "$ref": "#\/components\/schemas\/GroupResource"
-                                        },
-                                        "applicants": {
+                                        "data": {
                                             "type": "array",
                                             "items": {
                                                 "allOf": [
                                                     {
-                                                        "$ref": "#\/components\/schemas\/ApplicantResource"
+                                                        "$ref": "#/components/schemas/ApplicantResource"
                                                     },
                                                     {
                                                         "type": "object",
@@ -1753,23 +2588,197 @@
                                                     }
                                                 ]
                                             }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "group",
-                                        "applicants"
+                                        "data",
+                                        "links",
+                                        "meta"
                                     ]
                                 }
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notes": {
+        "/groups/{group}/close-attendance": {
+            "post": {
+                "operationId": "group.closeAttendance",
+                "summary": "Close the attendance for a group, marking pending applicants as absent",
+                "tags": [
+                    "Group"
+                ],
+                "parameters": [
+                    {
+                        "name": "group",
+                        "in": "path",
+                        "required": true,
+                        "description": "The group ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Attendance has been closed successfully."
+                                        },
+                                        "group": {
+                                            "$ref": "#/components/schemas/GroupResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "group"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/notes": {
             "get": {
                 "operationId": "note.index",
                 "summary": "List notes. Can filter by noteable_type and noteable_id",
@@ -1780,6 +2789,7 @@
                     {
                         "name": "noteable_type",
                         "in": "query",
+                        "description": "Type of the object the notes belong to (family_profile, family_member, visit, or a model class name).",
                         "schema": {
                             "type": "string"
                         }
@@ -1787,8 +2797,18 @@
                     {
                         "name": "noteable_id",
                         "in": "query",
+                        "description": "ID of the object the notes belong to.",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -1796,14 +2816,14 @@
                     "200": {
                         "description": "Paginated set of `NoteResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/NoteResource"
+                                                "$ref": "#/components/schemas/NoteResource"
                                             }
                                         },
                                         "links": {
@@ -1932,8 +2952,11 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -1945,7 +2968,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -1975,7 +2998,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -1984,7 +3007,7 @@
                                             "const": "Note created successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/NoteResource"
+                                            "$ref": "#/components/schemas/NoteResource"
                                         }
                                     },
                                     "required": [
@@ -1998,7 +3021,7 @@
                     "400": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2015,15 +3038,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/notes\/{id}": {
+        "/notes/{note}": {
             "get": {
                 "operationId": "note.show",
                 "tags": [
@@ -2031,11 +3054,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "note",
                         "in": "path",
                         "required": true,
+                        "description": "The note ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2043,18 +3067,28 @@
                     "200": {
                         "description": "`NoteResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/NoteResource"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/NoteResource"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "author"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2065,17 +3099,18 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "note",
                         "in": "path",
                         "required": true,
+                        "description": "The note ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2094,7 +3129,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2103,7 +3138,7 @@
                                             "const": "Note updated successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/NoteResource"
+                                            "$ref": "#/components/schemas/NoteResource"
                                         }
                                     },
                                     "required": [
@@ -2117,7 +3152,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2134,10 +3169,13 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2148,11 +3186,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "note",
                         "in": "path",
                         "required": true,
+                        "description": "The note ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2160,7 +3199,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2179,7 +3218,7 @@
                     "403": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2195,31 +3234,109 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tasks": {
+        "/roles": {
+            "get": {
+                "operationId": "role.index",
+                "summary": "Get a list of all system roles",
+                "tags": [
+                    "Role"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Optional search by role name (partial match).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `RoleResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoleResource"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/tasks": {
             "get": {
                 "operationId": "task.index",
                 "summary": "List tasks. Filter by visit_id or assignee",
                 "tags": [
                     "Task"
                 ],
+                "parameters": [
+                    {
+                        "name": "visit_id",
+                        "in": "query",
+                        "description": "Filter tasks by the visit they belong to.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "assigned_to",
+                        "in": "query",
+                        "description": "Filter tasks by the user they are assigned to.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter tasks by their status.",
+                        "schema": {
+                            "$ref": "#/components/schemas/TaskStatus"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `TaskResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/TaskResource"
+                                                "$ref": "#/components/schemas/TaskResource"
                                             }
                                         },
                                         "links": {
@@ -2348,8 +3465,11 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2361,7 +3481,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2379,7 +3499,7 @@
                                         ]
                                     },
                                     "priority": {
-                                        "$ref": "#\/components\/schemas\/TaskPriority"
+                                        "$ref": "#/components/schemas/TaskPriority"
                                     },
                                     "due_date": {
                                         "type": [
@@ -2408,7 +3528,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2417,7 +3537,7 @@
                                             "const": "Task created successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/TaskResource"
+                                            "$ref": "#/components/schemas/TaskResource"
                                         }
                                     },
                                     "required": [
@@ -2429,15 +3549,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/tasks\/{id}": {
+        "/tasks/{task}": {
             "get": {
                 "operationId": "task.show",
                 "tags": [
@@ -2445,11 +3565,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "task",
                         "in": "path",
                         "required": true,
+                        "description": "The task ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2457,18 +3578,30 @@
                     "200": {
                         "description": "`TaskResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/TaskResource"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TaskResource"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "assignee",
+                                                "visit",
+                                                "notes"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2479,17 +3612,18 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "task",
                         "in": "path",
                         "required": true,
+                        "description": "The task ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2503,10 +3637,10 @@
                                         ]
                                     },
                                     "status": {
-                                        "$ref": "#\/components\/schemas\/TaskStatus"
+                                        "$ref": "#/components/schemas/TaskStatus"
                                     },
                                     "priority": {
-                                        "$ref": "#\/components\/schemas\/TaskPriority"
+                                        "$ref": "#/components/schemas/TaskPriority"
                                     },
                                     "due_date": {
                                         "type": [
@@ -2537,7 +3671,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2546,7 +3680,7 @@
                                             "const": "Task updated successfully"
                                         },
                                         "data": {
-                                            "$ref": "#\/components\/schemas\/TaskResource"
+                                            "$ref": "#/components/schemas/TaskResource"
                                         }
                                     },
                                     "required": [
@@ -2558,10 +3692,13 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2572,11 +3709,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "task",
                         "in": "path",
                         "required": true,
+                        "description": "The task ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2584,7 +3722,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -2600,31 +3738,493 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/users": {
+        "/testimonies": {
+            "get": {
+                "operationId": "testimony.index",
+                "tags": [
+                    "Testimony"
+                ],
+                "parameters": [
+                    {
+                        "name": "family_profile_id",
+                        "in": "query",
+                        "description": "Filter testimonies by the family profile they belong to.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Testimony"
+                                            }
+                                        },
+                                        "first_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "from": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "minimum": 1
+                                        },
+                                        "last_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "links": {
+                                            "type": "array",
+                                            "description": "Generated paginator links.",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "url": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "label": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url",
+                                                    "label",
+                                                    "active"
+                                                ]
+                                            }
+                                        },
+                                        "next_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "path": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "description": "Base path for paginator generated URLs."
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "description": "Number of items shown per page.",
+                                            "minimum": 0
+                                        },
+                                        "prev_page_url": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "to": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ],
+                                            "description": "Number of the last item in the slice.",
+                                            "minimum": 1
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "description": "Total number of items being paginated.",
+                                            "minimum": 0
+                                        }
+                                    },
+                                    "required": [
+                                        "current_page",
+                                        "data",
+                                        "first_page_url",
+                                        "from",
+                                        "last_page_url",
+                                        "last_page",
+                                        "links",
+                                        "next_page_url",
+                                        "path",
+                                        "per_page",
+                                        "prev_page_url",
+                                        "to",
+                                        "total"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "testimony.store",
+                "tags": [
+                    "Testimony"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "family_profile_id": {
+                                        "type": "integer"
+                                    },
+                                    "language": {
+                                        "type": "string",
+                                        "enum": [
+                                            "es",
+                                            "en"
+                                        ]
+                                    },
+                                    "audio": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "binary",
+                                        "contentMediaType": "application/octet-stream",
+                                        "description": "Maximum file size: 20480 kilobytes."
+                                    },
+                                    "transcription": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "20MB max"
+                                    },
+                                    "summary": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "recorded_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "family_profile_id",
+                                    "language",
+                                    "recorded_at"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Testimony recorded successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Testimony"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/testimonies/{testimony}": {
+            "get": {
+                "operationId": "testimony.show",
+                "tags": [
+                    "Testimony"
+                ],
+                "parameters": [
+                    {
+                        "name": "testimony",
+                        "in": "path",
+                        "required": true,
+                        "description": "The testimony ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Testimony"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "testimony.update",
+                "tags": [
+                    "Testimony"
+                ],
+                "parameters": [
+                    {
+                        "name": "testimony",
+                        "in": "path",
+                        "required": true,
+                        "description": "The testimony ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "language": {
+                                        "type": "string",
+                                        "enum": [
+                                            "es",
+                                            "en"
+                                        ]
+                                    },
+                                    "transcription": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "summary": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "recorded_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Testimony updated successfully"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Testimony"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "testimony.destroy",
+                "tags": [
+                    "Testimony"
+                ],
+                "parameters": [
+                    {
+                        "name": "testimony",
+                        "in": "path",
+                        "required": true,
+                        "description": "The testimony ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Testimony deleted successfully"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/users": {
             "get": {
                 "operationId": "user.index",
-                "summary": "Listar usuarios con filtros opcionales y paginaci\u00f3n.\n* Ejemplos de endpoints v\u00e1lidos:\n1. Sin par\u00e1metros (Trae la p\u00e1gina 1 con configuraci\u00f3n por defecto):\nGET \/api\/users\n* 2. Navegaci\u00f3n de paginaci\u00f3n (Ir a la p\u00e1gina 2):\nGET \/api\/users?page=2\n* 3. Filtrar solo por nombre:\nGET \/api\/users?name=Carlos\n* 4. Filtrar solo por correo:\nGET \/api\/users?email=gmail.com\n* 5. B\u00fasqueda combinada (Nombre O Correo):\nGET \/api\/users?name=Carlos&email=admin",
+                "summary": "Listar usuarios con filtros opcionales y paginaci\u00f3n.\n* Ejemplos de endpoints v\u00e1lidos:\n1. Sin par\u00e1metros (Trae la p\u00e1gina 1 con configuraci\u00f3n por defecto):\nGET /api/users\n* 2. Navegaci\u00f3n de paginaci\u00f3n (Ir a la p\u00e1gina 2):\nGET /api/users?page=2\n* 3. Filtrar solo por nombre:\nGET /api/users?name=Carlos\n* 4. Filtrar solo por correo:\nGET /api/users?email=gmail.com\n* 5. B\u00fasqueda combinada (Nombre O Correo):\nGET /api/users?name=Carlos&email=admin\n* 6. Filtrar por rol:\nGET /api/users?role=admin",
                 "tags": [
                     "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Search users by name (partial match).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Search users by email (partial match).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "description": "Filter users by their assigned role name.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `UserResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/UserResource"
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/UserResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "roles"
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         },
                                         "links": {
@@ -2753,8 +4353,11 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2766,7 +4369,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2796,23 +4399,23 @@
                     "201": {
                         "description": "`UserResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/UserResource"
+                                    "$ref": "#/components/schemas/UserResource"
                                 }
                             }
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/users\/{user}": {
+        "/users/{user}": {
             "get": {
                 "operationId": "user.show",
                 "tags": [
@@ -2833,18 +4436,28 @@
                     "200": {
                         "description": "`UserResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/UserResource"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "roles"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2866,7 +4479,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2891,21 +4504,21 @@
                     "200": {
                         "description": "`UserResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/UserResource"
+                                    "$ref": "#/components/schemas/UserResource"
                                 }
                             }
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -2930,33 +4543,78 @@
                         "description": "No content"
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/visits": {
+        "/visits": {
             "get": {
                 "operationId": "visit.index",
                 "summary": "List visits. Supports filtering by family_profile_id and status",
                 "tags": [
                     "Visit"
                 ],
+                "parameters": [
+                    {
+                        "name": "family_profile_id",
+                        "in": "query",
+                        "description": "Filter visits by the family profile they belong to.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter visits by their status.",
+                        "schema": {
+                            "$ref": "#/components/schemas/VisitStatus"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Visits scheduled on this exact date.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "min_date",
+                        "in": "query",
+                        "description": "Visits scheduled on or after this date.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for paginated results.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `VisitResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#\/components\/schemas\/VisitResource"
+                                                "$ref": "#/components/schemas/VisitResource"
                                             }
                                         },
                                         "links": {
@@ -3085,8 +4743,11 @@
                             }
                         }
                     },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -3098,7 +4759,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3112,7 +4773,7 @@
                                     "location_type": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/VisitLocationType"
+                                                "$ref": "#/components/schemas/VisitLocationType"
                                             },
                                             {
                                                 "type": "null"
@@ -3120,7 +4781,7 @@
                                         ]
                                     },
                                     "status": {
-                                        "$ref": "#\/components\/schemas\/VisitStatus"
+                                        "$ref": "#/components/schemas/VisitStatus"
                                     },
                                     "attendants": {
                                         "type": [
@@ -3145,7 +4806,7 @@
                     "201": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3156,7 +4817,7 @@
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#\/components\/schemas\/VisitResource"
+                                                    "$ref": "#/components/schemas/VisitResource"
                                                 },
                                                 {
                                                     "type": "object",
@@ -3176,15 +4837,15 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/visits\/{id}": {
+        "/visits/{visit}": {
             "get": {
                 "operationId": "visit.show",
                 "tags": [
@@ -3192,11 +4853,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "visit",
                         "in": "path",
                         "required": true,
+                        "description": "The visit ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3204,18 +4866,32 @@
                     "200": {
                         "description": "`VisitResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "$ref": "#\/components\/schemas\/VisitResource"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/VisitResource"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "familyProfile",
+                                                "attendants",
+                                                "notes",
+                                                "tasks",
+                                                "evidences"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "$ref": "#\/components\/responses\/ModelNotFoundException"
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -3226,17 +4902,18 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "visit",
                         "in": "path",
                         "required": true,
+                        "description": "The visit ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "requestBody": {
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -3252,12 +4929,12 @@
                                         "format": "date-time"
                                     },
                                     "status": {
-                                        "$ref": "#\/components\/schemas\/VisitStatus"
+                                        "$ref": "#/components/schemas/VisitStatus"
                                     },
                                     "location_type": {
                                         "anyOf": [
                                             {
-                                                "$ref": "#\/components\/schemas\/VisitLocationType"
+                                                "$ref": "#/components/schemas/VisitLocationType"
                                             },
                                             {
                                                 "type": "null"
@@ -3288,7 +4965,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3299,7 +4976,7 @@
                                         "data": {
                                             "allOf": [
                                                 {
-                                                    "$ref": "#\/components\/schemas\/VisitResource"
+                                                    "$ref": "#/components/schemas/VisitResource"
                                                 },
                                                 {
                                                     "type": "object",
@@ -3319,10 +4996,13 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -3333,11 +5013,12 @@
                 ],
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "visit",
                         "in": "path",
                         "required": true,
+                        "description": "The visit ID",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3345,7 +5026,7 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
@@ -3361,8 +5042,11 @@
                             }
                         }
                     },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -3370,14 +5054,6 @@
     },
     "components": {
         "schemas": {
-            "ApplicantGender": {
-                "type": "string",
-                "enum": [
-                    "man",
-                    "woman"
-                ],
-                "title": "ApplicantGender"
-            },
             "ApplicantResource": {
                 "type": "object",
                 "properties": {
@@ -3400,13 +5076,9 @@
                         ]
                     },
                     "gender": {
-                        "anyOf": [
-                            {
-                                "$ref": "#\/components\/schemas\/ApplicantGender"
-                            },
-                            {
-                                "type": "null"
-                            }
+                        "type": [
+                            "string",
+                            "null"
                         ]
                     },
                     "current_stage_id": {
@@ -3422,7 +5094,7 @@
                         ]
                     },
                     "process_status": {
-                        "$ref": "#\/components\/schemas\/ApplicantStatus"
+                        "$ref": "#/components/schemas/ApplicantStatus"
                     },
                     "rejection_reason": {
                         "type": [
@@ -3465,7 +5137,7 @@
                     "group": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/GroupResource"
+                                "$ref": "#/components/schemas/GroupResource"
                             },
                             {
                                 "type": "null"
@@ -3473,7 +5145,7 @@
                         ]
                     },
                     "attendance": {
-                        "$ref": "#\/components\/schemas\/AttendanceResource"
+                        "$ref": "#/components/schemas/AttendanceResource"
                     },
                     "created_at": {
                         "type": [
@@ -3524,6 +5196,61 @@
                 ],
                 "title": "ApplicantStatus"
             },
+            "Attendance": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "applicant_id": {
+                        "type": "integer"
+                    },
+                    "group_id": {
+                        "type": "integer"
+                    },
+                    "attendance_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/AttendanceStatus"
+                    },
+                    "scanned_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "applicant_id",
+                    "group_id",
+                    "attendance_code",
+                    "status",
+                    "scanned_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "Attendance"
+            },
             "AttendanceResource": {
                 "type": "object",
                 "properties": {
@@ -3543,7 +5270,7 @@
                         ]
                     },
                     "status": {
-                        "$ref": "#\/components\/schemas\/AttendanceStatus"
+                        "$ref": "#/components/schemas/AttendanceStatus"
                     },
                     "scanned_at": {
                         "type": [
@@ -3553,10 +5280,10 @@
                         "format": "date-time"
                     },
                     "applicant": {
-                        "$ref": "#\/components\/schemas\/ApplicantResource"
+                        "$ref": "#/components/schemas/ApplicantResource"
                     },
                     "group": {
-                        "$ref": "#\/components\/schemas\/GroupResource"
+                        "$ref": "#/components/schemas/GroupResource"
                     },
                     "created_at": {
                         "type": [
@@ -3589,6 +5316,7 @@
                 "type": "string",
                 "enum": [
                     "present",
+                    "attended",
                     "absent",
                     "pending"
                 ],
@@ -3615,7 +5343,7 @@
                         "type": "string"
                     },
                     "document_type": {
-                        "$ref": "#\/components\/schemas\/DocumentType"
+                        "$ref": "#/components/schemas/DocumentType"
                     },
                     "description": {
                         "type": [
@@ -3643,14 +5371,14 @@
                     },
                     "uploaded_by": {
                         "type": [
-                            "string",
+                            "integer",
                             "null"
                         ]
                     },
                     "uploader": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/UserResource"
+                                "$ref": "#/components/schemas/UserResource"
                             },
                             {
                                 "type": "null"
@@ -3712,6 +5440,7 @@
             "EducationLevel": {
                 "type": "string",
                 "enum": [
+                    "preschool",
                     "none",
                     "elementary",
                     "middle_school",
@@ -3720,7 +5449,7 @@
                 ],
                 "title": "EducationLevel"
             },
-            "Evidence": {
+            "EvidenceResource": {
                 "type": "object",
                 "properties": {
                     "id": {
@@ -3729,8 +5458,14 @@
                     "visit_id": {
                         "type": "integer"
                     },
-                    "file_path": {
+                    "url": {
                         "type": "string"
+                    },
+                    "mime_type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "description": {
                         "type": [
@@ -3738,17 +5473,7 @@
                             "null"
                         ]
                     },
-                    "taken_by": {
-                        "type": "integer"
-                    },
                     "created_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "updated_at": {
                         "type": [
                             "string",
                             "null"
@@ -3759,13 +5484,12 @@
                 "required": [
                     "id",
                     "visit_id",
-                    "file_path",
+                    "url",
+                    "mime_type",
                     "description",
-                    "taken_by",
-                    "created_at",
-                    "updated_at"
+                    "created_at"
                 ],
-                "title": "Evidence"
+                "title": "EvidenceResource"
             },
             "FamilyMemberResource": {
                 "type": "object",
@@ -3777,10 +5501,16 @@
                         "type": "integer"
                     },
                     "name": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "paternal_surname": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "maternal_surname": {
                         "type": [
@@ -3792,7 +5522,10 @@
                         "type": "string"
                     },
                     "birth_date": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time"
                     },
                     "curp": {
@@ -3802,7 +5535,14 @@
                         ]
                     },
                     "relationship": {
-                        "$ref": "#\/components\/schemas\/Relationship"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Relationship"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "is_responsible": {
                         "type": "boolean"
@@ -3819,7 +5559,7 @@
                     "occupation": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/Occupation"
+                                "$ref": "#/components/schemas/Occupation"
                             },
                             {
                                 "type": "null"
@@ -3829,7 +5569,7 @@
                     "marital_status": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/MaritalStatus"
+                                "$ref": "#/components/schemas/MaritalStatus"
                             },
                             {
                                 "type": "null"
@@ -3839,7 +5579,7 @@
                     "education_level": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/EducationLevel"
+                                "$ref": "#/components/schemas/EducationLevel"
                             },
                             {
                                 "type": "null"
@@ -3861,7 +5601,7 @@
                     "religion": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/Religion"
+                                "$ref": "#/components/schemas/Religion"
                             },
                             {
                                 "type": "null"
@@ -3886,7 +5626,7 @@
                     "indigenous_language": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/IndigenousLanguage"
+                                "$ref": "#/components/schemas/IndigenousLanguage"
                             },
                             {
                                 "type": "null"
@@ -3909,18 +5649,18 @@
                         ]
                     },
                     "familyProfile": {
-                        "$ref": "#\/components\/schemas\/FamilyProfileResource"
+                        "$ref": "#/components/schemas/FamilyProfileResource"
                     },
                     "documents": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/DocumentResource"
+                            "$ref": "#/components/schemas/DocumentResource"
                         }
                     },
                     "notes": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/NoteResource"
+                            "$ref": "#/components/schemas/NoteResource"
                         }
                     },
                     "created_at": {
@@ -3982,13 +5722,10 @@
                         "type": "string"
                     },
                     "status": {
-                        "$ref": "#\/components\/schemas\/FamilyStatus"
+                        "$ref": "#/components/schemas/FamilyStatus"
                     },
                     "family_photo_path": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
+                        "type": "null"
                     },
                     "lives_on_land": {
                         "type": "boolean"
@@ -4096,7 +5833,7 @@
                         ]
                     },
                     "land_currency": {
-                        "$ref": "#\/components\/schemas\/Currency"
+                        "$ref": "#/components/schemas/Currency"
                     },
                     "land_last_payment_date": {
                         "type": [
@@ -4120,7 +5857,7 @@
                     "land_size": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/LandSize"
+                                "$ref": "#/components/schemas/LandSize"
                             },
                             {
                                 "type": "null"
@@ -4137,7 +5874,7 @@
                     "home_status": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/HousingStatus"
+                                "$ref": "#/components/schemas/HousingStatus"
                             },
                             {
                                 "type": "null"
@@ -4163,7 +5900,7 @@
                         ]
                     },
                     "home_monthly_rent_currency": {
-                        "$ref": "#\/components\/schemas\/Currency"
+                        "$ref": "#/components/schemas/Currency"
                     },
                     "home_has_receipts": {
                         "type": [
@@ -4231,13 +5968,6 @@
                         ],
                         "format": "date-time"
                     },
-                    "building_finish_date": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
                     "building_team": {
                         "type": [
                             "string",
@@ -4253,7 +5983,7 @@
                     "responsibleMember": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/FamilyMemberResource"
+                                "$ref": "#/components/schemas/FamilyMemberResource"
                             },
                             {
                                 "type": "null"
@@ -4263,25 +5993,13 @@
                     "members": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/FamilyMemberResource"
+                            "$ref": "#/components/schemas/FamilyMemberResource"
                         }
                     },
                     "documents": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/DocumentResource"
-                        }
-                    },
-                    "notes": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#\/components\/schemas\/NoteResource"
-                        }
-                    },
-                    "visits": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#\/components\/schemas\/VisitResource"
+                            "$ref": "#/components/schemas/DocumentResource"
                         }
                     },
                     "created_at": {
@@ -4345,7 +6063,6 @@
                     "reason",
                     "construction_notified",
                     "building_start_date",
-                    "building_finish_date",
                     "building_team",
                     "building_team_color",
                     "created_at",
@@ -4356,13 +6073,15 @@
             "FamilyStatus": {
                 "type": "string",
                 "enum": [
+                    "pre_profile",
                     "new",
-                    "potential",
                     "in_process",
                     "on_hold",
+                    "potential",
                     "approved",
-                    "not_eligible",
+                    "programmed",
                     "built",
+                    "not_eligible",
                     "dont_build"
                 ],
                 "title": "FamilyStatus"
@@ -4427,7 +6146,7 @@
                     "applicants": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/ApplicantResource"
+                            "$ref": "#/components/schemas/ApplicantResource"
                         }
                     },
                     "created_at": {
@@ -4488,6 +6207,16 @@
                 ],
                 "title": "IndigenousLanguage"
             },
+            "LandService": {
+                "type": "string",
+                "enum": [
+                    "electricity",
+                    "water",
+                    "septic_tank",
+                    "sewage"
+                ],
+                "title": "LandService"
+            },
             "LandSize": {
                 "type": "string",
                 "enum": [
@@ -4529,7 +6258,7 @@
                         "type": "integer"
                     },
                     "author": {
-                        "$ref": "#\/components\/schemas\/UserResource"
+                        "$ref": "#/components/schemas/UserResource"
                     },
                     "created_at": {
                         "type": [
@@ -4577,6 +6306,18 @@
                     "retired",
                     "housewife",
                     "student",
+                    "nurse",
+                    "carpenter",
+                    "blacksmith",
+                    "supermarket_worker",
+                    "mechanic",
+                    "stylist",
+                    "manicurist",
+                    "nanny",
+                    "janitor",
+                    "cashier",
+                    "veterinarian",
+                    "government_worker",
                     "other"
                 ],
                 "title": "Occupation"
@@ -4605,6 +6346,38 @@
                     "other"
                 ],
                 "title": "Religion"
+            },
+            "RoleResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "RoleResource"
             },
             "TaskPriority": {
                 "type": "string",
@@ -4635,10 +6408,10 @@
                         ]
                     },
                     "status": {
-                        "$ref": "#\/components\/schemas\/TaskStatus"
+                        "$ref": "#/components/schemas/TaskStatus"
                     },
                     "priority": {
-                        "$ref": "#\/components\/schemas\/TaskPriority"
+                        "$ref": "#/components/schemas/TaskPriority"
                     },
                     "due_date": {
                         "type": [
@@ -4664,12 +6437,12 @@
                         ]
                     },
                     "assigner": {
-                        "$ref": "#\/components\/schemas\/UserResource"
+                        "$ref": "#/components/schemas/UserResource"
                     },
                     "assignee": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/UserResource"
+                                "$ref": "#/components/schemas/UserResource"
                             },
                             {
                                 "type": "null"
@@ -4677,18 +6450,18 @@
                         ]
                     },
                     "visit": {
-                        "$ref": "#\/components\/schemas\/VisitResource"
+                        "$ref": "#/components/schemas/VisitResource"
                     },
                     "notes": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/NoteResource"
+                            "$ref": "#/components/schemas/NoteResource"
                         }
                     },
                     "documents": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/DocumentResource"
+                            "$ref": "#/components/schemas/DocumentResource"
                         }
                     },
                     "created_at": {
@@ -4731,6 +6504,76 @@
                     "cancelled"
                 ],
                 "title": "TaskStatus"
+            },
+            "Testimony": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "family_profile_id": {
+                        "type": "integer"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "audio_path": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "transcription": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "summary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "recorded_by": {
+                        "type": "integer"
+                    },
+                    "recorded_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "audio_url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "family_profile_id",
+                    "language",
+                    "audio_path",
+                    "transcription",
+                    "summary",
+                    "recorded_by",
+                    "recorded_at",
+                    "created_at",
+                    "updated_at",
+                    "audio_url"
+                ],
+                "title": "Testimony"
             },
             "UserResource": {
                 "type": "object",
@@ -4799,7 +6642,7 @@
                         "type": "integer"
                     },
                     "status": {
-                        "$ref": "#\/components\/schemas\/VisitStatus"
+                        "$ref": "#/components/schemas/VisitStatus"
                     },
                     "scheduled_at": {
                         "type": "string",
@@ -4815,7 +6658,7 @@
                     "location_type": {
                         "anyOf": [
                             {
-                                "$ref": "#\/components\/schemas\/VisitLocationType"
+                                "$ref": "#/components/schemas/VisitLocationType"
                             },
                             {
                                 "type": "null"
@@ -4829,36 +6672,36 @@
                         ]
                     },
                     "familyProfile": {
-                        "$ref": "#\/components\/schemas\/FamilyProfileResource"
+                        "$ref": "#/components/schemas/FamilyProfileResource"
                     },
                     "attendants": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/UserResource"
+                            "$ref": "#/components/schemas/UserResource"
                         }
                     },
                     "notes": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/NoteResource"
+                            "$ref": "#/components/schemas/NoteResource"
                         }
                     },
                     "documents": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/DocumentResource"
+                            "$ref": "#/components/schemas/DocumentResource"
                         }
                     },
                     "tasks": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/TaskResource"
+                            "$ref": "#/components/schemas/TaskResource"
                         }
                     },
                     "evidences": {
                         "type": "array",
                         "items": {
-                            "$ref": "#\/components\/schemas\/Evidence"
+                            "$ref": "#/components/schemas/EvidenceResource"
                         }
                     },
                     "created_at": {
@@ -4906,7 +6749,7 @@
             "AuthenticationException": {
                 "description": "Unauthenticated",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {
@@ -4925,7 +6768,7 @@
             "ValidationException": {
                 "description": "Validation error",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {
@@ -4955,7 +6798,7 @@
             "ModelNotFoundException": {
                 "description": "Not found",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {

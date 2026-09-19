@@ -5,15 +5,14 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface Evidence {
+export interface EvidenceResource {
   id: number;
   visit_id: number;
-  file_path: string;
+  url: string;
+  /** @nullable */
+  mime_type: string | null;
   /** @nullable */
   description: string | null;
-  taken_by: number;
   /** @nullable */
   created_at: string | null;
-  /** @nullable */
-  updated_at: string | null;
 }

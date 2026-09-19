@@ -21,7 +21,7 @@ export interface DocumentResource {
   size: number;
   url: string;
   /** @nullable */
-  uploaded_by: string | null;
+  uploaded_by: number | null;
   uploader?: UserResource | null;
   /** @nullable */
   created_at: string | null;

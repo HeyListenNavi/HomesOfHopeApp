@@ -4,9 +4,9 @@
  * Laravel
  * OpenAPI spec version: 0.0.1
  */
-import type { AttendanceUpdate200Data } from './attendanceUpdate200Data';
+import type { Attendance } from './attendance';
 
 export type AttendanceUpdate200 = {
   message: 'Attendance updated manually.';
-  data: AttendanceUpdate200Data;
+  data: Attendance;
 };
