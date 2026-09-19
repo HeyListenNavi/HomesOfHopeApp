@@ -18,12 +18,18 @@ const QuickActionButton = ({
     return (
         <TouchableOpacity
             onPress={onPress}
-            className={`items-center gap-2 ${className}`}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={label}
+            className={`items-center gap-2 min-h-[88px] ${className}`}
         >
-            <View className="bg-primary/90 p-5 rounded-2xl">
+            <View className="bg-primary p-5 rounded-2xl shadow-lg shadow-primary/30">
                 <Boxicon name={iconName} size={28} color="white" />
             </View>
-            <Text className="text-xs text-gray-500 font-medium text-center">
+            <Text
+                className="text-sm text-gray-700 font-semibold text-center"
+                numberOfLines={1}
+            >
                 {label}
             </Text>
         </TouchableOpacity>

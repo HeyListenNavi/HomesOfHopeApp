@@ -23,7 +23,7 @@ const ServicesList = ({ services }: { services: string[] }) => {
             {services.map((s) => (
                 <View
                     key={s}
-                    className="bg-[#9BD189]/10 px-3 py-1 rounded-full flex-row items-center gap-1"
+                    className="bg-primary/10 px-3 py-1 rounded-full flex-row items-center gap-1"
                 >
                     <Boxicon
                         name="bxs-check-circle"

@@ -8,7 +8,7 @@ interface StatCardProps {
     iconName: string;
     iconColor: string;
     iconBgColor: string;
-    size?: "full" | "half";
+    size?: "full" | "half" | "compact";
     trend?: {
         value: string;
         label: string;
@@ -27,13 +27,41 @@ const StatCard = ({
     size = "full",
     trend,
 }: StatCardProps) => {
-    const containerClass =
-        size === "full"
-            ? "w-full"
-            : "w-[48%]";
+    const accessibilityLabel = `${label}: ${value}${
+        trend ? `, ${trend.value} ${trend.label}` : ""
+    }`;
+
+    if (size === "compact") {
+        return (
+            <View
+                accessible
+                accessibilityLabel={accessibilityLabel}
+                className="bg-white flex-1 p-3 rounded-2xl items-center gap-1.5 shadow-md shadow-black/5"
+            >
+                <View className={`${iconBgColor} p-2 rounded-xl`}>
+                    <Boxicon size={18} color={iconColor} name={iconName as any} />
+                </View>
+                <Text className="text-2xl font-bold text-gray-800 leading-none">
+                    {value}
+                </Text>
+                <Text
+                    className="text-sm text-gray-600 text-center"
+                    numberOfLines={2}
+                >
+                    {label}
+                </Text>
+            </View>
+        );
+    }
+
+    const containerClass = size === "full" ? "w-full" : "w-[48%]";
 
     return (
-        <View className={`bg-white p-5 rounded-3xl flex-row justify-between items-center ${containerClass}`}>
+        <View
+            accessible
+            accessibilityLabel={accessibilityLabel}
+            className={`bg-white p-6 rounded-3xl flex-row justify-between items-center shadow-md shadow-black/5 ${containerClass}`}
+        >
             <View>
                 <View
                     className={`${iconBgColor} self-start p-2 rounded-full mb-3`}
@@ -51,13 +79,7 @@ const StatCard = ({
                 >
                     {value}
                 </Text>
-                <Text
-                    className={`text-gray-500 ${
-                        size === "full" ? "text-sm" : "text-xs"
-                    } mt-1`}
-                >
-                    {label}
-                </Text>
+                <Text className="text-gray-600 text-sm mt-1">{label}</Text>
             </View>
 
             {trend && (
@@ -69,21 +91,15 @@ const StatCard = ({
                             name={trend.iconName as any}
                         />
                     </View>
-                    <View className="flex-row items-baseline">
-                        <Text
-                            className="text-2xl font-bold"
-                            style={{ color: trend.color }}
-                        >
-                            {trend.value}
-                        </Text>
-                        <Text
-                            className="text-sm font-bold ml-1"
-                            style={{ color: trend.color }}
-                        >
-                            %
-                        </Text>
-                    </View>
-                    <Text className="text-gray-400 text-xs">{trend.label}</Text>
+                    <Text
+                        className="text-2xl font-bold"
+                        style={{ color: trend.color }}
+                    >
+                        {trend.value}
+                    </Text>
+                    <Text className="text-gray-500 text-sm mt-0.5">
+                        {trend.label}
+                    </Text>
                 </View>
             )}
         </View>
