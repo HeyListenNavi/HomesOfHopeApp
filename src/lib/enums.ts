@@ -18,13 +18,13 @@ import {
 } from "@/services/generated/apiTypes";
 import type { BoxIconName } from "@/components/Boxicons";
 
-export interface EnumMeta {
+interface EnumMeta {
     value: string;
     label: string;
     emoji?: string;
 }
 
-export interface EnumOption {
+interface EnumOption {
     label: string;
     value: string;
     emoji?: string;

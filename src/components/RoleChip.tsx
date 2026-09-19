@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import { BoxIconName } from "@/components/Boxicons";
 
-export interface RoleStyle {
+interface RoleStyle {
     key: string;
     label: string;
     bg: string;
@@ -23,7 +23,7 @@ export const formatRoleLabel = (role?: string | null): string => {
         .join(" ");
 };
 
-export const getRoleStyle = (role?: string | null): RoleStyle => {
+const getRoleStyle = (role?: string | null): RoleStyle => {
     const label = formatRoleLabel(role);
     const key = role ? role.toLowerCase().trim().replace(/[\s-]+/g, "_") : "staff";
     return {

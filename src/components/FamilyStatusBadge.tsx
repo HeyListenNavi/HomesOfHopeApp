@@ -4,13 +4,13 @@ import { Text } from "@/components/ui/text";
 import { FAMILY_STATUS } from "@/lib/enums";
 import { FamilyStatus } from "@/services/generated/apiTypes";
 
-export interface StatusStyle {
+interface StatusStyle {
     label: string;
     bg: string;
     text: string;
 }
 
-export const getStatusStyle = (status: FamilyStatus | ""): StatusStyle => {
+const getStatusStyle = (status: FamilyStatus | ""): StatusStyle => {
     const meta = status ? FAMILY_STATUS[status] : undefined;
     return {
         label: meta?.label ?? status,
