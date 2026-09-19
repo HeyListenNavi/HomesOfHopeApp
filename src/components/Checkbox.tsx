@@ -49,7 +49,7 @@ const Checkbox = ({
                 )}
             </View>
 
-            <View className="relative min-h-[60px] flex-row items-center bg-gray-100/60 rounded-2xl px-4 py-3">
+            <View className="relative min-h-[60px] flex-row items-center bg-gray-100 rounded-2xl px-4 py-3">
                 <TouchableOpacity className="relative size-7 justify-center items-center">
                     <Animated.View
                         className="absolute"

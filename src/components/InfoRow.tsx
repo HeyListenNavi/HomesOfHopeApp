@@ -9,6 +9,7 @@ const InfoRow = ({
     iconColor = "#9ca3af",
     description,
     className,
+    copyable = false,
 }: {
     label: string;
     value?: string | null | boolean;
@@ -16,18 +17,22 @@ const InfoRow = ({
     iconColor?: string;
     description?: string;
     className?: string;
+    copyable?: boolean;
 }) => {
     return (
         <View className="flex-row gap-1 items-start">
-            {icon && <Boxicon name={icon} color={iconColor} size={18} />}
-            <View className="gap-1">
-                <Text className="text-gray-400 text-sm uppercase">{label}</Text>
+            {icon && <Boxicon name={icon} color={iconColor} size={20} />}
+            <View className="gap-0.5">
+                <Text className="text-gray-400 text-base font-medium">{label}</Text>
                 <View>
-                    <Text className={`text-gray-600 font-bold ${className}`}>
+                    <Text 
+                        className={`text-gray-700 text-base font-bold ${className}`}
+                        selectable={copyable}
+                    >
                         {value}
                     </Text>
                     {description && (
-                        <Text className="text-gray-400 text-sm">
+                        <Text className="text-gray-400 text-base">
                             {description}
                         </Text>
                     )}
