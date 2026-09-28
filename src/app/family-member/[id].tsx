@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     ScrollView,
@@ -30,6 +30,7 @@ import { DocumentResource } from "@/services/generated/apiTypes";
 import { useFamilyMemberShow } from "@/services/generated/apiEndpoints";
 import { useScreenTopPadding } from "@/lib/layout";
 import EmptyState from "@/components/EmptyState";
+import FilePreviewDialog from "@/components/FilePreviewDialog";
 
 const getAge = (dateString?: string | null) => {
     if (!dateString) return "?";
@@ -51,6 +52,7 @@ export default function FamilyMemberPage() {
     const topPadding = useScreenTopPadding();
 
     const memberId = Number(id);
+    const [previewDoc, setPreviewDoc] = useState<DocumentResource | null>(null);
     const {
         data: member,
         isPending,
@@ -402,7 +404,7 @@ export default function FamilyMemberPage() {
                                 <TouchableOpacity
                                     key={doc.id}
                                     className="flex-row items-center gap-4 py-1 active:opacity-70"
-                                    onPress={() => Linking.openURL(doc.url)}
+                                    onPress={() => setPreviewDoc(doc)}
                                     accessibilityRole="button"
                                     accessibilityLabel={`Abrir ${DOCUMENT[doc.document_type]?.label ?? doc.document_type}`}
                                 >
@@ -433,6 +435,18 @@ export default function FamilyMemberPage() {
                     )}
                 </View>
             </ScrollView>
+
+            <FilePreviewDialog
+                open={!!previewDoc}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) setPreviewDoc(null);
+                }}
+                file={previewDoc ? {
+                        name: previewDoc.original_name,
+                        uri: previewDoc.url,
+                        mimeType: previewDoc.mime_type,
+                    } : null}
+            />
         </View>
     );
 }

@@ -24,6 +24,7 @@ import EmptyState from "@/components/EmptyState";
 import { useVisitShow } from "@/services/generated/apiEndpoints";
 import { useVideoPlayer, VideoView } from "expo-video";
 import AudioPlayer from "@/components/AudioPlayer";
+import FilePreviewDialog from "@/components/FilePreviewDialog";
 import { TASK_STATUS, VISIT_STATUS } from "@/lib/enums";
 
 const getMediaType = (
@@ -254,6 +255,7 @@ export default function VisitViewPage() {
     const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
     const [selectedAudio, setSelectedAudio] = useState<{ url: string; title?: string } | null>(null);
+    const [previewFile, setPreviewFile] = useState<{ name: string; uri: string; mimeType?: string | null } | null>(null);
 
     const visitId = Number(id);
     const { data: visit, isPending, isError, refetch, isFetching } = useVisitShow(
@@ -658,7 +660,11 @@ export default function VisitViewPage() {
                                                     title: item.description || "Audio de Evidencia",
                                                 });
                                             } else if (item.url) {
-                                                Linking.openURL(item.url);
+                                                setPreviewFile({
+                                                    name: item.description || "Evidencia",
+                                                    uri: item.url,
+                                                    mimeType: item.mime_type,
+                                                });
                                             }
                                         }}
                                         accessibilityRole="button"
@@ -794,6 +800,14 @@ export default function VisitViewPage() {
             <AudioPlayerModal
                 audioItem={selectedAudio}
                 onClose={() => setSelectedAudio(null)}
+            />
+
+            <FilePreviewDialog
+                open={!!previewFile}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) setPreviewFile(null);
+                }}
+                file={previewFile}
             />
         </View>
     );

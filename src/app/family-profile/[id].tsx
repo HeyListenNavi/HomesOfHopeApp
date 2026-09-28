@@ -20,6 +20,7 @@ import FluentEmoji from "@/components/FluentEmoji";
 import BrandBoxicon from "@/components/BrandBoxicons";
 import FamilyStatusBadge from "@/components/FamilyStatusBadge";
 import SectionHeader from "@/components/SectionHeader";
+import FilePreviewDialog from "@/components/FilePreviewDialog";
 import { Badge } from "@/components/ui/badge";
 import TestimonyCard from "@/components/TestimonyCard";
 import NoteCard from "@/components/NoteCard";
@@ -73,6 +74,7 @@ const Page = () => {
     const [photoFullscreen, setPhotoFullscreen] = useState(false);
     const [selectedTestimony, setSelectedTestimony] = useState<any>(null);
     const [selectedNote, setSelectedNote] = useState<NoteResource | null>(null);
+    const [previewDoc, setPreviewDoc] = useState<DocumentResource | null>(null);
     const testimonySheetRef = useRef<BottomSheetModal>(null);
     const noteSheetRef = useRef<BottomSheetModal>(null);
 
@@ -661,7 +663,7 @@ const Page = () => {
                                 <TouchableOpacity
                                     key={doc.id}
                                     className="flex-row items-center gap-4 py-1 active:opacity-70"
-                                    onPress={() => Linking.openURL(doc.url)}
+                                    onPress={() => setPreviewDoc(doc)}
                                     accessibilityRole="button"
                                     accessibilityLabel={`Abrir ${DOCUMENT[doc.document_type]?.label ?? doc.document_type}`}
                                 >
@@ -824,6 +826,18 @@ const Page = () => {
                 ref={noteSheetRef}
                 note={selectedNote}
                 onDismiss={() => setSelectedNote(null)}
+            />
+
+            <FilePreviewDialog
+                open={!!previewDoc}
+                onOpenChange={(openOpen) => {
+                    if (!openOpen) setPreviewDoc(null);
+                }}
+                file={previewDoc ? {
+                        name: previewDoc.original_name,
+                        uri: previewDoc.url,
+                        mimeType: previewDoc.mime_type,
+                    } : null}
             />
         </>
     );
