@@ -5,6 +5,6 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type AttendanceScanBody = {
-  attendance_code: string;
+export type AttendanceUpdate423 = {
+  message: 'Attendance is closed for this group.';
 };

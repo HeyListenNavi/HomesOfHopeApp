@@ -35,7 +35,7 @@ export interface ApplicantResource {
   /** @nullable */
   completed_at: string | null;
   group?: GroupResource | null;
-  attendance?: AttendanceResource;
+  current_attendance?: AttendanceResource;
   /** @nullable */
   created_at: string | null;
   /** @nullable */

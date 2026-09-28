@@ -33,6 +33,7 @@ import type {
   AttendanceScan404,
   AttendanceScanBody,
   AttendanceUpdate200,
+  AttendanceUpdate423,
   AttendanceUpdateBody,
   AuthLogin200,
   AuthLoginBody,
@@ -294,14 +295,14 @@ export const useAttendanceScan = <TError = ErrorType<AuthenticationExceptionResp
  * @summary Manually update attendance status by ID
  */
 export const attendanceUpdate = (
-    id: string,
+    attendance: number,
     attendanceUpdateBody: BodyType<AttendanceUpdateBody>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
 
 
       return customInstance<AttendanceUpdate200>(
-      {url: `/attendance/${id}`, method: 'PUT',
+      {url: `/attendance/${attendance}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: attendanceUpdateBody, signal
     },
@@ -311,9 +312,9 @@ export const attendanceUpdate = (
 
 
 
-export const getAttendanceUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: BodyType<AttendanceUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: BodyType<AttendanceUpdateBody>}, TContext> => {
+export const getAttendanceUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse | AttendanceUpdate423>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{attendance: number;data: BodyType<AttendanceUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{attendance: number;data: BodyType<AttendanceUpdateBody>}, TContext> => {
 
 const mutationKey = ['attendanceUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -325,10 +326,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof attendanceUpdate>>, {id: string;data: BodyType<AttendanceUpdateBody>}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof attendanceUpdate>>, {attendance: number;data: BodyType<AttendanceUpdateBody>}> = (props) => {
+          const {attendance,data} = props ?? {};
 
-          return  attendanceUpdate(id,data,requestOptions)
+          return  attendanceUpdate(attendance,data,requestOptions)
         }
 
 
@@ -340,17 +341,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type AttendanceUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof attendanceUpdate>>>
     export type AttendanceUpdateMutationBody = BodyType<AttendanceUpdateBody>
-    export type AttendanceUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type AttendanceUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse | AttendanceUpdate423>
 
     /**
  * @summary Manually update attendance status by ID
  */
-export const useAttendanceUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{id: string;data: BodyType<AttendanceUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
+export const useAttendanceUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse | AttendanceUpdate423>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof attendanceUpdate>>, TError,{attendance: number;data: BodyType<AttendanceUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof attendanceUpdate>>,
         TError,
-        {id: string;data: BodyType<AttendanceUpdateBody>},
+        {attendance: number;data: BodyType<AttendanceUpdateBody>},
         TContext
       > => {
       return useMutation(getAttendanceUpdateMutationOptions(options), queryClient);

@@ -6,4 +6,4 @@
  */
 import type { ApplicantResource } from './applicantResource';
 
-export type GroupApplicants200DataItem = ApplicantResource & { [key: string]: unknown } & Required<Pick<ApplicantResource & { [key: string]: unknown }, 'attendance'>>;
+export type GroupApplicants200DataItem = ApplicantResource & { [key: string]: unknown } & Required<Pick<ApplicantResource & { [key: string]: unknown }, 'current_attendance'>>;
