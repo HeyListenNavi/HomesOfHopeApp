@@ -24,6 +24,7 @@ const queryClient = new QueryClient();
 
 const Layout = () => {
     const insets = useSafeAreaInsets();
+    const router = useRouter();
 
     const [fontsLoaded] = useFonts({
         Boxicons: require("@/assets/fonts/boxicons.ttf"),
@@ -40,8 +41,6 @@ const Layout = () => {
     }, [fontsLoaded]);
 
     if (!fontsLoaded) return null;
-
-    const router = useRouter();
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -251,8 +250,8 @@ const Layout = () => {
                                 }}
                             />
                         </Stack>
+                        <PortalHost />
                     </BottomSheetModalProvider>
-                    <PortalHost />
                 </KeyboardProvider>
             </GestureHandlerRootView>
         </QueryClientProvider>

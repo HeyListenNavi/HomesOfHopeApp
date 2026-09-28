@@ -328,7 +328,7 @@ const Page = () => {
             <ActivityIndicator size="large" color="#61b346" />
         </View>
     ) : (
-        <View className="bg-white rounded-3xl shadow-md shadow-black/5 py-10 items-center gap-3">
+        <View className="bg-white rounded-3xl py-10 items-center gap-3">
             <View className="h-16 w-16 rounded-2xl bg-gray-100 items-center justify-center">
                 <Boxicon name="bx-search" size={28} color="#9ca3af" />
             </View>
