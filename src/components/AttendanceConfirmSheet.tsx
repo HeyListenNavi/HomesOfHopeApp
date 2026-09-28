@@ -13,8 +13,9 @@ interface AttendanceConfirmSheetProps {
 const AttendanceConfirmSheet = ({ applicant, onDismiss, onScanAnother }: AttendanceConfirmSheetProps) => {
     if (!applicant) return null;
 
-    const scannedAt = applicant.attendance?.scanned_at
-        ? new Date(applicant.attendance.scanned_at).toLocaleTimeString("es-MX", {
+    const attendance = applicant.current_attendance;
+    const scannedAt = attendance?.scanned_at
+        ? new Date(attendance.scanned_at).toLocaleTimeString("es-MX", {
             hour: "2-digit",
             minute: "2-digit",
         })
@@ -62,13 +63,13 @@ const AttendanceConfirmSheet = ({ applicant, onDismiss, onScanAnother }: Attenda
                     </View>
                 </View>
 
-                {(applicant.attendance?.attendance_code || applicant.curp || scannedAt) && (
+                {(attendance?.attendance_code || applicant.curp || scannedAt) && (
                     <View>
-                        {applicant.attendance?.attendance_code && (
+                        {attendance?.attendance_code && (
                             <DetailRow
                                 icon="bx-barcode"
                                 label="Código"
-                                value={applicant.attendance.attendance_code}
+                                value={attendance.attendance_code}
                             />
                         )}
                         {applicant.curp && (

@@ -66,25 +66,25 @@ const Page = () => {
 
     const handleQRScanned = async (code: string) => {
         setScannerOpen(false);
-        const found = applicants.find((a) => a.attendance?.attendance_code === code);
+        const found = applicants.find((a) => a.current_attendance?.attendance_code === code);
         
-        if (!found || !found.attendance) {
+        if (!found || !found.current_attendance) {
             ToastAndroid.show(`Código no encontrado: ${code}`, ToastAndroid.SHORT);
             return;
         }
 
         try {
             await scanAttendance.mutateAsync({
-                data: { attendance_code: code, status: "present" }
+                data: { attendance_code: code }
             });
             
             await applicantsQuery.refetch();
             
             const updatedFound = {
                 ...found,
-                attendance: { ...found.attendance, status: "present" as const, scanned_at: new Date().toISOString() }
+                current_attendance: { ...found.current_attendance, status: "present" as const, scanned_at: new Date().toISOString() }
             };
-            setScannedApplicant(updatedFound as any);
+            setScannedApplicant(updatedFound);
             attendanceSheetRef.current?.present();
             
         } catch (error) {
@@ -95,7 +95,7 @@ const Page = () => {
     const handleMarkPresent = async (attendanceId: number) => {
         try {
             await updateAttendance.mutateAsync({
-                id: String(attendanceId),
+                attendance: attendanceId,
                 data: { status: "present" }
             });
             
@@ -109,7 +109,7 @@ const Page = () => {
     const handleMarkAttended = async (attendanceId: number) => {
         try {
             await updateAttendance.mutateAsync({
-                id: String(attendanceId),
+                attendance: attendanceId,
                 data: { status: "attended" }
             });
             
@@ -168,15 +168,15 @@ const Page = () => {
     const timeString = dateObj ? dateObj.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }) : "Sin hora";
 
     const presentCount = applicants.filter(
-        (a) => a.attendance?.status === "present" || a.attendance?.status === "attended"
+        (a) => a.current_attendance?.status === "present" || a.current_attendance?.status === "attended"
     ).length;
-    const pendingCount = applicants.filter((a) => a.attendance?.status === "pending").length;
+    const pendingCount = applicants.filter((a) => a.current_attendance?.status === "pending").length;
     const totalCount = applicantsQuery.data?.pages[0]?.meta?.total ?? applicants.length;
 
     const renderItem: ListRenderItem<GroupApplicants200DataItem> = ({ item }) => (
         <View className="mb-3">
             <ApplicantInterviewCard
-                applicant={item as any}
+                applicant={item}
                 onMarkPresent={handleMarkPresent}
                 onMarkAttended={handleMarkAttended}
             />
@@ -374,7 +374,7 @@ const Page = () => {
             
             <BottomSheet ref={attendanceSheetRef} scrollable={false}>
                 <AttendanceConfirmSheet
-                    applicant={scannedApplicant as any}
+                    applicant={scannedApplicant}
                     onDismiss={() => attendanceSheetRef.current?.dismiss()}
                     onScanAnother={() => {
                         attendanceSheetRef.current?.dismiss();

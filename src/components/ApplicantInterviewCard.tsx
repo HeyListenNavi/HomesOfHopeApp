@@ -19,12 +19,13 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
     const router = useRouter();
     const confirmRef = useRef<BottomSheetModal>(null);
 
-    const attendanceStatus = (applicant.attendance?.status ?? "pending") as AttendanceStatus;
+    const attendance = applicant.current_attendance;
+    const attendanceStatus = (attendance?.status ?? "pending") as AttendanceStatus;
     const statusStyle = ATTENDANCE[attendanceStatus] ?? ATTENDANCE.pending;
     const processLabel =
         PROCESS_STATUS[applicant.process_status]?.label ?? applicant.process_status;
 
-    const hasAttendance = !!applicant.attendance?.id;
+    const hasAttendance = !!attendance?.id;
     const canMarkPresent = attendanceStatus === "pending" && hasAttendance;
     const canMarkAttended = attendanceStatus === "present" && hasAttendance;
     const isReviewed = attendanceStatus === "attended";
@@ -32,8 +33,8 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
 
     const handleConfirmPresent = () => {
         confirmRef.current?.dismiss();
-        if (applicant.attendance?.id) {
-            onMarkPresent?.(applicant.attendance.id);
+        if (attendance?.id) {
+            onMarkPresent?.(attendance.id);
         }
     };
 
@@ -99,7 +100,7 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
                 <View className="flex-row items-center gap-1.5">
                     <Boxicon name="bx-barcode" size={16} color="#9ca3af" />
                     <Text className="text-gray-400 text-sm font-medium">
-                        {applicant.attendance?.attendance_code || "Sin código"}
+                        {attendance?.attendance_code || "Sin código"}
                     </Text>
                 </View>
 
@@ -117,8 +118,8 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
                 ) : canMarkAttended ? (
                     <TouchableOpacity
                         onPress={() => {
-                            if (applicant.attendance?.id != null) {
-                                onMarkAttended?.(applicant.attendance.id);
+                            if (attendance?.id != null) {
+                                onMarkAttended?.(attendance.id);
                             }
                         }}
                         className="bg-primary px-4 py-2 rounded-2xl flex-row items-center gap-1.5 shadow-sm shadow-primary/30 active:opacity-80"
