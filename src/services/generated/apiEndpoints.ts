@@ -39,10 +39,10 @@ import type {
   AuthLoginBody,
   AuthLogout200,
   AuthenticationExceptionResponse,
+  AuthorizationExceptionResponse,
   DocumentDestroy200,
   DocumentResource,
   DocumentStore201,
-  DocumentStore400,
   DocumentStoreBody,
   EvidenceDestroy200,
   EvidenceResource,
@@ -63,6 +63,7 @@ import type {
   FamilyProfileStoreBody,
   FamilyProfileUpdate200,
   FamilyProfileUpdateBody,
+  GetUser200,
   GroupApplicants200,
   GroupApplicantsParams,
   GroupCloseAttendance200,
@@ -71,15 +72,12 @@ import type {
   GroupResource,
   ModelNotFoundExceptionResponse,
   NoteDestroy200,
-  NoteDestroy403,
   NoteIndex200,
   NoteIndexParams,
   NoteShow200,
   NoteStore201,
-  NoteStore400,
   NoteStoreBody,
   NoteUpdate200,
-  NoteUpdate403,
   NoteUpdateBody,
   RoleIndexParams,
   RoleResource,
@@ -145,7 +143,7 @@ export const getUser = (
 ) => {
 
 
-      return customInstance<UserResource>(
+      return customInstance<GetUser200>(
       {url: `/user`, method: 'GET', signal
     },
       options);
@@ -498,7 +496,7 @@ formData.append(`file`, documentStoreBody.file);
 
 
 
-export const getDocumentStoreMutationOptions = <TError = ErrorType<DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getDocumentStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: BodyType<DocumentStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: BodyType<DocumentStoreBody>}, TContext> => {
 
@@ -527,12 +525,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DocumentStoreMutationResult = NonNullable<Awaited<ReturnType<typeof documentStore>>>
     export type DocumentStoreMutationBody = BodyType<DocumentStoreBody>
-    export type DocumentStoreMutationError = ErrorType<DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type DocumentStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Store a newly created document in storage
  */
-export const useDocumentStore = <TError = ErrorType<DocumentStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const useDocumentStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentStore>>, TError,{data: BodyType<DocumentStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof documentStore>>,
@@ -568,7 +566,7 @@ export const getDocumentShowQueryKey = (document: number,) => {
     }
 
 
-export const getDocumentShowQueryOptions = <TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getDocumentShowQueryOptions = <TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -587,10 +585,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type DocumentShowQueryResult = NonNullable<Awaited<ReturnType<typeof documentShow>>>
-export type DocumentShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type DocumentShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentShow>>,
@@ -600,7 +598,7 @@ export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentShow>>,
@@ -610,7 +608,7 @@ export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -618,7 +616,7 @@ export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>
  * @summary Display the specified resource
  */
 
-export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentShow<TData = Awaited<ReturnType<typeof documentShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -654,7 +652,7 @@ export const documentDestroy = (
 
 
 
-export const getDocumentDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getDocumentDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{document: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{document: number}, TContext> => {
 
@@ -683,12 +681,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DocumentDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof documentDestroy>>>
 
-    export type DocumentDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type DocumentDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
     /**
  * @summary Remove the specified resource from storage
  */
-export const useDocumentDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const useDocumentDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof documentDestroy>>, TError,{document: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof documentDestroy>>,
@@ -725,7 +723,7 @@ export const getDocumentDownloadQueryKey = (document: number,) => {
     }
 
 
-export const getDocumentDownloadQueryOptions = <TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getDocumentDownloadQueryOptions = <TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -744,10 +742,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type DocumentDownloadQueryResult = NonNullable<Awaited<ReturnType<typeof documentDownload>>>
-export type DocumentDownloadQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type DocumentDownloadQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentDownload>>,
@@ -757,7 +755,7 @@ export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDo
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof documentDownload>>,
@@ -767,7 +765,7 @@ export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDo
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -775,7 +773,7 @@ export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDo
  * @summary Download the file
  */
 
-export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useDocumentDownload<TData = Awaited<ReturnType<typeof documentDownload>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  document: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentDownload>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -819,7 +817,7 @@ if(evidenceStoreBody.description !== undefined && evidenceStoreBody.description 
 
 
 
-export const getEvidenceStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getEvidenceStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceStore>>, TError,{data: BodyType<EvidenceStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof evidenceStore>>, TError,{data: BodyType<EvidenceStoreBody>}, TContext> => {
 
@@ -848,12 +846,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type EvidenceStoreMutationResult = NonNullable<Awaited<ReturnType<typeof evidenceStore>>>
     export type EvidenceStoreMutationBody = BodyType<EvidenceStoreBody>
-    export type EvidenceStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type EvidenceStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Store new evidence (Upload media)
  */
-export const useEvidenceStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const useEvidenceStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceStore>>, TError,{data: BodyType<EvidenceStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof evidenceStore>>,
@@ -889,7 +887,7 @@ export const getEvidenceShowQueryKey = (evidence: number,) => {
     }
 
 
-export const getEvidenceShowQueryOptions = <TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getEvidenceShowQueryOptions = <TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -908,10 +906,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type EvidenceShowQueryResult = NonNullable<Awaited<ReturnType<typeof evidenceShow>>>
-export type EvidenceShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type EvidenceShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  evidence: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof evidenceShow>>,
@@ -921,7 +919,7 @@ export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof evidenceShow>>,
@@ -931,7 +929,7 @@ export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -939,7 +937,7 @@ export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>
  * @summary Show a specific evidence
  */
 
-export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useEvidenceShow<TData = Awaited<ReturnType<typeof evidenceShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  evidence: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof evidenceShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -975,7 +973,7 @@ export const evidenceDestroy = (
 
 
 
-export const getEvidenceDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getEvidenceDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceDestroy>>, TError,{evidence: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof evidenceDestroy>>, TError,{evidence: number}, TContext> => {
 
@@ -1004,12 +1002,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type EvidenceDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof evidenceDestroy>>>
 
-    export type EvidenceDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type EvidenceDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
     /**
  * @summary Delete evidence
  */
-export const useEvidenceDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const useEvidenceDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evidenceDestroy>>, TError,{evidence: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof evidenceDestroy>>,
@@ -1049,7 +1047,7 @@ export const getFamilyMemberIndexQueryKey = (params?: FamilyMemberIndexParams,) 
     }
 
 
-export const getFamilyMemberIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyMemberIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1068,10 +1066,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type FamilyMemberIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof familyMemberIndex>>>
-export type FamilyMemberIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type FamilyMemberIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  FamilyMemberIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberIndex>>,
@@ -1081,7 +1079,7 @@ export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<Return
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberIndex>>,
@@ -1091,12 +1089,12 @@ export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<Return
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyMemberIndex>>, FamilyMemberIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyMemberIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData, QueryKey, FamilyMemberIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1113,7 +1111,7 @@ export function useFamilyMemberIndexInfinite<TData = InfiniteData<Awaited<Return
 
 
 
-export const getFamilyMemberIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyMemberIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1132,10 +1130,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type FamilyMemberIndexQueryResult = NonNullable<Awaited<ReturnType<typeof familyMemberIndex>>>
-export type FamilyMemberIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type FamilyMemberIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  FamilyMemberIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberIndex>>,
@@ -1145,7 +1143,7 @@ export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMem
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberIndex>>,
@@ -1155,12 +1153,12 @@ export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMem
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyMemberIndex<TData = Awaited<ReturnType<typeof familyMemberIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyMemberIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1195,7 +1193,7 @@ export const familyMemberStore = (
 
 
 
-export const getFamilyMemberStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getFamilyMemberStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: BodyType<FamilyMemberStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: BodyType<FamilyMemberStoreBody>}, TContext> => {
 
@@ -1224,9 +1222,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyMemberStoreMutationResult = NonNullable<Awaited<ReturnType<typeof familyMemberStore>>>
     export type FamilyMemberStoreMutationBody = BodyType<FamilyMemberStoreBody>
-    export type FamilyMemberStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type FamilyMemberStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
-    export const useFamilyMemberStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    export const useFamilyMemberStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberStore>>, TError,{data: BodyType<FamilyMemberStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyMemberStore>>,
@@ -1259,7 +1257,7 @@ export const getFamilyMemberShowQueryKey = (familyMember: number,) => {
     }
 
 
-export const getFamilyMemberShowQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyMemberShowQueryOptions = <TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1278,10 +1276,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type FamilyMemberShowQueryResult = NonNullable<Awaited<ReturnType<typeof familyMemberShow>>>
-export type FamilyMemberShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type FamilyMemberShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberShow>>,
@@ -1291,7 +1289,7 @@ export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemb
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyMemberShow>>,
@@ -1301,12 +1299,12 @@ export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemb
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyMemberShow<TData = Awaited<ReturnType<typeof familyMemberShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyMember: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyMemberShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1342,7 +1340,7 @@ export const familyMemberUpdate = (
 
 
 
-export const getFamilyMemberUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getFamilyMemberUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}, TContext> => {
 
@@ -1371,9 +1369,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyMemberUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof familyMemberUpdate>>>
     export type FamilyMemberUpdateMutationBody = BodyType<FamilyMemberUpdateBody> | undefined
-    export type FamilyMemberUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type FamilyMemberUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useFamilyMemberUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    export const useFamilyMemberUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberUpdate>>, TError,{familyMember: number;data?: BodyType<FamilyMemberUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyMemberUpdate>>,
@@ -1399,7 +1397,7 @@ export const familyMemberDestroy = (
 
 
 
-export const getFamilyMemberDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getFamilyMemberDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberDestroy>>, TError,{familyMember: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyMemberDestroy>>, TError,{familyMember: number}, TContext> => {
 
@@ -1428,9 +1426,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyMemberDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof familyMemberDestroy>>>
 
-    export type FamilyMemberDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type FamilyMemberDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useFamilyMemberDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    export const useFamilyMemberDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyMemberDestroy>>, TError,{familyMember: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyMemberDestroy>>,
@@ -1492,7 +1490,7 @@ export const getFamilyProfileIndexQueryKey = (params?: FamilyProfileIndexParams,
     }
 
 
-export const getFamilyProfileIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyProfileIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1511,10 +1509,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type FamilyProfileIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof familyProfileIndex>>>
-export type FamilyProfileIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type FamilyProfileIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  FamilyProfileIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileIndex>>,
@@ -1524,7 +1522,7 @@ export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<Retur
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileIndex>>,
@@ -1534,7 +1532,7 @@ export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<Retur
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1542,7 +1540,7 @@ export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<Retur
  * @summary Listar perfiles de familia con filtros avanzados y relaciones
  */
 
-export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof familyProfileIndex>>, FamilyProfileIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData, QueryKey, FamilyProfileIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1559,7 +1557,7 @@ export function useFamilyProfileIndexInfinite<TData = InfiniteData<Awaited<Retur
 
 
 
-export const getFamilyProfileIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyProfileIndexQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1578,10 +1576,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type FamilyProfileIndexQueryResult = NonNullable<Awaited<ReturnType<typeof familyProfileIndex>>>
-export type FamilyProfileIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type FamilyProfileIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  FamilyProfileIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileIndex>>,
@@ -1591,7 +1589,7 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileIndex>>,
@@ -1601,7 +1599,7 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1609,7 +1607,7 @@ export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyPr
  * @summary Listar perfiles de familia con filtros avanzados y relaciones
  */
 
-export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useFamilyProfileIndex<TData = Awaited<ReturnType<typeof familyProfileIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: FamilyProfileIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1647,7 +1645,7 @@ export const familyProfileStore = (
 
 
 
-export const getFamilyProfileStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getFamilyProfileStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: BodyType<FamilyProfileStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: BodyType<FamilyProfileStoreBody>}, TContext> => {
 
@@ -1676,12 +1674,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyProfileStoreMutationResult = NonNullable<Awaited<ReturnType<typeof familyProfileStore>>>
     export type FamilyProfileStoreMutationBody = BodyType<FamilyProfileStoreBody>
-    export type FamilyProfileStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type FamilyProfileStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Store a newly created resource in storage
  */
-export const useFamilyProfileStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const useFamilyProfileStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileStore>>, TError,{data: BodyType<FamilyProfileStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyProfileStore>>,
@@ -1717,7 +1715,7 @@ export const getFamilyProfileShowQueryKey = (familyProfile: number,) => {
     }
 
 
-export const getFamilyProfileShowQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getFamilyProfileShowQueryOptions = <TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1736,10 +1734,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type FamilyProfileShowQueryResult = NonNullable<Awaited<ReturnType<typeof familyProfileShow>>>
-export type FamilyProfileShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type FamilyProfileShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyProfile: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileShow>>,
@@ -1749,7 +1747,7 @@ export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyPro
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof familyProfileShow>>,
@@ -1759,7 +1757,7 @@ export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyPro
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1767,7 +1765,7 @@ export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyPro
  * @summary Display the specified resource
  */
 
-export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useFamilyProfileShow<TData = Awaited<ReturnType<typeof familyProfileShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  familyProfile: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyProfileShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1806,7 +1804,7 @@ export const familyProfileUpdate = (
 
 
 
-export const getFamilyProfileUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getFamilyProfileUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}, TContext> => {
 
@@ -1835,12 +1833,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyProfileUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof familyProfileUpdate>>>
     export type FamilyProfileUpdateMutationBody = BodyType<FamilyProfileUpdateBody> | undefined
-    export type FamilyProfileUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type FamilyProfileUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
     /**
  * @summary Update the specified resource in storage
  */
-export const useFamilyProfileUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const useFamilyProfileUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileUpdate>>, TError,{familyProfile: number;data?: BodyType<FamilyProfileUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyProfileUpdate>>,
@@ -1869,7 +1867,7 @@ export const familyProfileDestroy = (
 
 
 
-export const getFamilyProfileDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getFamilyProfileDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{familyProfile: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{familyProfile: number}, TContext> => {
 
@@ -1898,12 +1896,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FamilyProfileDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof familyProfileDestroy>>>
 
-    export type FamilyProfileDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type FamilyProfileDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
     /**
  * @summary Remove the specified resource from storage
  */
-export const useFamilyProfileDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const useFamilyProfileDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof familyProfileDestroy>>, TError,{familyProfile: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof familyProfileDestroy>>,
@@ -1946,7 +1944,7 @@ export const getGroupIndexQueryKey = (params?: GroupIndexParams,) => {
     }
 
 
-export const getGroupIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getGroupIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1965,10 +1963,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GroupIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof groupIndex>>>
-export type GroupIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type GroupIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  GroupIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupIndex>>,
@@ -1978,7 +1976,7 @@ export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupIndex>>,
@@ -1988,7 +1986,7 @@ export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1996,7 +1994,7 @@ export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
  * @summary Get a list of active and future groups
  */
 
-export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupIndex>>, GroupIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData, QueryKey, GroupIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2013,7 +2011,7 @@ export function useGroupIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
 
 
 
-export const getGroupIndexQueryOptions = <TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGroupIndexQueryOptions = <TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2032,10 +2030,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GroupIndexQueryResult = NonNullable<Awaited<ReturnType<typeof groupIndex>>>
-export type GroupIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type GroupIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  GroupIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupIndex>>,
@@ -2045,7 +2043,7 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupIndex>>,
@@ -2055,7 +2053,7 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -2063,7 +2061,7 @@ export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TE
  * @summary Get a list of active and future groups
  */
 
-export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupIndex<TData = Awaited<ReturnType<typeof groupIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: GroupIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2106,7 +2104,7 @@ export const getGroupShowQueryKey = (group: number,) => {
     }
 
 
-export const getGroupShowQueryOptions = <TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getGroupShowQueryOptions = <TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2125,10 +2123,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GroupShowQueryResult = NonNullable<Awaited<ReturnType<typeof groupShow>>>
-export type GroupShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type GroupShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  group: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupShow>>,
@@ -2138,7 +2136,7 @@ export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof groupShow>>,
@@ -2148,7 +2146,7 @@ export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -2156,7 +2154,7 @@ export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TErr
  * @summary Get a specific group details
  */
 
-export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useGroupShow<TData = Awaited<ReturnType<typeof groupShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  group: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2209,7 +2207,7 @@ export const getGroupApplicantsQueryKey = (group: number,
     }
 
 
-export const getGroupApplicantsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(group: number,
+export const getGroupApplicantsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
@@ -2229,10 +2227,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GroupApplicantsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof groupApplicants>>>
-export type GroupApplicantsInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+export type GroupApplicantsInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
 
-export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params: undefined |  GroupApplicantsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>> & Pick<
         DefinedInitialDataOptions<
@@ -2243,7 +2241,7 @@ export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnTy
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>> & Pick<
         UndefinedInitialDataOptions<
@@ -2254,7 +2252,7 @@ export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnTy
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
@@ -2263,7 +2261,7 @@ export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnTy
  * @summary Get the applicants for a specific group, including their attendance status
  */
 
-export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof groupApplicants>>, GroupApplicantsParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData, QueryKey, GroupApplicantsParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
@@ -2281,7 +2279,7 @@ export function useGroupApplicantsInfinite<TData = InfiniteData<Awaited<ReturnTy
 
 
 
-export const getGroupApplicantsQueryOptions = <TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(group: number,
+export const getGroupApplicantsQueryOptions = <TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
@@ -2301,10 +2299,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GroupApplicantsQueryResult = NonNullable<Awaited<ReturnType<typeof groupApplicants>>>
-export type GroupApplicantsQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+export type GroupApplicantsQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
 
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params: undefined |  GroupApplicantsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -2315,7 +2313,7 @@ export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplic
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -2326,7 +2324,7 @@ export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplic
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
@@ -2335,7 +2333,7 @@ export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplic
  * @summary Get the applicants for a specific group, including their attendance status
  */
 
-export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
+export function useGroupApplicants<TData = Awaited<ReturnType<typeof groupApplicants>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>>(
  group: number,
     params?: GroupApplicantsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof groupApplicants>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
@@ -2372,7 +2370,7 @@ export const groupCloseAttendance = (
 
 
 
-export const getGroupCloseAttendanceMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getGroupCloseAttendanceMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof groupCloseAttendance>>, TError,{group: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof groupCloseAttendance>>, TError,{group: number}, TContext> => {
 
@@ -2401,12 +2399,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type GroupCloseAttendanceMutationResult = NonNullable<Awaited<ReturnType<typeof groupCloseAttendance>>>
 
-    export type GroupCloseAttendanceMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type GroupCloseAttendanceMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
     /**
  * @summary Close the attendance for a group, marking pending applicants as absent
  */
-export const useGroupCloseAttendance = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const useGroupCloseAttendance = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof groupCloseAttendance>>, TError,{group: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof groupCloseAttendance>>,
@@ -2418,10 +2416,12 @@ export const useGroupCloseAttendance = <TError = ErrorType<AuthenticationExcepti
     }
 
 /**
- * @summary List notes. Can filter by noteable_type and noteable_id
+ * The parent is required: without it there is nothing to authorize against,
+ * and the response would contain every note in the table.
+ * @summary List the notes attached to a single parent record
  */
 export const noteIndex = (
-    params?: NoteIndexParams,
+    params: NoteIndexParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
 
@@ -2449,7 +2449,7 @@ export const getNoteIndexQueryKey = (params?: NoteIndexParams,) => {
     }
 
 
-export const getNoteIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getNoteIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2468,11 +2468,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type NoteIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof noteIndex>>>
-export type NoteIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type NoteIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params: undefined |  NoteIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>> & Pick<
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteIndex>>,
           TError,
@@ -2481,8 +2481,8 @@ export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>> & Pick<
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteIndex>>,
           TError,
@@ -2491,16 +2491,16 @@ export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List notes. Can filter by noteable_type and noteable_id
+ * @summary List the notes attached to a single parent record
  */
 
-export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof noteIndex>>, NoteIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData, QueryKey, NoteIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -2516,7 +2516,7 @@ export function useNoteIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
 
 
 
-export const getNoteIndexQueryOptions = <TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getNoteIndexQueryOptions = <TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2535,11 +2535,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type NoteIndexQueryResult = NonNullable<Awaited<ReturnType<typeof noteIndex>>>
-export type NoteIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type NoteIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params: undefined |  NoteIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>> & Pick<
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteIndex>>,
           TError,
@@ -2548,8 +2548,8 @@ export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>> & Pick<
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteIndex>>,
           TError,
@@ -2558,16 +2558,16 @@ export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List notes. Can filter by noteable_type and noteable_id
+ * @summary List the notes attached to a single parent record
  */
 
-export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useNoteIndex<TData = Awaited<ReturnType<typeof noteIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: NoteIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -2601,7 +2601,7 @@ export const noteStore = (
 
 
 
-export const getNoteStoreMutationOptions = <TError = ErrorType<NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getNoteStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: BodyType<NoteStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: BodyType<NoteStoreBody>}, TContext> => {
 
@@ -2630,9 +2630,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type NoteStoreMutationResult = NonNullable<Awaited<ReturnType<typeof noteStore>>>
     export type NoteStoreMutationBody = BodyType<NoteStoreBody>
-    export type NoteStoreMutationError = ErrorType<NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type NoteStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
-    export const useNoteStore = <TError = ErrorType<NoteStore400 | AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    export const useNoteStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteStore>>, TError,{data: BodyType<NoteStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof noteStore>>,
@@ -2665,7 +2665,7 @@ export const getNoteShowQueryKey = (note: number,) => {
     }
 
 
-export const getNoteShowQueryOptions = <TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getNoteShowQueryOptions = <TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2684,10 +2684,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type NoteShowQueryResult = NonNullable<Awaited<ReturnType<typeof noteShow>>>
-export type NoteShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type NoteShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  note: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteShow>>,
@@ -2697,7 +2697,7 @@ export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof noteShow>>,
@@ -2707,12 +2707,12 @@ export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useNoteShow<TData = Awaited<ReturnType<typeof noteShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  note: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof noteShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2748,7 +2748,7 @@ export const noteUpdate = (
 
 
 
-export const getNoteUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | NoteUpdate403 | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getNoteUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{note: number;data?: BodyType<NoteUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{note: number;data?: BodyType<NoteUpdateBody>}, TContext> => {
 
@@ -2777,9 +2777,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type NoteUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof noteUpdate>>>
     export type NoteUpdateMutationBody = BodyType<NoteUpdateBody> | undefined
-    export type NoteUpdateMutationError = ErrorType<AuthenticationExceptionResponse | NoteUpdate403 | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type NoteUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useNoteUpdate = <TError = ErrorType<AuthenticationExceptionResponse | NoteUpdate403 | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    export const useNoteUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteUpdate>>, TError,{note: number;data?: BodyType<NoteUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof noteUpdate>>,
@@ -2805,7 +2805,7 @@ export const noteDestroy = (
 
 
 
-export const getNoteDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | NoteDestroy403 | ModelNotFoundExceptionResponse>,
+export const getNoteDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{note: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{note: number}, TContext> => {
 
@@ -2834,9 +2834,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type NoteDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof noteDestroy>>>
 
-    export type NoteDestroyMutationError = ErrorType<AuthenticationExceptionResponse | NoteDestroy403 | ModelNotFoundExceptionResponse>
+    export type NoteDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useNoteDestroy = <TError = ErrorType<AuthenticationExceptionResponse | NoteDestroy403 | ModelNotFoundExceptionResponse>,
+    export const useNoteDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof noteDestroy>>, TError,{note: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof noteDestroy>>,
@@ -2873,7 +2873,7 @@ export const getRoleIndexQueryKey = (params?: RoleIndexParams,) => {
     }
 
 
-export const getRoleIndexQueryOptions = <TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getRoleIndexQueryOptions = <TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2892,10 +2892,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type RoleIndexQueryResult = NonNullable<Awaited<ReturnType<typeof roleIndex>>>
-export type RoleIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type RoleIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  RoleIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof roleIndex>>,
@@ -2905,7 +2905,7 @@ export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof roleIndex>>,
@@ -2915,7 +2915,7 @@ export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -2923,7 +2923,7 @@ export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TErr
  * @summary Get a list of all system roles
  */
 
-export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: RoleIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof roleIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -2942,10 +2942,12 @@ export function useRoleIndex<TData = Awaited<ReturnType<typeof roleIndex>>, TErr
 
 
 /**
- * @summary List tasks. Filter by visit_id or assignee
+ * The visit is required: without it there is nothing to authorize against,
+ * and the response would contain every task in the table.
+ * @summary List the tasks belonging to a single visit
  */
 export const taskIndex = (
-    params?: TaskIndexParams,
+    params: TaskIndexParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
 
@@ -2973,7 +2975,7 @@ export const getTaskIndexQueryKey = (params?: TaskIndexParams,) => {
     }
 
 
-export const getTaskIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getTaskIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -2992,11 +2994,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type TaskIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof taskIndex>>>
-export type TaskIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type TaskIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params: undefined |  TaskIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>> & Pick<
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskIndex>>,
           TError,
@@ -3005,8 +3007,8 @@ export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>> & Pick<
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskIndex>>,
           TError,
@@ -3015,16 +3017,16 @@ export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List tasks. Filter by visit_id or assignee
+ * @summary List the tasks belonging to a single visit
  */
 
-export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof taskIndex>>, TaskIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData, QueryKey, TaskIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -3040,7 +3042,7 @@ export function useTaskIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
 
 
 
-export const getTaskIndexQueryOptions = <TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getTaskIndexQueryOptions = <TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3059,11 +3061,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type TaskIndexQueryResult = NonNullable<Awaited<ReturnType<typeof taskIndex>>>
-export type TaskIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type TaskIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params: undefined |  TaskIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskIndex>>,
           TError,
@@ -3072,8 +3074,8 @@ export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskIndex>>,
           TError,
@@ -3082,16 +3084,16 @@ export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List tasks. Filter by visit_id or assignee
+ * @summary List the tasks belonging to a single visit
  */
 
-export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTaskIndex<TData = Awaited<ReturnType<typeof taskIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TaskIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -3125,7 +3127,7 @@ export const taskStore = (
 
 
 
-export const getTaskStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getTaskStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: BodyType<TaskStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: BodyType<TaskStoreBody>}, TContext> => {
 
@@ -3154,9 +3156,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TaskStoreMutationResult = NonNullable<Awaited<ReturnType<typeof taskStore>>>
     export type TaskStoreMutationBody = BodyType<TaskStoreBody>
-    export type TaskStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type TaskStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
-    export const useTaskStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    export const useTaskStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskStore>>, TError,{data: BodyType<TaskStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof taskStore>>,
@@ -3189,7 +3191,7 @@ export const getTaskShowQueryKey = (task: number,) => {
     }
 
 
-export const getTaskShowQueryOptions = <TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getTaskShowQueryOptions = <TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3208,10 +3210,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type TaskShowQueryResult = NonNullable<Awaited<ReturnType<typeof taskShow>>>
-export type TaskShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type TaskShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  task: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskShow>>,
@@ -3221,7 +3223,7 @@ export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof taskShow>>,
@@ -3231,12 +3233,12 @@ export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTaskShow<TData = Awaited<ReturnType<typeof taskShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  task: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taskShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -3272,7 +3274,7 @@ export const taskUpdate = (
 
 
 
-export const getTaskUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getTaskUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{task: number;data?: BodyType<TaskUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{task: number;data?: BodyType<TaskUpdateBody>}, TContext> => {
 
@@ -3301,9 +3303,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TaskUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof taskUpdate>>>
     export type TaskUpdateMutationBody = BodyType<TaskUpdateBody> | undefined
-    export type TaskUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type TaskUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useTaskUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    export const useTaskUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskUpdate>>, TError,{task: number;data?: BodyType<TaskUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof taskUpdate>>,
@@ -3329,7 +3331,7 @@ export const taskDestroy = (
 
 
 
-export const getTaskDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getTaskDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{task: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{task: number}, TContext> => {
 
@@ -3358,9 +3360,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TaskDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof taskDestroy>>>
 
-    export type TaskDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type TaskDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useTaskDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    export const useTaskDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof taskDestroy>>, TError,{task: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof taskDestroy>>,
@@ -3371,8 +3373,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getTaskDestroyMutationOptions(options), queryClient);
     }
 
+/**
+ * The family profile is required: without it there is nothing to authorize
+ * against, and the response would contain every testimony in the table.
+ * @summary List the testimonies recorded for a single family profile
+ */
 export const testimonyIndex = (
-    params?: TestimonyIndexParams,
+    params: TestimonyIndexParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
 
@@ -3400,7 +3407,7 @@ export const getTestimonyIndexQueryKey = (params?: TestimonyIndexParams,) => {
     }
 
 
-export const getTestimonyIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getTestimonyIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3419,11 +3426,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type TestimonyIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof testimonyIndex>>>
-export type TestimonyIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type TestimonyIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params: undefined |  TestimonyIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>> & Pick<
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof testimonyIndex>>,
           TError,
@@ -3432,8 +3439,8 @@ export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnTyp
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>> & Pick<
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof testimonyIndex>>,
           TError,
@@ -3442,13 +3449,16 @@ export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnTyp
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the testimonies recorded for a single family profile
+ */
 
-export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testimonyIndex>>, TestimonyIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData, QueryKey, TestimonyIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -3464,7 +3474,7 @@ export function useTestimonyIndexInfinite<TData = InfiniteData<Awaited<ReturnTyp
 
 
 
-export const getTestimonyIndexQueryOptions = <TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getTestimonyIndexQueryOptions = <TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3483,11 +3493,11 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type TestimonyIndexQueryResult = NonNullable<Awaited<ReturnType<typeof testimonyIndex>>>
-export type TestimonyIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type TestimonyIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params: undefined |  TestimonyIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>> & Pick<
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof testimonyIndex>>,
           TError,
@@ -3496,8 +3506,8 @@ export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyInd
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>> & Pick<
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof testimonyIndex>>,
           TError,
@@ -3506,13 +3516,16 @@ export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyInd
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the testimonies recorded for a single family profile
+ */
 
-export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
- params?: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useTestimonyIndex<TData = Awaited<ReturnType<typeof testimonyIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
+ params: TestimonyIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -3559,7 +3572,7 @@ formData.append(`recorded_at`, testimonyStoreBody.recorded_at);
 
 
 
-export const getTestimonyStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getTestimonyStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyStore>>, TError,{data: BodyType<TestimonyStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof testimonyStore>>, TError,{data: BodyType<TestimonyStoreBody>}, TContext> => {
 
@@ -3588,9 +3601,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TestimonyStoreMutationResult = NonNullable<Awaited<ReturnType<typeof testimonyStore>>>
     export type TestimonyStoreMutationBody = BodyType<TestimonyStoreBody>
-    export type TestimonyStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type TestimonyStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
-    export const useTestimonyStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    export const useTestimonyStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyStore>>, TError,{data: BodyType<TestimonyStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof testimonyStore>>,
@@ -3623,7 +3636,7 @@ export const getTestimonyShowQueryKey = (testimony: number,) => {
     }
 
 
-export const getTestimonyShowQueryOptions = <TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getTestimonyShowQueryOptions = <TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3642,10 +3655,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type TestimonyShowQueryResult = NonNullable<Awaited<ReturnType<typeof testimonyShow>>>
-export type TestimonyShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type TestimonyShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  testimony: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof testimonyShow>>,
@@ -3655,7 +3668,7 @@ export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof testimonyShow>>,
@@ -3665,12 +3678,12 @@ export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useTestimonyShow<TData = Awaited<ReturnType<typeof testimonyShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  testimony: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testimonyShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -3706,7 +3719,7 @@ export const testimonyUpdate = (
 
 
 
-export const getTestimonyUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getTestimonyUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyUpdate>>, TError,{testimony: number;data?: BodyType<TestimonyUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof testimonyUpdate>>, TError,{testimony: number;data?: BodyType<TestimonyUpdateBody>}, TContext> => {
 
@@ -3735,9 +3748,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TestimonyUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof testimonyUpdate>>>
     export type TestimonyUpdateMutationBody = BodyType<TestimonyUpdateBody> | undefined
-    export type TestimonyUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type TestimonyUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useTestimonyUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    export const useTestimonyUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyUpdate>>, TError,{testimony: number;data?: BodyType<TestimonyUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof testimonyUpdate>>,
@@ -3763,7 +3776,7 @@ export const testimonyDestroy = (
 
 
 
-export const getTestimonyDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getTestimonyDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyDestroy>>, TError,{testimony: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof testimonyDestroy>>, TError,{testimony: number}, TContext> => {
 
@@ -3792,9 +3805,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TestimonyDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof testimonyDestroy>>>
 
-    export type TestimonyDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type TestimonyDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useTestimonyDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    export const useTestimonyDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof testimonyDestroy>>, TError,{testimony: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof testimonyDestroy>>,
@@ -3850,7 +3863,7 @@ export const getUserIndexQueryKey = (params?: UserIndexParams,) => {
     }
 
 
-export const getUserIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getUserIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3869,10 +3882,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type UserIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof userIndex>>>
-export type UserIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type UserIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  UserIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof userIndex>>,
@@ -3882,7 +3895,7 @@ export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof userIndex>>,
@@ -3892,7 +3905,7 @@ export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -3913,7 +3926,7 @@ GET /api/users?name=Carlos&email=admin
 GET /api/users?role=admin
  */
 
-export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof userIndex>>, UserIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: UserIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData, QueryKey, UserIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -3930,7 +3943,7 @@ export function useUserIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typ
 
 
 
-export const getUserIndexQueryOptions = <TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getUserIndexQueryOptions = <TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -3949,10 +3962,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type UserIndexQueryResult = NonNullable<Awaited<ReturnType<typeof userIndex>>>
-export type UserIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type UserIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  UserIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof userIndex>>,
@@ -3962,7 +3975,7 @@ export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof userIndex>>,
@@ -3972,7 +3985,7 @@ export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -3993,7 +4006,7 @@ GET /api/users?name=Carlos&email=admin
 GET /api/users?role=admin
  */
 
-export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useUserIndex<TData = Awaited<ReturnType<typeof userIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: UserIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -4028,7 +4041,7 @@ export const userStore = (
 
 
 
-export const getUserStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getUserStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: BodyType<UserStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: BodyType<UserStoreBody>}, TContext> => {
 
@@ -4057,9 +4070,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UserStoreMutationResult = NonNullable<Awaited<ReturnType<typeof userStore>>>
     export type UserStoreMutationBody = BodyType<UserStoreBody>
-    export type UserStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type UserStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
-    export const useUserStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    export const useUserStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userStore>>, TError,{data: BodyType<UserStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof userStore>>,
@@ -4092,7 +4105,7 @@ export const getUserShowQueryKey = (user: number,) => {
     }
 
 
-export const getUserShowQueryOptions = <TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getUserShowQueryOptions = <TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -4111,10 +4124,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type UserShowQueryResult = NonNullable<Awaited<ReturnType<typeof userShow>>>
-export type UserShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type UserShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof userShow>>,
@@ -4124,7 +4137,7 @@ export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof userShow>>,
@@ -4134,12 +4147,12 @@ export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useUserShow<TData = Awaited<ReturnType<typeof userShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  user: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -4175,7 +4188,7 @@ export const userUpdate = (
 
 
 
-export const getUserUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getUserUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: BodyType<UserUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: BodyType<UserUpdateBody>}, TContext> => {
 
@@ -4204,9 +4217,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UserUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof userUpdate>>>
     export type UserUpdateMutationBody = BodyType<UserUpdateBody> | undefined
-    export type UserUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type UserUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useUserUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    export const useUserUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userUpdate>>, TError,{user: number;data?: BodyType<UserUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof userUpdate>>,
@@ -4232,7 +4245,7 @@ export const userDestroy = (
 
 
 
-export const getUserDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getUserDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userDestroy>>, TError,{user: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof userDestroy>>, TError,{user: number}, TContext> => {
 
@@ -4261,9 +4274,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UserDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof userDestroy>>>
 
-    export type UserDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type UserDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useUserDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    export const useUserDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userDestroy>>, TError,{user: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof userDestroy>>,
@@ -4306,7 +4319,7 @@ export const getVisitIndexQueryKey = (params?: VisitIndexParams,) => {
     }
 
 
-export const getVisitIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
+export const getVisitIndexInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -4325,10 +4338,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type VisitIndexInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof visitIndex>>>
-export type VisitIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type VisitIndexInfiniteQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  VisitIndexParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitIndex>>,
@@ -4338,7 +4351,7 @@ export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitIndex>>,
@@ -4348,7 +4361,7 @@ export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -4356,7 +4369,7 @@ export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
  * @summary List visits. Supports filtering by family_profile_id and status
  */
 
-export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<typeof visitIndex>>, VisitIndexParams['page']>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: VisitIndexParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData, QueryKey, VisitIndexParams['page']>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -4373,7 +4386,7 @@ export function useVisitIndexInfinite<TData = InfiniteData<Awaited<ReturnType<ty
 
 
 
-export const getVisitIndexQueryOptions = <TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getVisitIndexQueryOptions = <TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -4392,10 +4405,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type VisitIndexQueryResult = NonNullable<Awaited<ReturnType<typeof visitIndex>>>
-export type VisitIndexQueryError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+export type VisitIndexQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
 
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params: undefined |  VisitIndexParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitIndex>>,
@@ -4405,7 +4418,7 @@ export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitIndex>>,
@@ -4415,7 +4428,7 @@ export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TE
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -4423,7 +4436,7 @@ export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TE
  * @summary List visits. Supports filtering by family_profile_id and status
  */
 
-export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>>(
+export function useVisitIndex<TData = Awaited<ReturnType<typeof visitIndex>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>>(
  params?: VisitIndexParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitIndex>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -4458,7 +4471,7 @@ export const visitStore = (
 
 
 
-export const getVisitStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+export const getVisitStoreMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: BodyType<VisitStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: BodyType<VisitStoreBody>}, TContext> => {
 
@@ -4487,9 +4500,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type VisitStoreMutationResult = NonNullable<Awaited<ReturnType<typeof visitStore>>>
     export type VisitStoreMutationBody = BodyType<VisitStoreBody>
-    export type VisitStoreMutationError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>
+    export type VisitStoreMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>
 
-    export const useVisitStore = <TError = ErrorType<AuthenticationExceptionResponse | ValidationExceptionResponse>,
+    export const useVisitStore = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitStore>>, TError,{data: BodyType<VisitStoreBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof visitStore>>,
@@ -4522,7 +4535,7 @@ export const getVisitShowQueryKey = (visit: number,) => {
     }
 
 
-export const getVisitShowQueryOptions = <TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getVisitShowQueryOptions = <TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -4541,10 +4554,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type VisitShowQueryResult = NonNullable<Awaited<ReturnType<typeof visitShow>>>
-export type VisitShowQueryError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+export type VisitShowQueryError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
 
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  visit: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitShow>>,
@@ -4554,7 +4567,7 @@ export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof visitShow>>,
@@ -4564,12 +4577,12 @@ export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TErr
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>>(
+export function useVisitShow<TData = Awaited<ReturnType<typeof visitShow>>, TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>>(
  visit: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof visitShow>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -4605,7 +4618,7 @@ export const visitUpdate = (
 
 
 
-export const getVisitUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+export const getVisitUpdateMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{visit: number;data?: BodyType<VisitUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{visit: number;data?: BodyType<VisitUpdateBody>}, TContext> => {
 
@@ -4634,9 +4647,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type VisitUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof visitUpdate>>>
     export type VisitUpdateMutationBody = BodyType<VisitUpdateBody> | undefined
-    export type VisitUpdateMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
+    export type VisitUpdateMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>
 
-    export const useVisitUpdate = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
+    export const useVisitUpdate = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitUpdate>>, TError,{visit: number;data?: BodyType<VisitUpdateBody>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof visitUpdate>>,
@@ -4662,7 +4675,7 @@ export const visitDestroy = (
 
 
 
-export const getVisitDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+export const getVisitDestroyMutationOptions = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{visit: number}, TContext>, request?: SecondParameter<typeof customInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{visit: number}, TContext> => {
 
@@ -4691,9 +4704,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type VisitDestroyMutationResult = NonNullable<Awaited<ReturnType<typeof visitDestroy>>>
 
-    export type VisitDestroyMutationError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>
+    export type VisitDestroyMutationError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>
 
-    export const useVisitDestroy = <TError = ErrorType<AuthenticationExceptionResponse | ModelNotFoundExceptionResponse>,
+    export const useVisitDestroy = <TError = ErrorType<AuthenticationExceptionResponse | AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof visitDestroy>>, TError,{visit: number}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof visitDestroy>>,

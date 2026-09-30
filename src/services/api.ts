@@ -1,5 +1,6 @@
 import Axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { useAuthStore } from '@/store/authStore';
+import { queryClient } from '@/lib/queryClient';
 import { router } from 'expo-router';
 
 export const AXIOS_INSTANCE = Axios.create({
@@ -25,10 +26,19 @@ AXIOS_INSTANCE.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized
+      // The stored token is no longer valid; drop the session.
       useAuthStore.getState().logout();
       router.replace('/login');
     }
+
+    if (error.response?.status === 403) {
+      // The session is still valid but the policy denied this action. The
+      // request is rejected rather than logged out, and the stored permissions
+      // are invalidated so the UI stops offering affordances the backend now
+      // refuses (for example after a role change).
+      queryClient.invalidateQueries({ queryKey: ['getUser'] });
+    }
+
     return Promise.reject(error);
   },
 );

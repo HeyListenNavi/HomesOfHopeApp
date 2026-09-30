@@ -11,7 +11,8 @@ export interface UserResource {
   email: string;
   /** @nullable */
   email_verified_at: string | null;
-  roles?: unknown[];
+  roles?: string[];
+  permissions?: string[];
   /** @nullable */
   created_at: string | null;
   /** @nullable */

@@ -9,7 +9,7 @@ export type TestimonyIndexParams = {
 /**
  * Filter testimonies by the family profile they belong to.
  */
-family_profile_id?: number;
+family_profile_id: number;
 /**
  * Page number for paginated results.
  * @minimum 1

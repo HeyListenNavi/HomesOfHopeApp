@@ -10,7 +10,7 @@ export type TaskIndexParams = {
 /**
  * Filter tasks by the visit they belong to.
  */
-visit_id?: number;
+visit_id: number;
 /**
  * Filter tasks by the user they are assigned to.
  */

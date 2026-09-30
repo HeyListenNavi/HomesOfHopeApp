@@ -18,7 +18,17 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UserResource"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "roles"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -271,7 +281,17 @@
                                             "type": "string"
                                         },
                                         "user": {
-                                            "$ref": "#/components/schemas/UserResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "roles"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -384,24 +404,8 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "const": "Invalid documentable_type"
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -440,6 +444,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -485,6 +492,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -538,6 +548,9 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -598,6 +611,9 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -632,6 +648,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -677,6 +696,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -852,6 +874,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -1023,6 +1048,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -1070,6 +1098,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -1242,6 +1273,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -1288,6 +1322,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -1489,6 +1526,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -1844,6 +1884,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -1893,6 +1936,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -2252,6 +2298,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -2299,6 +2348,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -2494,6 +2546,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -2531,6 +2586,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -2735,6 +2793,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -2789,6 +2850,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
                     },
@@ -2801,7 +2865,8 @@
         "/notes": {
             "get": {
                 "operationId": "note.index",
-                "summary": "List notes. Can filter by noteable_type and noteable_id",
+                "description": "The parent is required: without it there is nothing to authorize against,\nand the response would contain every note in the table.",
+                "summary": "List the notes attached to a single parent record",
                 "tags": [
                     "Note"
                 ],
@@ -2809,7 +2874,8 @@
                     {
                         "name": "noteable_type",
                         "in": "query",
-                        "description": "Type of the object the notes belong to (family_profile, family_member, visit, or a model class name).",
+                        "required": true,
+                        "description": "Type of the object the notes belong to (family_profile, family_member or visit).",
                         "schema": {
                             "type": "string"
                         }
@@ -2817,6 +2883,7 @@
                     {
                         "name": "noteable_id",
                         "in": "query",
+                        "required": true,
                         "description": "ID of the object the notes belong to.",
                         "schema": {
                             "type": "integer"
@@ -2972,6 +3039,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -3038,24 +3108,8 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "const": "Invalid noteable_type"
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -3103,6 +3157,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -3170,23 +3227,7 @@
                         }
                     },
                     "403": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "const": "Unauthorized"
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -3236,23 +3277,7 @@
                         }
                     },
                     "403": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "const": "Unauthorized"
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -3294,6 +3319,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -3306,7 +3334,8 @@
         "/tasks": {
             "get": {
                 "operationId": "task.index",
-                "summary": "List tasks. Filter by visit_id or assignee",
+                "description": "The visit is required: without it there is nothing to authorize against,\nand the response would contain every task in the table.",
+                "summary": "List the tasks belonging to a single visit",
                 "tags": [
                     "Task"
                 ],
@@ -3314,6 +3343,7 @@
                     {
                         "name": "visit_id",
                         "in": "query",
+                        "required": true,
                         "description": "Filter tasks by the visit they belong to.",
                         "schema": {
                             "type": "integer"
@@ -3488,6 +3518,9 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -3571,6 +3604,9 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -3616,6 +3652,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -3711,6 +3750,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -3758,6 +3800,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
                     },
@@ -3770,6 +3815,8 @@
         "/testimonies": {
             "get": {
                 "operationId": "testimony.index",
+                "description": "The family profile is required: without it there is nothing to authorize\nagainst, and the response would contain every testimony in the table.",
+                "summary": "List the testimonies recorded for a single family profile",
                 "tags": [
                     "Testimony"
                 ],
@@ -3777,6 +3824,7 @@
                     {
                         "name": "family_profile_id",
                         "in": "query",
+                        "required": true,
                         "description": "Filter testimonies by the family profile they belong to.",
                         "schema": {
                             "type": "integer"
@@ -3919,6 +3967,9 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -4009,6 +4060,9 @@
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
                     }
@@ -4042,6 +4096,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -4125,6 +4182,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -4171,6 +4231,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -4373,6 +4436,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -4426,6 +4492,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -4472,6 +4541,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -4531,6 +4603,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -4561,6 +4636,9 @@
                 "responses": {
                     "204": {
                         "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -4763,6 +4841,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -4856,6 +4937,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -4906,6 +4990,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -5015,6 +5102,9 @@
                             }
                         }
                     },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     },
@@ -5061,6 +5151,9 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -6616,7 +6709,15 @@
                     },
                     "roles": {
                         "type": "array",
-                        "items": {}
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "created_at": {
                         "type": [
@@ -6810,6 +6911,25 @@
                             "required": [
                                 "message",
                                 "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthorizationException": {
+                "description": "Authorization error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
                             ]
                         }
                     }

@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type NoteStore400 = {
-  message: 'Invalid noteable_type';
+export type AuthorizationExceptionResponse = {
+  /** Error overview. */
+  message: string;
 };
