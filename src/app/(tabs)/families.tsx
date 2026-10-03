@@ -17,6 +17,8 @@ import { useTabBarClearance } from "@/lib/layout";
 import { useFamilyProfileIndexInfinite } from "@/services/generated/apiEndpoints";
 import EmptyState from "@/components/EmptyState";
 import Input from "@/components/Input";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
 
 const Page = () => {
     const router = useRouter();
@@ -54,14 +56,18 @@ const Page = () => {
                     Familias
                 </Text>
 
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    className="ml-auto flex-row items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-2 shadow-lg shadow-primary/30"
-                    onPress={() => router.push("/new-family-profile" as any)}
-                >
-                    <Boxicon name="bxs-plus" size={18} color="white" />
-                    <Text className="text-white font-bold">Crear</Text>
-                </TouchableOpacity>
+                <Can permission={Permission.familyProfileCreate}>
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        className="ml-auto flex-row items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-2 shadow-lg shadow-primary/30"
+                        onPress={() => router.push("/new-family-profile" as any)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Crear nueva familia"
+                    >
+                        <Boxicon name="bxs-plus" size={18} color="white" />
+                        <Text className="text-white font-bold">Crear</Text>
+                    </TouchableOpacity>
+                </Can>
             </View>
 
             <Input

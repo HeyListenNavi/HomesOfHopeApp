@@ -18,10 +18,14 @@ import { useTabBarClearance } from "@/lib/layout";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import { useRoleIndex, useUserIndexInfinite } from "@/services/generated/apiEndpoints";
 import EmptyState from "@/components/EmptyState";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const Page = () => {
     const router = useRouter();
     const tabBarClearance = useTabBarClearance();
+    const { can } = usePermissions();
 
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
@@ -39,7 +43,9 @@ const Page = () => {
             }
         }
     );
-    const roles = useRoleIndex();
+    const roles = useRoleIndex({}, {
+        query: { enabled: can(Permission.roleViewAny) },
+    });
 
     const refreshing = (users.isFetching && !users.isFetchingNextPage) || roles.isFetching;
 
@@ -58,16 +64,18 @@ const Page = () => {
                     Equipo
                 </Text>
 
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    className="ml-auto flex-row items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-2 shadow-lg shadow-primary/30"
-                    onPress={() => router.push("/new-staff-profile" as any)}
-                    accessibilityRole="button"
-                    accessibilityLabel="Crear nuevo integrante de staff"
-                >
-                    <Boxicon name="bxs-plus" size={18} color="white" />
-                    <Text className="text-white font-bold">Crear</Text>
-                </TouchableOpacity>
+                <Can permission={Permission.userCreate}>
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        className="ml-auto flex-row items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-2 shadow-lg shadow-primary/30"
+                        onPress={() => router.push("/new-staff-profile" as any)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Crear nuevo integrante de staff"
+                    >
+                        <Boxicon name="bxs-plus" size={18} color="white" />
+                        <Text className="text-white font-bold">Crear</Text>
+                    </TouchableOpacity>
+                </Can>
             </View>
 
             {}
@@ -96,15 +104,16 @@ const Page = () => {
             </View>
 
             {}
-            <ScrollView
-                horizontal
-                nestedScrollEnabled={true}
-                directionalLockEnabled={true}
-                showsHorizontalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                className="-mx-6"
-                contentContainerClassName="px-6 gap-3 py-1"
-            >
+            <Can permission={Permission.roleViewAny}>
+                <ScrollView
+                    horizontal
+                    nestedScrollEnabled={true}
+                    directionalLockEnabled={true}
+                    showsHorizontalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    className="-mx-6"
+                    contentContainerClassName="px-6 gap-3 py-1"
+                >
                 <TouchableOpacity
                     onPress={() => setSelectedRole(null)}
                     activeOpacity={0.8}
@@ -143,7 +152,8 @@ const Page = () => {
                         </TouchableOpacity>
                     );
                 })}
-            </ScrollView>
+                </ScrollView>
+            </Can>
         </View>
     );
 

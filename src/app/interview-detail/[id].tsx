@@ -19,10 +19,14 @@ import { useGroupShow, useGroupApplicantsInfinite, useAttendanceScan, useAttenda
 import EmptyState from "@/components/EmptyState";
 import type { GroupApplicants200DataItem } from "@/services/generated/apiTypes";
 import Input from "@/components/Input";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const Page = () => {
     const id = Number(useLocalSearchParams<{ id: string }>().id);
     const topPadding = useScreenTopPadding();
+    const { can } = usePermissions();
 
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -65,6 +69,7 @@ const Page = () => {
     };
 
     const handleQRScanned = async (code: string) => {
+        if (!can(Permission.applicantUpdate)) return;
         setScannerOpen(false);
         const found = applicants.find((a) => a.current_attendance?.attendance_code === code);
         
@@ -93,6 +98,7 @@ const Page = () => {
     };
 
     const handleMarkPresent = async (attendanceId: number) => {
+        if (!can(Permission.applicantUpdate)) return;
         try {
             await updateAttendance.mutateAsync({
                 attendance: attendanceId,
@@ -107,6 +113,7 @@ const Page = () => {
     };
 
     const handleMarkAttended = async (attendanceId: number) => {
+        if (!can(Permission.applicantUpdate)) return;
         try {
             await updateAttendance.mutateAsync({
                 attendance: attendanceId,
@@ -121,6 +128,7 @@ const Page = () => {
     };
 
     const handleCloseAttendance = async () => {
+        if (!can(Permission.applicantUpdate)) return;
         confirmModalRef.current?.dismiss();
         
         try {
@@ -253,7 +261,7 @@ const Page = () => {
 
             <View className="gap-3">
                 {!attendanceClosed ? (
-                    <>
+                    <Can permission={Permission.applicantUpdate}>
                         <TouchableOpacity
                             onPress={() => setScannerOpen(true)}
                             className="bg-primary h-[56px] rounded-3xl flex-row justify-center items-center gap-2 shadow-lg shadow-primary/30 active:opacity-90"
@@ -277,7 +285,7 @@ const Page = () => {
                             <Boxicon name="bxs-lock" size={16} color="#dc2626" />
                             <Text className="text-red-500 font-bold text-base">Cerrar Asistencia</Text>
                         </TouchableOpacity>
-                    </>
+                    </Can>
                 ) : (
                     <View className="flex-row items-center justify-center gap-1.5 py-2">
                         <Boxicon name="bxs-lock" size={16} color="#9ca3af" />
@@ -370,7 +378,9 @@ const Page = () => {
                 }
             />
 
-            <QRScannerModal visible={scannerOpen} onScanned={handleQRScanned} onClose={() => setScannerOpen(false)} />
+            {can(Permission.applicantUpdate) && (
+                <QRScannerModal visible={scannerOpen} onScanned={handleQRScanned} onClose={() => setScannerOpen(false)} />
+            )}
             
             <BottomSheet ref={attendanceSheetRef} scrollable={false}>
                 <AttendanceConfirmSheet

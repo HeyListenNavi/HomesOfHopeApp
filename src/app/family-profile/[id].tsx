@@ -20,6 +20,8 @@ import FluentEmoji from "@/components/FluentEmoji";
 import BrandBoxicon from "@/components/BrandBoxicons";
 import FamilyStatusBadge from "@/components/FamilyStatusBadge";
 import SectionHeader from "@/components/SectionHeader";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
 import FilePreviewDialog from "@/components/FilePreviewDialog";
 import { Badge } from "@/components/ui/badge";
 import TestimonyCard from "@/components/TestimonyCard";
@@ -275,14 +277,16 @@ const Page = () => {
                                 </View>
                             </View>
 
-                            <TouchableOpacity
-                                onPress={() => router.push(`/edit-family-profile/${family.id}`)}
-                                className="h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20"
-                                accessibilityRole="button"
-                                accessibilityLabel="Editar perfil de familia"
-                            >
-                                <Boxicon name="bxs-edit" size={22} color="#61b346" />
-                            </TouchableOpacity>
+                            <Can permission={Permission.familyProfileUpdate}>
+                                <TouchableOpacity
+                                    onPress={() => router.push(`/edit-family-profile/${family.id}`)}
+                                    className="h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20"
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Editar perfil de familia"
+                                >
+                                    <Boxicon name="bxs-edit" size={22} color="#61b346" />
+                                </TouchableOpacity>
+                            </Can>
                         </View>
 
                         <View className="gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
@@ -355,6 +359,7 @@ const Page = () => {
                         emoji="👥"
                         title="Integrantes"
                         action={
+                            <Can permission={Permission.familyMemberCreate}>
                             <TouchableOpacity
                                 className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
                                 onPress={() => router.push(`/new-family-member/${family.id}` as any)}
@@ -364,6 +369,7 @@ const Page = () => {
                                 <Boxicon name="bx-plus" size={16} color="#61b346" />
                                 <Text className="text-primary font-bold text-sm">Añadir</Text>
                             </TouchableOpacity>
+                        </Can>
                         }
                     />
                     {members.length > 0 ? (
@@ -646,15 +652,17 @@ const Page = () => {
                         emoji="📄"
                         title="Documentos"
                         action={
-                            <TouchableOpacity
-                                className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
-                                onPress={() => router.push(`/new-document/${family.id}?documentable_type=family_profile` as any)}
-                                accessibilityRole="button"
-                                accessibilityLabel="Subir documento"
-                            >
-                                <Boxicon name="bx-plus" size={16} color="#61b346" />
-                                <Text className="text-primary font-bold text-sm">Subir</Text>
-                            </TouchableOpacity>
+                            <Can permission={Permission.familyProfileUpdate}>
+                                <TouchableOpacity
+                                    className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
+                                    onPress={() => router.push(`/new-document/${family.id}?documentable_type=family_profile` as any)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Subir documento"
+                                >
+                                    <Boxicon name="bx-plus" size={16} color="#61b346" />
+                                    <Text className="text-primary font-bold text-sm">Subir</Text>
+                                </TouchableOpacity>
+                            </Can>
                         }
                     />
                     {documents.length > 0 ? (
@@ -700,15 +708,17 @@ const Page = () => {
                         emoji="🌟"
                         title="Testimonios"
                         action={
-                            <TouchableOpacity
-                                className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
-                                onPress={() => router.push(`/new-testimony/${family.id}`)}
-                                accessibilityRole="button"
-                                accessibilityLabel="Añadir testimonio"
-                            >
-                                <Boxicon name="bx-plus" size={16} color="#61b346" />
-                                <Text className="text-primary font-bold text-sm">Añadir</Text>
-                            </TouchableOpacity>
+                            <Can permission={Permission.familyProfileUpdate}>
+                                <TouchableOpacity
+                                    className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
+                                    onPress={() => router.push(`/new-testimony/${family.id}`)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Añadir testimonio"
+                                >
+                                    <Boxicon name="bx-plus" size={16} color="#61b346" />
+                                    <Text className="text-primary font-bold text-sm">Añadir</Text>
+                                </TouchableOpacity>
+                            </Can>
                         }
                     />
                     {testimonies.length > 0 ? (
@@ -737,15 +747,17 @@ const Page = () => {
                         emoji="📝"
                         title="Notas"
                         action={
-                            <TouchableOpacity
-                                className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
-                                onPress={() => router.push(`/new-note/${family.id}?noteable_type=family_profile` as any)}
-                                accessibilityRole="button"
-                                accessibilityLabel="Añadir nota"
-                            >
-                                <Boxicon name="bx-plus" size={16} color="#61b346" />
-                                <Text className="text-primary font-bold text-sm">Añadir</Text>
-                            </TouchableOpacity>
+                            <Can permission={Permission.familyProfileUpdate}>
+                                <TouchableOpacity
+                                    className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
+                                    onPress={() => router.push(`/new-note/${family.id}?noteable_type=family_profile` as any)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Añadir nota"
+                                >
+                                    <Boxicon name="bx-plus" size={16} color="#61b346" />
+                                    <Text className="text-primary font-bold text-sm">Añadir</Text>
+                                </TouchableOpacity>
+                            </Can>
                         }
                     />
                     {notes.length > 0 ? (

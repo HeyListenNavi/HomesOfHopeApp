@@ -35,6 +35,8 @@ import type {
     Religion,
     Occupation,
 } from "@/services/generated/apiTypes";
+import { Permission } from "@/lib/permissions";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 export default function NewFamilyMemberPage() {
     const router = useRouter();
@@ -43,6 +45,7 @@ export default function NewFamilyMemberPage() {
     const scrollViewRef = useRef<any>(null);
     const queryClient = useQueryClient();
     const storeMutation = useFamilyMemberStore();
+    const allowed = usePermissionGuard(Permission.familyMemberCreate);
 
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -161,6 +164,8 @@ export default function NewFamilyMemberPage() {
             setIsLoading(false);
         }
     };
+
+    if (!allowed) return null;
 
     return (
         <View className="flex-1 bg-gray-100">

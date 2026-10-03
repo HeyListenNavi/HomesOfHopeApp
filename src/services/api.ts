@@ -2,6 +2,7 @@ import Axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { queryClient } from '@/lib/queryClient';
 import { router } from 'expo-router';
+import type { GetUser200 } from '@/services/generated/apiTypes';
 
 export const AXIOS_INSTANCE = Axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -32,11 +33,7 @@ AXIOS_INSTANCE.interceptors.response.use(
     }
 
     if (error.response?.status === 403) {
-      // The session is still valid but the policy denied this action. The
-      // request is rejected rather than logged out, and the stored permissions
-      // are invalidated so the UI stops offering affordances the backend now
-      // refuses (for example after a role change).
-      queryClient.invalidateQueries({ queryKey: ['getUser'] });
+      refreshPermissions();
     }
 
     return Promise.reject(error);
@@ -52,6 +49,16 @@ export const customInstance = <T>(
     ...options,
   }).then(({ data }) => data);
 };
+
+export const refreshPermissions = () =>
+  queryClient
+    .fetchQuery({
+      queryKey: ['/user'],
+      queryFn: () => customInstance<GetUser200>({ url: '/user', method: 'GET' }),
+      staleTime: 0,
+    })
+    .then((user) => useAuthStore.getState().setUser(user))
+    .catch(() => {});
 
 export type ErrorType<Error> = AxiosError<Error>;
 export type BodyType<BodyData> = BodyData;

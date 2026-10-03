@@ -8,6 +8,8 @@ import type { ApplicantResource, AttendanceStatus } from "@/services/generated/a
 import ConfirmModal from "@/components/ConfirmModal";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { ATTENDANCE, PROCESS_STATUS } from "@/lib/enums";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export interface ApplicantProps {
     applicant: ApplicantResource;
@@ -18,6 +20,8 @@ export interface ApplicantProps {
 const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: ApplicantProps) => {
     const router = useRouter();
     const confirmRef = useRef<BottomSheetModal>(null);
+    const { can } = usePermissions();
+    const canUpdate = can(Permission.applicantUpdate);
 
     const attendance = applicant.current_attendance;
     const attendanceStatus = (attendance?.status ?? "pending") as AttendanceStatus;
@@ -26,8 +30,8 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
         PROCESS_STATUS[applicant.process_status]?.label ?? applicant.process_status;
 
     const hasAttendance = !!attendance?.id;
-    const canMarkPresent = attendanceStatus === "pending" && hasAttendance;
-    const canMarkAttended = attendanceStatus === "present" && hasAttendance;
+    const canMarkPresent = canUpdate && attendanceStatus === "pending" && hasAttendance;
+    const canMarkAttended = canUpdate && attendanceStatus === "present" && hasAttendance;
     const isReviewed = attendanceStatus === "attended";
     const isAbsent = attendanceStatus === "absent";
 
@@ -138,6 +142,11 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
                     <View className="flex-row items-center gap-1.5 px-1">
                         <Boxicon name="bxs-x-circle" size={16} color="#dc2626" />
                         <Text className="text-red-600 text-sm font-bold">Ausente</Text>
+                    </View>
+                ) : hasAttendance ? (
+                    <View className="flex-row items-center gap-1.5 px-1">
+                        <Boxicon name={statusStyle.icon} size={16} color={statusStyle.iconColor} />
+                        <Text className={`${statusStyle.text} text-sm font-bold`}>{statusStyle.label}</Text>
                     </View>
                 ) : (
                     <View className="flex-row items-center gap-1.5 px-1">

@@ -16,6 +16,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import InfoRow from "@/components/InfoRow";
 import FluentEmoji from "@/components/FluentEmoji";
 import SectionHeader from "@/components/SectionHeader";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
 import { formatDate } from "@/lib/utils";
 import {
     RELATIONSHIP,
@@ -157,15 +159,17 @@ export default function FamilyMemberPage() {
             >
                 {}
                 <View className="bg-white rounded-3xl p-6 shadow-md shadow-black/5 items-center gap-5 relative">
-                    <TouchableOpacity
-                        onPress={handleEditMember}
-                        activeOpacity={0.8}
-                        className="absolute top-5 right-5 h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20"
-                        accessibilityRole="button"
-                        accessibilityLabel="Editar Integrante"
-                    >
-                        <Boxicon name="bxs-edit" size={22} color="#61b346" />
-                    </TouchableOpacity>
+                    <Can permission={Permission.familyMemberUpdate}>
+                        <TouchableOpacity
+                            onPress={handleEditMember}
+                            activeOpacity={0.8}
+                            className="absolute top-5 right-5 h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20"
+                            accessibilityRole="button"
+                            accessibilityLabel="Editar Integrante"
+                        >
+                            <Boxicon name="bxs-edit" size={22} color="#61b346" />
+                        </TouchableOpacity>
+                    </Can>
 
                     <View className="h-24 w-24 rounded-full bg-primary/10 items-center justify-center border-2 border-primary/20 mt-1">
                         <FluentEmoji
@@ -387,15 +391,17 @@ export default function FamilyMemberPage() {
                         emoji="📄"
                         title="Documentos"
                         action={
-                            <TouchableOpacity
-                                className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
-                                onPress={() => router.push(`/new-document/${member.id}?documentable_type=family_member` as any)}
-                                accessibilityRole="button"
-                                accessibilityLabel="Subir documento"
-                            >
-                                <Boxicon name="bx-plus" size={16} color="#61b346" />
-                                <Text className="text-primary font-bold text-sm">Subir</Text>
-                            </TouchableOpacity>
+                            <Can permission={Permission.familyMemberUpdate}>
+                                <TouchableOpacity
+                                    className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center gap-1 active:opacity-70"
+                                    onPress={() => router.push(`/new-document/${member.id}?documentable_type=family_member` as any)}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Subir documento"
+                                >
+                                    <Boxicon name="bx-plus" size={16} color="#61b346" />
+                                    <Text className="text-primary font-bold text-sm">Subir</Text>
+                                </TouchableOpacity>
+                            </Can>
                         }
                     />
                     {memberDocs.length > 0 ? (

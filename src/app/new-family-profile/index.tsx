@@ -41,6 +41,8 @@ import {
 } from "@/lib/enums";
 import { useFamilyProfileStore } from "@/services/generated/apiEndpoints";
 import { useQueryClient } from "@tanstack/react-query";
+import { Permission } from "@/lib/permissions";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 export interface FamilyMemberDraft {
     id: string;
@@ -105,6 +107,7 @@ export default function NewFamilyProfilePage() {
     const { bottom } = useSafeAreaInsets();
     const scrollViewRef = useRef<any>(null);
     const queryClient = useQueryClient();
+    const allowed = usePermissionGuard(Permission.familyProfileCreate);
 
     const [step, setStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
@@ -382,6 +385,8 @@ export default function NewFamilyProfilePage() {
     } : null;
 
     
+    if (!allowed) return null;
+
     if (isSubmitted) {
         return (
             <View className="flex-1 bg-gray-100 items-center justify-center p-6 gap-6">

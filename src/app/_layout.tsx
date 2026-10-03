@@ -17,10 +17,10 @@ import {
 } from "@expo-google-fonts/inter";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 
 SplashScreen.preventAutoHideAsync();
-const queryClient = new QueryClient();
 
 const Layout = () => {
     const insets = useSafeAreaInsets();

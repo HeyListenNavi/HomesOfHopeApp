@@ -18,6 +18,8 @@ import { formatDate, formatDateTime } from "@/lib/utils";
 import { useUserShow } from "@/services/generated/apiEndpoints";
 import { useScreenTopPadding } from "@/lib/layout";
 import EmptyState from "@/components/EmptyState";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
 
 export default function StaffProfilePage() {
     const router = useRouter();
@@ -93,15 +95,17 @@ export default function StaffProfilePage() {
             >
                 {}
                 <View className="bg-white rounded-3xl p-6 shadow-md shadow-black/5 items-center gap-5 relative">
-                    <TouchableOpacity
-                        onPress={() => router.push(`/edit-staff-profile/${user.id}` as any)}
-                        activeOpacity={0.8}
-                        className="absolute top-5 right-5 h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20 z-10"
-                        accessibilityRole="button"
-                        accessibilityLabel="Editar Staff"
-                    >
-                        <Boxicon name="bxs-edit" size={22} color="#61b346" />
-                    </TouchableOpacity>
+                    <Can permission={Permission.userUpdate}>
+                        <TouchableOpacity
+                            onPress={() => router.push(`/edit-staff-profile/${user.id}` as any)}
+                            activeOpacity={0.8}
+                            className="absolute top-5 right-5 h-11 w-11 bg-primary/10 rounded-2xl items-center justify-center active:bg-primary/20 z-10"
+                            accessibilityRole="button"
+                            accessibilityLabel="Editar Staff"
+                        >
+                            <Boxicon name="bxs-edit" size={22} color="#61b346" />
+                        </TouchableOpacity>
+                    </Can>
 
                     <View className="h-24 w-24 rounded-full bg-primary/10 items-center justify-center border-2 border-primary/20 mt-1">
                         <FluentEmoji emoji="👤" className="text-5xl" />

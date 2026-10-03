@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import * as SecureStore from "expo-secure-store";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
+import type { UserResource } from "@/services/generated/apiTypes";
 
 type AuthStore = {
     token: string | null;
-    user: any | null;
+    user: UserResource | null;
     setToken: (token: string) => void;
-    setUser: (user: any) => void;
+    setUser: (user: UserResource) => void;
     logout: () => void;
 };
 
@@ -28,7 +29,7 @@ export const useAuthStore = create<AuthStore>()(
             token: null,
             user: null,
             setToken: (token: string) => set({ token }),
-            setUser: (user: any) => set({ user }),
+            setUser: (user: UserResource) => set({ user }),
             logout: () => set({ token: null, user: null }),
         }),
         {

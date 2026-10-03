@@ -41,6 +41,9 @@ import {
     getFamilyProfileShowQueryKey,
 } from "@/services/generated/apiEndpoints";
 import { useQueryClient } from "@tanstack/react-query";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 export default function EditFamilyProfilePage() {
     const router = useRouter();
@@ -50,10 +53,19 @@ export default function EditFamilyProfilePage() {
 
     const familyProfileId = Number(id);
     const queryClient = useQueryClient();
+    const { can } = usePermissions();
+    const allowed = usePermissionGuard(Permission.familyProfileUpdate);
 
     const { data: profileData, isPending: isDataLoading } = useFamilyProfileShow(
         familyProfileId,
-        { query: { enabled: !isNaN(familyProfileId) && familyProfileId > 0 } }
+        {
+            query: {
+                enabled:
+                    !isNaN(familyProfileId) &&
+                    familyProfileId > 0 &&
+                    can(Permission.familyProfileUpdate),
+            },
+        }
     );
 
     const [isLoading, setIsLoading] = useState(false);
@@ -385,6 +397,8 @@ export default function EditFamilyProfilePage() {
         latitude: home.lat,
         longitude: home.lng,
     } : null;
+
+    if (!allowed) return null;
 
     if (isDataLoading && !profileData) {
         return (

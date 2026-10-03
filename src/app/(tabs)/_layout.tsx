@@ -8,6 +8,8 @@ import { withLayoutContext } from "expo-router";
 import { ParamListBase, TabNavigationState } from "expo-router/react-navigation";
 import CustomTabBar, { CustomTabBarProps } from "@/components/CustomTabBar";
 import Boxicon from "@/components/Boxicons";
+import { usePermissions } from "@/hooks/usePermissions";
+import { Permission } from "@/lib/permissions";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -16,9 +18,11 @@ export const MaterialTopTabs = withLayoutContext<
     typeof Navigator,
     TabNavigationState<ParamListBase>,
     MaterialTopTabNavigationEventMap
->(Navigator);
+>(Navigator, undefined, true);
 
 export default function TabsLayout() {
+    const { can } = usePermissions();
+
     return (
         <MaterialTopTabs
             initialRouteName="index"
@@ -44,58 +48,66 @@ export default function TabsLayout() {
                     ),
                 }}
             />
-            <MaterialTopTabs.Screen
-                name="visits"
-                options={{
-                    title: "Visitas",
-                    tabBarIcon: ({ color, focused }) => (
-                        <Boxicon
-                            name={focused ? "bxs-location" : "bxs-location"}
-                            size={24}
-                            color={color}
-                        />
-                    ),
-                }}
-            />
-            <MaterialTopTabs.Screen
-                name="interviews"
-                options={{
-                    title: "Entrevistas",
-                    tabBarIcon: ({ color, focused }) => (
-                        <Boxicon
-                            name={focused ? "bxs-clipboard-detail" : "bxs-clipboard-detail"}
-                            size={24}
-                            color={color}
-                        />
-                    ),
-                }}
-            />
-            <MaterialTopTabs.Screen
-                name="families"
-                options={{
-                    title: "Perfiles",
-                    tabBarIcon: ({ color, focused }) => (
-                        <Boxicon
-                            name={focused ? "bxs-home-heart" : "bxs-home-heart"}
-                            size={24}
-                            color={color}
-                        />
-                    ),
-                }}
-            />
-            <MaterialTopTabs.Screen
-                name="team"
-                options={{
-                    title: "Equipo",
-                    tabBarIcon: ({ color, focused }) => (
-                        <Boxicon
-                            name={focused ? "bxs-user" : "bxs-user"}
-                            size={24}
-                            color={color}
-                        />
-                    ),
-                }}
-            />
+            {can(Permission.visitViewAny) && (
+                <MaterialTopTabs.Screen
+                    name="visits"
+                    options={{
+                        title: "Visitas",
+                        tabBarIcon: ({ color, focused }) => (
+                            <Boxicon
+                                name={focused ? "bxs-location" : "bxs-location"}
+                                size={24}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            )}
+            {can(Permission.groupViewAny) && (
+                <MaterialTopTabs.Screen
+                    name="interviews"
+                    options={{
+                        title: "Entrevistas",
+                        tabBarIcon: ({ color, focused }) => (
+                            <Boxicon
+                                name={focused ? "bxs-clipboard-detail" : "bxs-clipboard-detail"}
+                                size={24}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            )}
+            {can(Permission.familyProfileViewAny) && (
+                <MaterialTopTabs.Screen
+                    name="families"
+                    options={{
+                        title: "Perfiles",
+                        tabBarIcon: ({ color, focused }) => (
+                            <Boxicon
+                                name={focused ? "bxs-home-heart" : "bxs-home-heart"}
+                                size={24}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            )}
+            {can(Permission.userViewAny) && (
+                <MaterialTopTabs.Screen
+                    name="team"
+                    options={{
+                        title: "Equipo",
+                        tabBarIcon: ({ color, focused }) => (
+                            <Boxicon
+                                name={focused ? "bxs-user" : "bxs-user"}
+                                size={24}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            )}
         </MaterialTopTabs>
     );
 }

@@ -6,6 +6,8 @@ import { useRouter } from "expo-router";
 import { formatDate } from "@/lib/utils";
 import { VisitResource, VisitStatus } from "@/services/generated/apiTypes";
 import { Badge } from "@/components/ui/badge";
+import { usePermissions } from "@/hooks/usePermissions";
+import { Permission } from "@/lib/permissions";
 
 interface VisitCardProps {
     visit: VisitResource;
@@ -57,7 +59,8 @@ const VisitCard = ({ visit, variant = "summary", familyName, readOnly = false }:
 
     const finalFamilyName = familyName || visit.familyProfile?.family_name || "Visita Programada";
 
-    const canFinalize = visit.status === VisitStatus.scheduled;
+    const { can } = usePermissions();
+    const canFinalize = visit.status === VisitStatus.scheduled && can(Permission.visitUpdate);
 
     if (variant === "full") {
         const accessibilityLabel = `${finalFamilyName}, ${locationLabel}, Hoy`;

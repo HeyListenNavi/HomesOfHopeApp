@@ -18,6 +18,9 @@ import { DocumentType, TaskResource } from "@/services/generated/apiTypes";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import BottomSheet from "@/components/BottomSheet";
 import VisitForm from "@/components/VisitForm";
+import Can from "@/components/Can";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useScreenTopPadding } from "@/lib/layout";
 import { Badge } from "@/components/ui/badge";
 import SectionHeader from "@/components/SectionHeader";
@@ -85,6 +88,9 @@ export default function VisitClosePage() {
             setLocalTasks(visit.tasks);
         }
     }, [visit?.tasks]);
+
+    const { can } = usePermissions();
+    const canUpdateVisit = can(Permission.visitUpdate);
 
     const toggleTask = (id: number) => {
         setLocalTasks((tasks) =>
@@ -436,7 +442,7 @@ export default function VisitClosePage() {
                                 return (
                                     <TouchableOpacity
                                         key={task.id}
-                                        onPress={() => toggleTask(task.id!)}
+                                        onPress={() => canUpdateVisit && toggleTask(task.id!)}
                                         className="flex-row items-center gap-4 px-4 py-4 rounded-2xl bg-gray-100"
                                         style={
                                             done
@@ -478,17 +484,19 @@ export default function VisitClosePage() {
             </ScrollView>
 
             <View className="px-6 pb-8 pt-4 bg-gray-100">
-                <TouchableOpacity
-                    onPress={openFinalizeSheet}
-                    className="w-full flex-row items-center justify-center gap-2 py-5 rounded-3xl bg-primary shadow-lg shadow-primary/30 active:opacity-90"
-                    accessibilityRole="button"
-                    accessibilityLabel="Finalizar visita y subir evidencia"
-                >
-                    <Text className="text-white text-base font-bold">
-                        Finalizar Visita
-                    </Text>
-                    <Boxicon name="bxs-check" size={20} color="#ffffff" />
-                </TouchableOpacity>
+                <Can permission={Permission.visitUpdate}>
+                    <TouchableOpacity
+                        onPress={openFinalizeSheet}
+                        className="w-full flex-row items-center justify-center gap-2 py-5 rounded-3xl bg-primary shadow-lg shadow-primary/30 active:opacity-90"
+                        accessibilityRole="button"
+                        accessibilityLabel="Finalizar visita y subir evidencia"
+                    >
+                        <Text className="text-white text-base font-bold">
+                            Finalizar Visita
+                        </Text>
+                        <Boxicon name="bxs-check" size={20} color="#ffffff" />
+                    </TouchableOpacity>
+                </Can>
             </View>
 
             <BottomSheet ref={bottomSheetRef} snapPoints={["85%", "95%"]}>

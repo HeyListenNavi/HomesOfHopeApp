@@ -16,8 +16,8 @@ import Boxicon from "@/components/Boxicons";
 import { useUserStore } from "@/services/generated/apiEndpoints";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
-
-
+import { Permission } from "@/lib/permissions";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 type FormValues = {
     name: string;
@@ -29,6 +29,7 @@ type FormValues = {
 export default function NewStaffProfilePage() {
     const router = useRouter();
     const queryClient = useQueryClient();
+    const allowed = usePermissionGuard(Permission.userCreate);
 
     const storeMutation = useUserStore();
 
@@ -79,6 +80,8 @@ export default function NewStaffProfilePage() {
             Alert.alert("Error al Guardar", errorMsg);
         }
     };
+
+    if (!allowed) return null;
 
     return (
         <KeyboardAwareScrollView

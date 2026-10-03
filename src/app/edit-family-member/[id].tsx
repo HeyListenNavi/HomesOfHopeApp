@@ -41,6 +41,9 @@ import type {
     Occupation,
 } from "@/services/generated/apiTypes";
 import EmptyState from "@/components/EmptyState";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 export default function EditFamilyMemberPage() {
     const router = useRouter();
@@ -68,6 +71,8 @@ export default function EditFamilyMemberPage() {
     const memberId = Number(id);
     const queryClient = useQueryClient();
     const updateMutation = useFamilyMemberUpdate();
+    const { can } = usePermissions();
+    const allowed = usePermissionGuard(Permission.familyMemberUpdate);
 
     const {
         data: member,
@@ -75,7 +80,8 @@ export default function EditFamilyMemberPage() {
         isError,
     } = useFamilyMemberShow(memberId, {
         query: {
-            enabled: !isNaN(memberId) && memberId > 0,
+            enabled:
+                !isNaN(memberId) && memberId > 0 && can(Permission.familyMemberUpdate),
         },
     });
 
@@ -214,6 +220,8 @@ export default function EditFamilyMemberPage() {
             setIsLoading(false);
         }
     };
+
+    if (!allowed) return null;
 
     if (isDataLoading) {
         return (

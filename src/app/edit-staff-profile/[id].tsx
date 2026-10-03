@@ -24,6 +24,9 @@ import {
 } from "@/services/generated/apiEndpoints";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
+import { Permission } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/usePermissions";
+import { usePermissionGuard } from "@/hooks/usePermissionGuard";
 
 
 
@@ -41,8 +44,13 @@ export default function EditStaffProfilePage() {
 
     const userId = Number(id);
 
+    const { can } = usePermissions();
+    const allowed = usePermissionGuard(Permission.userUpdate);
+
     const { data: existingUser, isPending: isUserPending } = useUserShow(userId, {
-        query: { enabled: !isNaN(userId) && userId > 0 },
+        query: {
+            enabled: !isNaN(userId) && userId > 0 && can(Permission.userUpdate),
+        },
     });
 
 
@@ -108,6 +116,8 @@ export default function EditStaffProfilePage() {
             Alert.alert("Error al Guardar", errorMsg);
         }
     };
+
+    if (!allowed) return null;
 
     if (isUserPending && !existingUser) {
         return (
