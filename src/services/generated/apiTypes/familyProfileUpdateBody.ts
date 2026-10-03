@@ -172,4 +172,9 @@ export type FamilyProfileUpdateBody = {
      * @nullable
      */
   responsible_member_id?: number | null;
+  /**
+     * Family photo upload
+     * @nullable
+     */
+  family_photo?: Blob | null;
 };

@@ -1967,7 +1967,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2268,6 +2268,15 @@
                                             "null"
                                         ],
                                         "description": "Relationship"
+                                    },
+                                    "family_photo": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "binary",
+                                        "contentMediaType": "application/octet-stream",
+                                        "description": "Family photo upload"
                                     }
                                 }
                             }

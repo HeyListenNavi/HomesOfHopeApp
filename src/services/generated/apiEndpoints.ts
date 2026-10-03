@@ -1792,11 +1792,144 @@ export const familyProfileUpdate = (
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
 
+      const formData = new FormData();
+if(familyProfileUpdateBody?.family_name !== undefined) {
+ formData.append(`family_name`, familyProfileUpdateBody.family_name);
+ }
+if(familyProfileUpdateBody?.status !== undefined) {
+ formData.append(`status`, familyProfileUpdateBody.status);
+ }
+if(familyProfileUpdateBody?.interviewer_name !== undefined && familyProfileUpdateBody.interviewer_name !== null) {
+ formData.append(`interviewer_name`, familyProfileUpdateBody.interviewer_name);
+ }
+if(familyProfileUpdateBody?.opened_at !== undefined) {
+ formData.append(`opened_at`, familyProfileUpdateBody.opened_at);
+ }
+if(familyProfileUpdateBody?.reason !== undefined && familyProfileUpdateBody.reason !== null) {
+ formData.append(`reason`, familyProfileUpdateBody.reason);
+ }
+if(familyProfileUpdateBody?.general_observations !== undefined && familyProfileUpdateBody.general_observations !== null) {
+ formData.append(`general_observations`, familyProfileUpdateBody.general_observations);
+ }
+if(familyProfileUpdateBody?.lives_on_land !== undefined) {
+ formData.append(`lives_on_land`, familyProfileUpdateBody.lives_on_land.toString())
+ }
+if(familyProfileUpdateBody?.has_addictions !== undefined && familyProfileUpdateBody.has_addictions !== null) {
+ formData.append(`has_addictions`, familyProfileUpdateBody.has_addictions.toString())
+ }
+if(familyProfileUpdateBody?.addictions_details !== undefined && familyProfileUpdateBody.addictions_details !== null) {
+ formData.append(`addictions_details`, familyProfileUpdateBody.addictions_details);
+ }
+if(familyProfileUpdateBody?.construction_notified !== undefined && familyProfileUpdateBody.construction_notified !== null) {
+ formData.append(`construction_notified`, familyProfileUpdateBody.construction_notified.toString())
+ }
+if(familyProfileUpdateBody?.home_city !== undefined && familyProfileUpdateBody.home_city !== null) {
+ formData.append(`home_city`, familyProfileUpdateBody.home_city);
+ }
+if(familyProfileUpdateBody?.home_colony !== undefined && familyProfileUpdateBody.home_colony !== null) {
+ formData.append(`home_colony`, familyProfileUpdateBody.home_colony);
+ }
+if(familyProfileUpdateBody?.home_address !== undefined && familyProfileUpdateBody.home_address !== null) {
+ formData.append(`home_address`, familyProfileUpdateBody.home_address);
+ }
+if(familyProfileUpdateBody?.home_address_link !== undefined && familyProfileUpdateBody.home_address_link !== null) {
+ formData.append(`home_address_link`, familyProfileUpdateBody.home_address_link);
+ }
+if(familyProfileUpdateBody?.home_latitude !== undefined && familyProfileUpdateBody.home_latitude !== null) {
+ formData.append(`home_latitude`, familyProfileUpdateBody.home_latitude.toString())
+ }
+if(familyProfileUpdateBody?.home_longitude !== undefined && familyProfileUpdateBody.home_longitude !== null) {
+ formData.append(`home_longitude`, familyProfileUpdateBody.home_longitude.toString())
+ }
+if(familyProfileUpdateBody?.home_ownership_time !== undefined && familyProfileUpdateBody.home_ownership_time !== null) {
+ formData.append(`home_ownership_time`, familyProfileUpdateBody.home_ownership_time);
+ }
+if(familyProfileUpdateBody?.home_owner_name !== undefined && familyProfileUpdateBody.home_owner_name !== null) {
+ formData.append(`home_owner_name`, familyProfileUpdateBody.home_owner_name);
+ }
+if(familyProfileUpdateBody?.home_monthly_rent !== undefined && familyProfileUpdateBody.home_monthly_rent !== null) {
+ formData.append(`home_monthly_rent`, familyProfileUpdateBody.home_monthly_rent.toString())
+ }
+if(familyProfileUpdateBody?.home_monthly_rent_currency !== undefined && familyProfileUpdateBody.home_monthly_rent_currency !== null) {
+ formData.append(`home_monthly_rent_currency`, familyProfileUpdateBody.home_monthly_rent_currency);
+ }
+if(familyProfileUpdateBody?.home_has_receipts !== undefined && familyProfileUpdateBody.home_has_receipts !== null) {
+ formData.append(`home_has_receipts`, familyProfileUpdateBody.home_has_receipts.toString())
+ }
+if(familyProfileUpdateBody?.house_description !== undefined && familyProfileUpdateBody.house_description !== null) {
+ formData.append(`house_description`, familyProfileUpdateBody.house_description);
+ }
+if(familyProfileUpdateBody?.land_city !== undefined && familyProfileUpdateBody.land_city !== null) {
+ formData.append(`land_city`, familyProfileUpdateBody.land_city);
+ }
+if(familyProfileUpdateBody?.land_colony !== undefined && familyProfileUpdateBody.land_colony !== null) {
+ formData.append(`land_colony`, familyProfileUpdateBody.land_colony);
+ }
+if(familyProfileUpdateBody?.land_address !== undefined && familyProfileUpdateBody.land_address !== null) {
+ formData.append(`land_address`, familyProfileUpdateBody.land_address);
+ }
+if(familyProfileUpdateBody?.land_address_link !== undefined && familyProfileUpdateBody.land_address_link !== null) {
+ formData.append(`land_address_link`, familyProfileUpdateBody.land_address_link);
+ }
+if(familyProfileUpdateBody?.land_latitude !== undefined && familyProfileUpdateBody.land_latitude !== null) {
+ formData.append(`land_latitude`, familyProfileUpdateBody.land_latitude.toString())
+ }
+if(familyProfileUpdateBody?.land_longitude !== undefined && familyProfileUpdateBody.land_longitude !== null) {
+ formData.append(`land_longitude`, familyProfileUpdateBody.land_longitude.toString())
+ }
+if(familyProfileUpdateBody?.land_ownership_time !== undefined && familyProfileUpdateBody.land_ownership_time !== null) {
+ formData.append(`land_ownership_time`, familyProfileUpdateBody.land_ownership_time);
+ }
+if(familyProfileUpdateBody?.land_total_cost !== undefined && familyProfileUpdateBody.land_total_cost !== null) {
+ formData.append(`land_total_cost`, familyProfileUpdateBody.land_total_cost.toString())
+ }
+if(familyProfileUpdateBody?.land_down_payment !== undefined && familyProfileUpdateBody.land_down_payment !== null) {
+ formData.append(`land_down_payment`, familyProfileUpdateBody.land_down_payment.toString())
+ }
+if(familyProfileUpdateBody?.land_monthly_payment !== undefined && familyProfileUpdateBody.land_monthly_payment !== null) {
+ formData.append(`land_monthly_payment`, familyProfileUpdateBody.land_monthly_payment.toString())
+ }
+if(familyProfileUpdateBody?.land_currency !== undefined && familyProfileUpdateBody.land_currency !== null) {
+ formData.append(`land_currency`, familyProfileUpdateBody.land_currency);
+ }
+if(familyProfileUpdateBody?.land_last_payment_date !== undefined && familyProfileUpdateBody.land_last_payment_date !== null) {
+ formData.append(`land_last_payment_date`, familyProfileUpdateBody.land_last_payment_date);
+ }
+if(familyProfileUpdateBody?.land_is_up_to_date !== undefined && familyProfileUpdateBody.land_is_up_to_date !== null) {
+ formData.append(`land_is_up_to_date`, familyProfileUpdateBody.land_is_up_to_date.toString())
+ }
+if(familyProfileUpdateBody?.land_is_flat !== undefined && familyProfileUpdateBody.land_is_flat !== null) {
+ formData.append(`land_is_flat`, familyProfileUpdateBody.land_is_flat.toString())
+ }
+if(familyProfileUpdateBody?.land_size !== undefined && familyProfileUpdateBody.land_size !== null) {
+ formData.append(`land_size`, familyProfileUpdateBody.land_size);
+ }
+if(familyProfileUpdateBody?.land_services !== undefined && familyProfileUpdateBody.land_services !== null) {
+ familyProfileUpdateBody?.land_services.forEach(value => formData.append(`land_services`, value));
+ }
+if(familyProfileUpdateBody?.building_start_date !== undefined && familyProfileUpdateBody.building_start_date !== null) {
+ formData.append(`building_start_date`, familyProfileUpdateBody.building_start_date);
+ }
+if(familyProfileUpdateBody?.building_finish_date !== undefined && familyProfileUpdateBody.building_finish_date !== null) {
+ formData.append(`building_finish_date`, familyProfileUpdateBody.building_finish_date);
+ }
+if(familyProfileUpdateBody?.building_team !== undefined && familyProfileUpdateBody.building_team !== null) {
+ formData.append(`building_team`, familyProfileUpdateBody.building_team);
+ }
+if(familyProfileUpdateBody?.building_team_color !== undefined && familyProfileUpdateBody.building_team_color !== null) {
+ formData.append(`building_team_color`, familyProfileUpdateBody.building_team_color);
+ }
+if(familyProfileUpdateBody?.responsible_member_id !== undefined && familyProfileUpdateBody.responsible_member_id !== null) {
+ formData.append(`responsible_member_id`, familyProfileUpdateBody.responsible_member_id.toString())
+ }
+if(familyProfileUpdateBody?.family_photo !== undefined && familyProfileUpdateBody.family_photo !== null) {
+ formData.append(`family_photo`, familyProfileUpdateBody.family_photo);
+ }
 
       return customInstance<FamilyProfileUpdate200>(
       {url: `/family-profiles/${familyProfile}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: familyProfileUpdateBody, signal
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
     },
       options);
     }
