@@ -404,29 +404,33 @@ const Page = () => {
                     )}
 
                     {(family.land_total_cost || family.land_down_payment || family.land_monthly_payment) && (
-                        <View className="flex-row gap-3">
+                        <View className="gap-3">
                             {family.land_total_cost && (
-                                <View className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 gap-0.5 border border-gray-100">
+                                <View className="bg-gray-50 rounded-2xl px-4 py-3 gap-0.5 border border-gray-100">
                                     <Text className="text-gray-400 text-xs font-medium">Costo Total</Text>
-                                    <Text className="text-gray-800 font-bold text-base">
+                                    <Text className="text-gray-800 font-bold text-lg">
                                         ${family.land_total_cost.toLocaleString()} {String(family.land_currency ?? "").toUpperCase()}
                                     </Text>
                                 </View>
                             )}
-                            {family.land_down_payment && (
-                                <View className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 gap-0.5 border border-gray-100">
-                                    <Text className="text-gray-400 text-xs font-medium">Enganche</Text>
-                                    <Text className="text-gray-800 font-bold text-base">
-                                        ${family.land_down_payment.toLocaleString()} {String(family.land_currency ?? "").toUpperCase()}
-                                    </Text>
-                                </View>
-                            )}
-                            {family.land_monthly_payment && (
-                                <View className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 gap-0.5 border border-gray-100">
-                                    <Text className="text-gray-400 text-xs font-medium">Mensual</Text>
-                                    <Text className="text-gray-800 font-bold text-base">
-                                        ${family.land_monthly_payment.toLocaleString()} {String(family.land_currency ?? "").toUpperCase()}
-                                    </Text>
+                            {(family.land_down_payment || family.land_monthly_payment) && (
+                                <View className="flex-row gap-3">
+                                    {family.land_down_payment && (
+                                        <View className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 gap-0.5 border border-gray-100">
+                                            <Text className="text-gray-400 text-xs font-medium">Enganch</Text>
+                                            <Text className="text-gray-800 font-bold text-base">
+                                                ${family.land_down_payment.toLocaleString()} {String(family.land_currency ?? "").toUpperCase()}
+                                            </Text>
+                                        </View>
+                                    )}
+                                    {family.land_monthly_payment && (
+                                        <View className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 gap-0.5 border border-gray-100">
+                                            <Text className="text-gray-400 text-xs font-medium">Mensual</Text>
+                                            <Text className="text-gray-800 font-bold text-base">
+                                                ${family.land_monthly_payment.toLocaleString()} {String(family.land_currency ?? "").toUpperCase()}
+                                            </Text>
+                                        </View>
+                                    )}
                                 </View>
                             )}
                         </View>
