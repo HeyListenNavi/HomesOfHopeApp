@@ -27,3 +27,23 @@ export const LIGHT_BASE_MAP_STYLE = [
         stylers: [{ color: "#dbeafe" }],
     },
 ];
+
+type MapsAddressSource = {
+    land_address_link?: string | null;
+    home_address_link?: string | null;
+} | null
+    | undefined;
+
+export const getVisitMapsLink = (
+    locationType: string | null | undefined,
+    family: MapsAddressSource
+): string | null => {
+    if (!family) return null;
+
+    const links =
+        locationType === "land"
+            ? [family.land_address_link, family.home_address_link]
+            : [family.home_address_link, family.land_address_link];
+
+    return links.find((link) => !!link) ?? null;
+};

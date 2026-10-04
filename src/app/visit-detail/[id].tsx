@@ -16,6 +16,7 @@ import BrandBoxicon from "@/components/BrandBoxicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { EvidenceResource, TaskResource } from "@/services/generated/apiTypes";
 import { useScreenTopPadding } from "@/lib/layout";
+import { getVisitMapsLink } from "@/lib/maps";
 import { Badge } from "@/components/ui/badge";
 import FluentEmoji from "@/components/FluentEmoji";
 import SectionHeader from "@/components/SectionHeader";
@@ -270,10 +271,7 @@ export default function VisitViewPage() {
     const responsible_member = visit?.family_profile?.responsible_member;
     const familyPhoto = visit?.family_profile?.family_photo_url;
 
-    const isLand = visit?.location_type === "land";
-    const relevantMapsLink = isLand
-        ? visit?.familyProfile?.land_address_link
-        : visit?.familyProfile?.home_address_link;
+    const relevantMapsLink = getVisitMapsLink(visit?.location_type, visit?.family_profile);
 
     const locationLabel =
         visit?.location_type === "home"

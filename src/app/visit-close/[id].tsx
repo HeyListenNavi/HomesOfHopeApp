@@ -22,6 +22,7 @@ import Can from "@/components/Can";
 import { Permission } from "@/lib/permissions";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useScreenTopPadding } from "@/lib/layout";
+import { getVisitMapsLink } from "@/lib/maps";
 import { Badge } from "@/components/ui/badge";
 import SectionHeader from "@/components/SectionHeader";
 import EmptyState from "@/components/EmptyState";
@@ -70,10 +71,7 @@ export default function VisitClosePage() {
     const responsible_member = visit?.family_profile?.responsible_member;
     const familyPhoto = visit?.family_profile?.family_photo_url;
 
-    const isLand = visit?.location_type === "land";
-    const relevantMapsLink = isLand
-        ? visit?.familyProfile?.land_address_link
-        : visit?.familyProfile?.home_address_link;
+    const relevantMapsLink = getVisitMapsLink(visit?.location_type, visit?.family_profile);
     const locationLabel =
         visit?.location_type === "home"
             ? "Vivienda Actual"

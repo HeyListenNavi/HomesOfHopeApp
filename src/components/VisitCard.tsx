@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text";
 import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import { useRouter } from "expo-router";
 import { formatDate } from "@/lib/utils";
+import { getVisitMapsLink } from "@/lib/maps";
 import { VisitResource, VisitStatus } from "@/services/generated/apiTypes";
 import { Badge } from "@/components/ui/badge";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -20,10 +21,7 @@ const VisitCard = ({ visit, variant = "summary", familyName, readOnly = false }:
     const router = useRouter();
 
     const openMapsLink = async () => {
-        const isLand = visit?.location_type === "land";
-        const address = isLand
-            ? visit?.familyProfile?.land_address_link
-            : visit?.familyProfile?.home_address_link;
+        const address = getVisitMapsLink(visit?.location_type, visit?.family_profile);
 
         if (!address) {
             ToastAndroid.show("Enlace de mapas no disponible.", ToastAndroid.SHORT);
@@ -38,7 +36,7 @@ const VisitCard = ({ visit, variant = "summary", familyName, readOnly = false }:
     };
 
     const openPhone = async () => {
-        const phone = visit?.familyProfile?.responsibleMember?.phone;
+        const phone = visit?.family_profile?.responsible_member?.phone;
         console.log(visit)
 
         if (!phone) {
