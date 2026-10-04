@@ -19,12 +19,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { useAuthStore } from "@/store/authStore";
 
 SplashScreen.preventAutoHideAsync();
 
 const Layout = () => {
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const userName = useAuthStore((state) => state.user?.name);
 
     const [fontsLoaded] = useFonts({
         Boxicons: require("@/assets/fonts/boxicons.ttf"),
@@ -92,7 +94,7 @@ const Layout = () => {
                                                 </Text>
                                                 <View className="flex-row items-center gap-1.5 mt-1">
                                                     <Text className="text-gray-500 font-medium text-base">
-                                                        Hola, {"Usuario"}
+                                                        Hola, {userName?.split(" ")[0] ?? "Usuario"}
                                                     </Text>
                                                     <FluentEmoji emoji="👋" className="text-lg" />
                                                 </View>
