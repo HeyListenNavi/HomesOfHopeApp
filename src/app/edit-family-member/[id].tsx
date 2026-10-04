@@ -52,7 +52,6 @@ export default function EditFamilyMemberPage() {
     const scrollViewRef = useRef<any>(null);
 
     const [isLoading, setIsLoading] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     
@@ -201,7 +200,7 @@ export default function EditFamilyMemberPage() {
                 medical_notes: formData.medical_notes || null,
             };
 
-            await updateMutation.mutateAsync({
+            const updated = await updateMutation.mutateAsync({
                 familyMember: memberId,
                 data: payload,
             });
@@ -210,7 +209,7 @@ export default function EditFamilyMemberPage() {
             await queryClient.invalidateQueries({ queryKey: getFamilyProfileShowQueryKey(member?.family_profile_id ?? 0) });
 
             ToastAndroid.show("Familiar actualizado ✅", ToastAndroid.SHORT);
-            setIsSubmitted(true);
+            router.replace(`/family-member/${updated.data?.id ?? memberId}` as any);
         } catch (err: any) {
             Alert.alert(
                 "Error al Guardar",
@@ -250,37 +249,6 @@ export default function EditFamilyMemberPage() {
                 >
                     <Text className="text-white font-bold text-base">Regresar</Text>
                 </TouchableOpacity>
-            </View>
-        );
-    }
-
-    if (isSubmitted) {
-        return (
-            <View className="flex-1 bg-gray-100 items-center justify-center p-6 gap-6">
-                <View className="bg-white p-8 rounded-3xl items-center gap-6 shadow-md shadow-black/5 w-full max-w-sm">
-                    <View className="h-28 w-28 rounded-3xl bg-primary/10 items-center justify-center">
-                        <FluentEmoji emoji="🎉" className="text-6xl" />
-                    </View>
-                    <View className="gap-2 items-center">
-                        <Text className="text-3xl font-black text-gray-800 text-center leading-tight">
-                            ¡Familiar Actualizado!
-                        </Text>
-                        <Text className="text-gray-500 text-center text-base font-medium">
-                            Los datos del familiar han sido guardados exitosamente.
-                        </Text>
-                    </View>
-                    <TouchableOpacity
-                        onPress={() => router.back()}
-                        activeOpacity={0.9}
-                        className="w-full bg-primary py-4 rounded-2xl items-center justify-center shadow-lg shadow-primary/30 mt-2"
-                        accessibilityRole="button"
-                        accessibilityLabel="Volver al Perfil"
-                    >
-                        <Text className="text-white font-bold text-lg">
-                            Volver al Perfil
-                        </Text>
-                    </TouchableOpacity>
-                </View>
             </View>
         );
     }

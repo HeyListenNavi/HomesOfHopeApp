@@ -149,12 +149,12 @@ export default function NewFamilyMemberPage() {
                 medical_notes: formData.medical_notes || null,
             };
 
-            await storeMutation.mutateAsync({ data: payload });
+            const created = await storeMutation.mutateAsync({ data: payload });
 
             await queryClient.invalidateQueries({ queryKey: getFamilyProfileShowQueryKey(profileId) });
 
             ToastAndroid.show("Familiar añadido exitosamente ✅", ToastAndroid.SHORT);
-            router.back();
+            router.replace(`/family-member/${created.data.id}` as any);
         } catch (err: any) {
             Alert.alert(
                 "Error al Guardar",
