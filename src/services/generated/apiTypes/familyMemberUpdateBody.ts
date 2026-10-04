@@ -31,6 +31,16 @@ export type FamilyMemberUpdateBody = {
   /** @nullable */
   weekly_income?: number | null;
   religion?: Religion | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  origin_state?: string | null;
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  origin_country?: string | null;
   /** @nullable */
   indigenous_language?: string | null;
   speaks_indigenous_language?: boolean;

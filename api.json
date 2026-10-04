@@ -989,6 +989,20 @@
                                             }
                                         ]
                                     },
+                                    "origin_state": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "origin_country": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
                                     "indigenous_language": {
                                         "type": [
                                             "string",
@@ -1223,6 +1237,20 @@
                                                 "type": "null"
                                             }
                                         ]
+                                    },
+                                    "origin_state": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "origin_country": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
                                     },
                                     "indigenous_language": {
                                         "type": [
