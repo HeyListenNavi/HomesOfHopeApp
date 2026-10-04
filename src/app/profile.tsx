@@ -19,6 +19,7 @@ import { formatDate } from "@/lib/utils";
 import BottomSheet from "@/components/BottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useGetUser, useAuthLogout } from "@/services/generated/apiEndpoints";
+import { queryClient } from "@/lib/queryClient";
 import EmptyState from "@/components/EmptyState";
 
 export default function ProfilePage() {
@@ -58,6 +59,7 @@ export default function ProfilePage() {
             console.log("Backend logout error:", e);
         } finally {
             authStore.logout();
+            queryClient.clear();
             router.replace("/login");
         }
     };

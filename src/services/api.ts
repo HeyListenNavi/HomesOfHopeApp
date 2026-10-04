@@ -27,8 +27,9 @@ AXIOS_INSTANCE.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // The stored token is no longer valid; drop the session.
+      // The stored session is no longer valid; drop it.
       useAuthStore.getState().logout();
+      queryClient.clear();
       router.replace('/login');
     }
 

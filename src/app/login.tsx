@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     TextInput,
@@ -18,12 +18,21 @@ import { authLogin } from "@/services/generated/apiEndpoints";
 export default function LoginScreen() {
     const router = useRouter();
     const authStore = useAuthStore();
+    const token = useAuthStore((state) => state.token);
 
     const [email, setEmail] = useState("admin@admin.com");
     const [password, setPassword] = useState("admin");
     const [showPassword, setShowPassword] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (token) {
+            router.replace("/(tabs)");
+        }
+    }, [token, router]);
+
+    if (token) return null;
 
     const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {

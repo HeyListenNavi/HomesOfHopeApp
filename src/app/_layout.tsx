@@ -20,6 +20,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { useAuthStore } from "@/store/authStore";
+import { useAuthHydrated } from "@/hooks/useAuthHydrated";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,16 +34,19 @@ const Layout = () => {
         BrandBoxicons: require("@/assets/fonts/boxicons-brands.ttf"),
         "Inter-Regular": Inter_400Regular,
         "Inter-Bold": Inter_700Bold,
-        "FluentEmoji": require("@/assets/fonts/FluentEmoji.ttf"),
+        FluentEmoji: require("@/assets/fonts/FluentEmoji.ttf"),
     });
 
+    const hydrated = useAuthHydrated();
+    const ready = fontsLoaded && hydrated;
+
     useEffect(() => {
-        if (fontsLoaded) {
+        if (ready) {
             SplashScreen.hideAsync();
         }
-    }, [fontsLoaded]);
+    }, [ready]);
 
-    if (!fontsLoaded) return null;
+    if (!ready) return null;
 
     return (
         <QueryClientProvider client={queryClient}>

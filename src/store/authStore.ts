@@ -30,7 +30,10 @@ export const useAuthStore = create<AuthStore>()(
             user: null,
             setToken: (token: string) => set({ token }),
             setUser: (user: UserResource) => set({ user }),
-            logout: () => set({ token: null, user: null }),
+            logout: () => {
+                set({ token: null, user: null });
+                void useAuthStore.persist.clearStorage();
+            },
         }),
         {
             name: 'auth-storage',
