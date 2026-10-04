@@ -45,11 +45,8 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
     return (
         <View className="bg-white rounded-3xl shadow-md shadow-black/5 overflow-hidden">
             {}
-            <TouchableOpacity
+            <View
                 className="px-4 py-5 flex-row items-center gap-4 active:bg-gray-50"
-                onPress={() => router.push(`/family-profile/${applicant.id}`)}
-                accessibilityRole="button"
-                accessibilityLabel={`Ver perfil de ${applicant.applicant_name}`}
             >
                 {}
                 <View
@@ -95,8 +92,8 @@ const ApplicantInterviewCard = ({ applicant, onMarkPresent, onMarkAttended }: Ap
                     </View>
                 </View>
 
-                <Boxicon name="bx-chevron-right" size={32} color="#d1d5db" />
-            </TouchableOpacity>
+                {/* <Boxicon name="bx-chevron-right" size={32} color="#d1d5db" /> */}
+            </View>
 
             {}
             <View className="border-t border-gray-100 px-4 py-3 flex-row items-center justify-between">
