@@ -34,6 +34,7 @@ export type FamilyMemberStoreBody = {
   religion?: Religion | null;
   /** @nullable */
   indigenous_language?: string | null;
+  speaks_indigenous_language?: boolean;
   is_pregnant?: boolean;
   /**
      * @minimum 1

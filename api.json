@@ -995,6 +995,9 @@
                                             "null"
                                         ]
                                     },
+                                    "speaks_indigenous_language": {
+                                        "type": "boolean"
+                                    },
                                     "is_pregnant": {
                                         "type": "boolean"
                                     },
@@ -1226,6 +1229,9 @@
                                             "string",
                                             "null"
                                         ]
+                                    },
+                                    "speaks_indigenous_language": {
+                                        "type": "boolean"
                                     },
                                     "is_pregnant": {
                                         "type": "boolean"
