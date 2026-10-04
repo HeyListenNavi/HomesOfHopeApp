@@ -34,12 +34,13 @@ import {
     RELIGION,
     INDIGENOUS_LANGUAGE,
     LAND_SERVICES,
+    LAND_SIZE,
     HOUSING_STATUS,
     CURRENCY,
     CITY,
     toOptions,
 } from "@/lib/enums";
-import { useFamilyProfileStore } from "@/services/generated/apiEndpoints";
+import { useFamilyProfileStore, useFamilyProfileStorePhoto } from "@/services/generated/apiEndpoints";
 import { useQueryClient } from "@tanstack/react-query";
 import { Permission } from "@/lib/permissions";
 import { usePermissionGuard } from "@/hooks/usePermissionGuard";
@@ -109,11 +110,12 @@ export default function NewFamilyProfilePage() {
     const queryClient = useQueryClient();
     const allowed = usePermissionGuard(Permission.familyProfileCreate);
 
-    const [step, setStep] = useState(1);
+const [step, setStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    const storePhotoMutation = useFamilyProfileStorePhoto();
     
     const [mapPickerTarget, setMapPickerTarget] = useState<"land" | "home" | null>(null);
 
@@ -133,6 +135,7 @@ export default function NewFamilyProfilePage() {
         lat: null as number | null,
         lng: null as number | null,
         ownership_time: "",
+        land_size: "",
         is_flat: true as boolean | null,
         currency: "mxn",
         total_cost: "",
@@ -350,12 +353,66 @@ export default function NewFamilyProfilePage() {
             const payload: any = {
                 family_name: family.name,
                 status: "new",
-                current_address: [land.colony, land.city].filter(Boolean).join(", ") || "Sin dirección",
                 opened_at: new Date().toISOString().split("T")[0],
+
+                lives_on_land: family.lives_on_land ?? true,
+                has_addictions: family.has_addictions ?? false,
+                addictions_details: family.has_addictions ? family.addictions_details : undefined,
+
+                land_city: land.city,
+                land_colony: land.colony,
+                land_address: land.address || undefined,
+                land_latitude: land.lat ? Number(land.lat) : undefined,
+                land_longitude: land.lng ? Number(land.lng) : undefined,
+                land_ownership_time: land.ownership_time || undefined,
+                land_size: land.land_size || undefined,
+                land_is_flat: land.is_flat ?? true,
+                land_currency: land.currency,
+                land_total_cost: land.total_cost ? Number(land.total_cost) : undefined,
+                land_down_payment: land.down_payment ? Number(land.down_payment) : undefined,
+                land_monthly_payment: land.monthly_payment ? Number(land.monthly_payment) : undefined,
+                land_last_payment_date: land.last_payment_date || undefined,
+                land_is_up_to_date: land.is_up_to_date ?? true,
+                land_services: land.services ?? ["electricity", "water"],
+
+                home_city: family.lives_on_land ? undefined : home.city,
+                home_colony: family.lives_on_land ? undefined : home.colony,
+                home_address: family.lives_on_land ? undefined : home.address,
+                home_latitude: family.lives_on_land || !home.lat ? undefined : Number(home.lat),
+                home_longitude: family.lives_on_land || !home.lng ? undefined : Number(home.lng),
+                home_status: family.lives_on_land ? undefined : home.status,
+                home_ownership_time: family.lives_on_land ? undefined : home.ownership_time,
+                home_owner_name: family.lives_on_land ? undefined : home.owner_name,
+                home_monthly_rent: family.lives_on_land || !home.monthly_rent ? undefined : Number(home.monthly_rent),
+                home_monthly_rent_currency: home.monthly_rent_currency,
+                home_has_receipts: family.lives_on_land ? undefined : (home.has_receipts ?? false),
+                house_description: family.lives_on_land ? undefined : home.description,
             };
 
-            await storeMutation.mutateAsync({ data: payload });
+            const response = await storeMutation.mutateAsync({ data: payload });
+            
+            const newProfileId = response?.data?.id;
+
             queryClient.invalidateQueries({ queryKey: ["/family-profiles"] });
+
+            if (newProfileId && docs.family_photo && typeof docs.family_photo !== 'string') {
+                const photo = docs.family_photo;
+                try {
+                    await storePhotoMutation.mutateAsync({
+                        familyProfile: newProfileId,
+                        data: {
+                            file: {
+                                uri: photo.uri,
+                                type: photo.mimeType || "image/jpeg",
+                                name: photo.name || "family_photo.jpg",
+                            } as any
+                        }
+                    });
+                } catch (photoErr) {
+                    console.error("Failed to upload family photo:", photoErr);
+                }
+            }
+
             setIsSubmitted(true);
         } catch (err: any) {
             Alert.alert(
@@ -665,6 +722,14 @@ export default function NewFamilyProfilePage() {
                                 value={land.address}
                                 onChangeText={(val) => setLand((p) => ({ ...p, address: val }))}
                                 error={errors["land.address"]}
+                            />
+
+                            <Select
+                                label="Medidas del Terreno"
+                                options={toOptions(LAND_SIZE)}
+                                optional
+                                value={land.land_size}
+                                onValueChange={(val) => setLand((p) => ({ ...p, land_size: val }))}
                             />
                         </View>
 

@@ -37,6 +37,7 @@ import {
 import { FamilyProfileResource, FamilyStatus } from "@/services/generated/apiTypes";
 import {
     useFamilyProfileUpdate,
+    useFamilyProfileStorePhoto,
     useFamilyProfileShow,
     getFamilyProfileShowQueryKey,
 } from "@/services/generated/apiEndpoints";
@@ -71,14 +72,14 @@ export default function EditFamilyProfilePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    
+    const storePhotoMutation = useFamilyProfileStorePhoto();
+
     const [openSections, setOpenSections] = useState({
         status: true,
         construction: true,
         family: true,
         land: true,
         home: true,
-        docs: true,
     });
 
     const toggleSection = (section: keyof typeof openSections) => {
@@ -146,8 +147,6 @@ export default function EditFamilyProfilePage() {
 
     const [docs, setDocs] = useState({
         family_photo: null as UploadedFileAsset | string | null,
-        land_ownership: null as UploadedFileAsset | string | null,
-        land_receipts: [] as (UploadedFileAsset | string)[],
     });
 
     
@@ -215,8 +214,6 @@ export default function EditFamilyProfilePage() {
 
         const initialDocs = {
             family_photo: initialData.family_photo_path || null,
-            land_ownership: null,
-            land_receipts: [],
         };
 
         setStatusState(initialStatus);
@@ -328,10 +325,10 @@ export default function EditFamilyProfilePage() {
                 building_start_date: construction.building_start_date || undefined,
                 building_team: construction.building_team || undefined,
                 building_team_color: construction.building_team_color || undefined,
-                construction_notified: construction.construction_notified,
+                construction_notified: construction.construction_notified ?? false,
 
-                lives_on_land: family.lives_on_land,
-                has_addictions: family.has_addictions,
+                lives_on_land: family.lives_on_land ?? true,
+                has_addictions: family.has_addictions ?? false,
                 addictions_details: family.has_addictions ? family.addictions_details : undefined,
                 general_observations: family.general_observations || undefined,
 
@@ -342,14 +339,14 @@ export default function EditFamilyProfilePage() {
                 land_longitude: land.lng ? String(land.lng) : undefined,
                 land_ownership_time: land.ownership_time || undefined,
                 land_size: land.land_size || undefined,
-                land_is_flat: land.is_flat,
+                land_is_flat: land.is_flat ?? true,
                 land_currency: land.currency,
                 land_total_cost: land.total_cost ? Number(land.total_cost) : undefined,
                 land_down_payment: land.down_payment ? Number(land.down_payment) : undefined,
                 land_monthly_payment: land.monthly_payment ? Number(land.monthly_payment) : undefined,
                 land_last_payment_date: land.last_payment_date || undefined,
-                land_is_up_to_date: land.is_up_to_date,
-                land_services: land.services,
+                land_is_up_to_date: land.is_up_to_date ?? true,
+                land_services: land.services ?? ["electricity", "water"],
 
                 home_city: family.lives_on_land ? undefined : home.city,
                 home_colony: family.lives_on_land ? undefined : home.colony,
@@ -361,7 +358,7 @@ export default function EditFamilyProfilePage() {
                 home_owner_name: family.lives_on_land ? undefined : home.owner_name,
                 home_monthly_rent: family.lives_on_land || !home.monthly_rent ? undefined : Number(home.monthly_rent),
                 home_monthly_rent_currency: home.monthly_rent_currency,
-                home_has_receipts: family.lives_on_land ? undefined : home.has_receipts,
+                home_has_receipts: family.lives_on_land ? undefined : (home.has_receipts ?? false),
                 house_description: family.lives_on_land ? undefined : home.description,
             };
 
@@ -369,6 +366,24 @@ export default function EditFamilyProfilePage() {
 
             queryClient.invalidateQueries({ queryKey: getFamilyProfileShowQueryKey(familyProfileId) });
             queryClient.invalidateQueries({ queryKey: ["/family-profiles"] });
+
+            if (docs.family_photo && typeof docs.family_photo !== 'string') {
+                const photo = docs.family_photo;
+                try {
+                    await storePhotoMutation.mutateAsync({
+                        familyProfile: familyProfileId,
+                        data: {
+                            file: {
+                                uri: photo.uri,
+                                type: photo.mimeType || "image/jpeg",
+                                name: photo.name || "family_photo.jpg",
+                            } as any
+                        }
+                    });
+                } catch (photoErr) {
+                    console.error("Failed to upload family photo:", photoErr);
+                }
+            }
 
             router.replace(`/family-profile/${familyProfileId}` as any);
         } catch (err: any) {
@@ -434,6 +449,20 @@ export default function EditFamilyProfilePage() {
                         </View>
                     </View>
                 )}
+
+                <View className="bg-white rounded-3xl shadow-md shadow-black/5 p-6 gap-3">
+                    <DocumentUploadCard
+                        emoji="🏠"
+                        title="Foto de la Familia"
+                        description="Foto donde aparezcan todos los que vivirán en la casa."
+                        badge="optional"
+                        icon="bxs-camera"
+                        buttonText="Tomar o seleccionar foto"
+                        className="gap-3"
+                        value={docs.family_photo}
+                        onChange={(file) => setDocs((p) => ({ ...p, family_photo: file }))}
+                    />
+                </View>
 
                 {}
                 <View className="bg-white rounded-3xl shadow-md shadow-black/5 overflow-hidden">
@@ -985,123 +1014,6 @@ export default function EditFamilyProfilePage() {
                         )}
                     </View>
                 )}
-
-                {}
-                <View className="bg-white rounded-3xl shadow-md shadow-black/5 overflow-hidden">
-                    <TouchableOpacity
-                        onPress={() => toggleSection("docs")}
-                        activeOpacity={0.8}
-                        className="p-6 flex-row items-center justify-between border-b border-gray-100"
-                    >
-                        <View className="flex-row items-center gap-3 flex-1 mr-2">
-                            <FluentEmoji emoji="📸" className="text-3xl" />
-                            <View className="flex-1">
-                                <Text className="font-bold text-gray-800 text-xl">
-                                    Fotos y Documentos
-                                </Text>
-                                <Text className="text-gray-500 text-sm font-medium">
-                                    Foto familiar, título de terreno y recibos.
-                                </Text>
-                            </View>
-                        </View>
-                        <Boxicon
-                            name={openSections.docs ? "bx-chevron-up" : "bx-chevron-down"}
-                            size={24}
-                            color="#6b7280"
-                        />
-                    </TouchableOpacity>
-
-                    {openSections.docs && (
-                        <View className="p-6 gap-6 bg-white">
-                            <DocumentUploadCard
-                                emoji="🏠"
-                                title="1. Foto de la Familia"
-                                description="Foto donde aparezcan todos los que vivirán en la casa."
-                                badge="optional"
-                                icon="bxs-camera"
-                                buttonText="Tomar o seleccionar foto"
-                                className="gap-3"
-                                value={docs.family_photo}
-                                onChange={(file) => setDocs((p) => ({ ...p, family_photo: file }))}
-                            />
-
-                            <DocumentUploadCard
-                                emoji="📜"
-                                title="2. Documento del Terreno"
-                                description="Foto o archivo PDF del título o contrato de propiedad."
-                                badge="optional"
-                                icon="bxs-file"
-                                buttonText="Subir contrato o título"
-                                className="gap-3"
-                                value={docs.land_ownership}
-                                onChange={(file) => setDocs((p) => ({ ...p, land_ownership: file }))}
-                            />
-
-                            <View className="gap-4">
-                                <SectionHeader
-                                    emoji="🧾"
-                                    title="3. Recibos del Terreno"
-                                    action={
-                                        <Badge className="bg-primary/10 border-transparent px-3 py-1.5 rounded-full">
-                                            <Text className="text-primary font-bold text-xs">
-                                                {docs.land_receipts.length}/5
-                                            </Text>
-                                        </Badge>
-                                    }
-                                />
-
-                                {docs.land_receipts.map((receipt, idx) => (
-                                    <View
-                                        key={idx}
-                                        className="bg-gray-50 p-4 rounded-2xl border border-gray-200 flex-row items-center justify-between"
-                                    >
-                                        <View className="flex-row items-center gap-3.5 flex-1 mr-2">
-                                            <View className="h-10 w-10 rounded-xl bg-primary/10 items-center justify-center shrink-0">
-                                                <Boxicon name="bxs-file" size={20} color="#61b346" />
-                                            </View>
-                                            <View className="flex-1">
-                                                <Text className="text-gray-800 font-bold text-base" numberOfLines={1}>
-                                                    Recibo {idx + 1}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <TouchableOpacity
-                                            onPress={() =>
-                                                setDocs((p) => ({
-                                                    ...p,
-                                                    land_receipts: p.land_receipts.filter((_, i) => i !== idx),
-                                                }))
-                                            }
-                                            className="h-9 w-9 bg-red-50 rounded-lg items-center justify-center"
-                                        >
-                                            <Boxicon name="bxs-trash" size={16} color="#dc2626" />
-                                        </TouchableOpacity>
-                                    </View>
-                                ))}
-
-                                {docs.land_receipts.length < 5 && (
-                                    <DocumentUploadCard
-                                        title="Añadir Recibo"
-                                        description="Sube otro recibo de pago del terreno"
-                                        badge="optional"
-                                        icon="bxs-plus-circle"
-                                        buttonText="Subir otro recibo"
-                                        className="gap-3 pt-2"
-                                        onChange={(file) => {
-                                            if (file) {
-                                                const newReceipt: UploadedFileAsset | string = file;
-                                                setDocs((p) => ({
-                                                    ...p,
-                                                    land_receipts: [...p.land_receipts, newReceipt],
-                                                }));
-                                            }
-                                        }}
-                                    />
-                                )}
-                            </View>
-                        </View>
-                    )}
-                </View>
             </KeyboardAwareScrollView>
 
             {}
