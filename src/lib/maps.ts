@@ -1,0 +1,29 @@
+const CARTO_API_KEY = process.env.EXPO_PUBLIC_CARTO_API_KEY;
+
+const CARTO_VOYAGER_BASE_URL =
+    "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png";
+
+export const CARTO_TILE_URL = CARTO_API_KEY
+    ? `${CARTO_VOYAGER_BASE_URL}?key=${CARTO_API_KEY}`
+    : CARTO_VOYAGER_BASE_URL;
+
+export const LIGHT_BASE_MAP_STYLE = [
+    {
+        elementType: "geometry",
+        stylers: [{ color: "#f4f3f0" }],
+    },
+    {
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+    },
+    {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ color: "#ffffff" }],
+    },
+    {
+        featureType: "water",
+        elementType: "geometry",
+        stylers: [{ color: "#dbeafe" }],
+    },
+];

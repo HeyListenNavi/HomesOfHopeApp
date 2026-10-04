@@ -14,6 +14,7 @@ import { getPlusCodeForCoords } from "@/lib/geo";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapPinMarker from "./MapPinMarker";
 import FluentEmoji from "@/components/FluentEmoji";
+import { CARTO_TILE_URL, LIGHT_BASE_MAP_STYLE } from "@/lib/maps";
 
 export interface LocationPoint {
     type: "land" | "home";
@@ -29,31 +30,6 @@ interface LocationMapModalProps {
     activePoint: LocationPoint;
     secondaryPoint?: LocationPoint | null;
 }
-
-const CARTO_VOYAGER_URL =
-    "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png";
-
-
-const LIGHT_BASE_MAP_STYLE = [
-    {
-        elementType: "geometry",
-        stylers: [{ color: "#f4f3f0" }],
-    },
-    {
-        elementType: "labels",
-        stylers: [{ visibility: "off" }],
-    },
-    {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [{ color: "#ffffff" }],
-    },
-    {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [{ color: "#dbeafe" }],
-    },
-];
 
 const LocationMapModal = ({
     visible,
@@ -242,7 +218,7 @@ const LocationMapModal = ({
                         {}
                         {layerType === "street" && (
                             <UrlTile
-                                urlTemplate={CARTO_VOYAGER_URL}
+                                urlTemplate={CARTO_TILE_URL}
                                 maximumZ={19}
                                 flipY={false}
                                 tileSize={256}

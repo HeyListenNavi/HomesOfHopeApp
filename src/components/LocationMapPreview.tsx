@@ -4,36 +4,12 @@ import MapView, { Marker, UrlTile } from "react-native-maps";
 import Boxicon from "@/components/Boxicons";
 import LocationMapModal, { LocationPoint } from "./LocationMapModal";
 import MapPinMarker from "./MapPinMarker";
+import { CARTO_TILE_URL, LIGHT_BASE_MAP_STYLE } from "@/lib/maps";
 
 interface LocationMapPreviewProps {
     activePoint: LocationPoint;
     secondaryPoint?: LocationPoint | null;
 }
-
-const CARTO_VOYAGER_URL =
-    "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png";
-
-
-const LIGHT_BASE_MAP_STYLE = [
-    {
-        elementType: "geometry",
-        stylers: [{ color: "#f4f3f0" }],
-    },
-    {
-        elementType: "labels",
-        stylers: [{ visibility: "off" }],
-    },
-    {
-        featureType: "road",
-        elementType: "geometry",
-        stylers: [{ color: "#ffffff" }],
-    },
-    {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [{ color: "#dbeafe" }],
-    },
-];
 
 const LocationMapPreview = ({
     activePoint,
@@ -72,7 +48,7 @@ const LocationMapPreview = ({
                     >
                         {}
                         <UrlTile
-                            urlTemplate={CARTO_VOYAGER_URL}
+                            urlTemplate={CARTO_TILE_URL}
                             maximumZ={19}
                             flipY={false}
                             tileSize={256}

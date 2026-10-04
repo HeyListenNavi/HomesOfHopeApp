@@ -22,6 +22,7 @@ import {
 } from "@/lib/geo";
 import MapPinMarker from "./MapPinMarker";
 import { debounce } from "lodash";
+import { CARTO_TILE_URL, LIGHT_BASE_MAP_STYLE } from "@/lib/maps";
 
 export interface LocationPickerResult {
     latitude: number;
@@ -43,17 +44,6 @@ interface LocationPickerModalProps {
     initialAddress?: string | null;
     onConfirm: (result: LocationPickerResult) => void;
 }
-
-const CARTO_VOYAGER_URL =
-    "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png";
-
-const LIGHT_BASE_MAP_STYLE = [
-    { elementType: "geometry", stylers: [{ color: "#f4f3f0" }] },
-    { elementType: "labels", stylers: [{ visibility: "off" }] },
-    { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
-    { featureType: "water", elementType: "geometry", stylers: [{ color: "#dbeafe" }] },
-];
-
 
 const TIJUANA_DEFAULT_LAT = 32.5149;
 const TIJUANA_DEFAULT_LNG = -117.0382;
@@ -281,7 +271,7 @@ const LocationPickerModal = ({
                     >
                         {layerType === "street" && (
                             <UrlTile
-                                urlTemplate={CARTO_VOYAGER_URL}
+                                urlTemplate={CARTO_TILE_URL}
                                 maximumZ={19}
                                 flipY={false}
                                 tileSize={256}
