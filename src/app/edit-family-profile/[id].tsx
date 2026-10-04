@@ -459,6 +459,7 @@ export default function EditFamilyProfilePage() {
                         icon="bxs-camera"
                         buttonText="Tomar o seleccionar foto"
                         className="gap-3"
+                        mode="photo"
                         value={docs.family_photo}
                         onChange={(file) => setDocs((p) => ({ ...p, family_photo: file }))}
                     />

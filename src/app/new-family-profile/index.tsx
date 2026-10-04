@@ -1447,6 +1447,7 @@ const [step, setStep] = useState(1);
                             badge="optional"
                             icon="bxs-camera"
                             buttonText="Tomar o seleccionar foto"
+                            mode="photo"
                             value={docs.family_photo}
                             onChange={(file) => setDocs((p) => ({ ...p, family_photo: file }))}
                         />

@@ -38,6 +38,7 @@ export interface DocumentUploadCardProps {
     onSecondaryUpload?: (file: UploadedFileAsset | null) => void;
     error?: string;
     className?: string;
+    mode?: "photo" | "document" | "mixed";
 }
 
 const DocumentUploadCard = ({
@@ -53,6 +54,7 @@ const DocumentUploadCard = ({
     onSecondaryUpload,
     error,
     className,
+    mode = "mixed",
 }: DocumentUploadCardProps) => {
     const optionsSheetRef = useRef<BottomSheetModal>(null);
     const [targetType, setTargetType] = useState<"primary" | "secondary">("primary");
@@ -184,40 +186,46 @@ const DocumentUploadCard = ({
         }
     };
 
-    const pickerOptions: SheetOption[] = [
-        {
-            label: "Escanear Documento (PDF)",
-            subtitle: "Toma varias páginas y crea un archivo PDF",
-            icon: "bxs-file",
-            color: "#61b346",
-            iconBgColor: "bg-primary/10",
-            onPress: startScan,
-        },
-        {
+    const pickerOptions: SheetOption[] = (() => {
+        const options: SheetOption[] = [];
+        if (mode === "mixed" || mode === "document") {
+            options.push({
+                label: "Escanear Documento (PDF)",
+                subtitle: "Toma varias páginas y crea un archivo PDF",
+                icon: "bxs-file",
+                color: "#61b346",
+                iconBgColor: "bg-primary/10",
+                onPress: startScan,
+            });
+        }
+        options.push({
             label: "Tomar Fotografía",
             subtitle: "Cámara rápida de tu dispositivo",
             icon: "bxs-camera",
             color: "#2563eb",
             iconBgColor: "bg-blue-100",
             onPress: handleCamera,
-        },
-        {
+        });
+        options.push({
             label: "Galería de Fotos",
             subtitle: "Seleccionar una imagen guardada",
             icon: "bxs-image",
             color: "#8b5cf6",
             iconBgColor: "bg-purple-100",
             onPress: handleGallery,
-        },
-        {
-            label: "Archivo o Documento PDF",
-            subtitle: "Explorar tus archivos locales",
-            icon: "bxs-file",
-            color: "#d97706",
-            iconBgColor: "bg-amber-100",
-            onPress: handleDocument,
-        },
-    ];
+        });
+        if (mode === "mixed" || mode === "document") {
+            options.push({
+                label: "Archivo o Documento PDF",
+                subtitle: "Explorar tus archivos locales",
+                icon: "bxs-file",
+                color: "#d97706",
+                iconBgColor: "bg-amber-100",
+                onPress: handleDocument,
+            });
+        }
+        return options;
+    })();
 
     return (
         <View className={className || "bg-white p-6 rounded-3xl shadow-md shadow-black/5 gap-4"}>
