@@ -57,7 +57,7 @@ const VisitCard = ({ visit, variant = "summary", familyName, readOnly = false }:
 
     const locationLabel = visit.location_type === "home" ? "Vivienda Actual" : visit.location_type === "land" ? "Terreno" : visit.location_type || "Visita";
 
-    const finalFamilyName = familyName || visit.familyProfile?.family_name || "Visita Programada";
+    const finalFamilyName = familyName || visit.family_profile?.family_name || "Visita Programada";
 
     const { can } = usePermissions();
     const canFinalize = visit.status === VisitStatus.scheduled && can(Permission.visitUpdate);

@@ -314,11 +314,11 @@ const Page = () => {
                             )}
                         </View>
 
-                        {family.responsibleMember?.phone && (
+                        {family.responsible_member?.phone && (
                             <TouchableOpacity
                                 onPress={() =>
                                     Linking.openURL(
-                                        `whatsapp://send?phone=${family.responsibleMember!.phone}`,
+                                        `whatsapp://send?phone=${family.responsible_member!.phone}`,
                                     )
                                 }
                                 className="flex-row items-center gap-4 bg-[#f0fdf4] rounded-2xl px-5 py-4 active:bg-green-100 border border-green-200"
@@ -330,10 +330,10 @@ const Page = () => {
                                 </View>
                                 <View className="flex-1 gap-0.5">
                                     <Text className="text-green-800 text-sm font-medium">
-                                        Responsable · {family.responsibleMember.name}
+                                        Responsable · {family.responsible_member.name}
                                     </Text>
                                     <Text className="text-gray-900 font-bold text-lg">
-                                        {family.responsibleMember.phone}
+                                        {family.responsible_member.phone}
                                     </Text>
                                 </View>
                                 <Boxicon name="bx-chevron-right" size={24} color="#16a34a" />

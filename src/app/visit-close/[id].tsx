@@ -67,8 +67,8 @@ export default function VisitClosePage() {
 
     const [isSyncing, setIsSyncing] = useState(false);
 
-    const responsible_member = visit?.familyProfile?.responsibleMember;
-    const familyPhoto = visit?.familyProfile?.family_photo_url;
+    const responsible_member = visit?.family_profile?.responsible_member;
+    const familyPhoto = visit?.family_profile?.family_photo_url;
 
     const isLand = visit?.location_type === "land";
     const relevantMapsLink = isLand
@@ -312,7 +312,7 @@ export default function VisitClosePage() {
                         router.push(`/family-profile/${visit.family_profile_id}`)
                     }
                     accessibilityRole="button"
-                    accessibilityLabel={`Ver perfil de ${visit.familyProfile?.family_name}`}
+                    accessibilityLabel={`Ver perfil de ${visit.family_profile?.family_name ?? "Sin nombre"}`}
                 >
                     {familyPhoto ? (
                         <Image
@@ -334,7 +334,7 @@ export default function VisitClosePage() {
                                 className="font-bold text-gray-800 text-xl leading-tight"
                                 numberOfLines={1}
                             >
-                                {visit.familyProfile?.family_name ?? "Sin nombre"}
+                                {visit.family_profile?.family_name ?? "Sin nombre"}
                             </Text>
 
                             {responsible_member && (

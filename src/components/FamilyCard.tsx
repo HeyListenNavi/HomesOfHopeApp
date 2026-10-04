@@ -14,7 +14,7 @@ interface FamilyCardProps {
 
 const FamilyCard = ({ family }: FamilyCardProps) => {
     const router = useRouter();
-    const phone = family.responsibleMember?.phone;
+    const phone = family.responsible_member?.phone;
     const statusLabel = getStatusLabel(family.status);
 
     const openWhatsApp = (e: any) => {
