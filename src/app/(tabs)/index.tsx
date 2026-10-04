@@ -86,7 +86,7 @@ const Page = () => {
 
                         <StatCard
                             size="full"
-                            value={families.data?.meta.total ?? 0}
+                            value={families.data?.total ?? 0}
                             label="Familias Registradas"
                             iconName="bxs-group"
                             iconColor="#2563eb"
@@ -104,7 +104,7 @@ const Page = () => {
                             />
                             <StatCard
                                 size="half"
-                                value={visits.data?.meta.total ?? 0}
+                                value={visits.data?.total ?? 0}
                                 label="Visitas hoy"
                                 iconName="bxs-location"
                                 iconColor="#9333ea"

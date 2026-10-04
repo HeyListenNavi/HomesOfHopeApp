@@ -18,8 +18,8 @@ const Page = () => {
     const visits = useVisitIndexInfinite({ min_date: tomorrow, status: VisitStatus.scheduled }, {
         query: {
             getNextPageParam: (visitPage) => {
-                const currentPage = visitPage.meta.current_page;
-                const lastPage = visitPage.meta.last_page;
+                const currentPage = visitPage.current_page;
+                const lastPage = visitPage.last_page;
                 return currentPage < lastPage ? currentPage + 1 : undefined;
             },
             initialPageParam: 1

@@ -38,8 +38,8 @@ const Page = () => {
         query: {
             enabled: !isNaN(id) && id > 0,
             getNextPageParam: (applicantPage) => {
-                const currentPage = applicantPage.meta.current_page;
-                const lastPage = applicantPage.meta.last_page;
+                const currentPage = applicantPage.current_page;
+                const lastPage = applicantPage.last_page;
                 return currentPage < lastPage ? currentPage + 1 : undefined;
             },
             initialPageParam: 1

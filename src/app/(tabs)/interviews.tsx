@@ -18,8 +18,8 @@ const Page = () => {
     const interviews = useGroupIndexInfinite({ min_date: tomorrow }, {
         query: {
             getNextPageParam: (group) => {
-                const currentPage = group.meta.current_page;
-                const lastPage = group.meta.last_page;
+                const currentPage = group.current_page;
+                const lastPage = group.last_page;
                 return currentPage < lastPage ? currentPage + 1 : undefined;
             },
             initialPageParam: 1

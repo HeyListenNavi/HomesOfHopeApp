@@ -35,8 +35,8 @@ const Page = () => {
         {
             query: {
                 getNextPageParam: (userPage) => {
-                    const currentPage = userPage.meta.current_page;
-                    const lastPage = userPage.meta.last_page;
+                    const currentPage = userPage.current_page;
+                    const lastPage = userPage.last_page;
                     return currentPage < lastPage ? currentPage + 1 : undefined;
                 },
                 initialPageParam: 1,
