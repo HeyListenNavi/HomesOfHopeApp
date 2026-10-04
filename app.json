@@ -9,7 +9,7 @@
     "icon": "./src/assets/images/icon.png",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.veronica.homesofhope"
+      "bundleIdentifier": "com.ywam.homesofhope"
     },
     "android": {
       "predictiveBackGestureEnabled": false,
@@ -19,7 +19,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.veronica.homesofhope"
+      "package": "com.ywam.homesofhope"
     },
     "web": {},
     "plugins": [
