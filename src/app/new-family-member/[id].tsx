@@ -143,6 +143,7 @@ export default function NewFamilyMemberPage() {
                 education_grade: formData.education_grade ? Number(formData.education_grade) : null,
                 weekly_income: formData.weekly_income ? Number(formData.weekly_income) : null,
                 religion: (formData.religion || null) as Religion | null,
+                speaks_indigenous_language: formData.indigenous_language !== "none",
                 indigenous_language: formData.indigenous_language === "none" ? null : formData.indigenous_language,
                 is_pregnant: formData.relationship === "padre" ? false : Boolean(formData.is_pregnant),
                 pregnancy_months: formData.pregnancy_months ? Number(formData.pregnancy_months) : null,
