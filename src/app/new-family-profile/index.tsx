@@ -40,7 +40,21 @@ import {
     CITY,
     toOptions,
 } from "@/lib/enums";
-import { useFamilyProfileStore, useFamilyProfileStorePhoto } from "@/services/generated/apiEndpoints";
+import {
+    useFamilyProfileStore,
+    useFamilyProfileStorePhoto,
+    useFamilyMemberStore,
+    useDocumentStore,
+    getFamilyProfileShowQueryKey,
+} from "@/services/generated/apiEndpoints";
+import type {
+    FamilyMemberStoreBody,
+    Relationship,
+    MaritalStatus,
+    EducationLevel,
+    Religion,
+    Occupation,
+} from "@/services/generated/apiTypes";
 import { useQueryClient } from "@tanstack/react-query";
 import { Permission } from "@/lib/permissions";
 import { usePermissionGuard } from "@/hooks/usePermissionGuard";
@@ -112,7 +126,6 @@ export default function NewFamilyProfilePage() {
 
 const [step, setStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const storePhotoMutation = useFamilyProfileStorePhoto();
@@ -346,6 +359,8 @@ const [step, setStep] = useState(1);
 
     
     const storeMutation = useFamilyProfileStore();
+    const storeMemberMutation = useFamilyMemberStore();
+    const storeDocumentMutation = useDocumentStore();
 
     const handleSubmit = async () => {
         setIsLoading(true);
@@ -413,7 +428,119 @@ const [step, setStep] = useState(1);
                 }
             }
 
-            setIsSubmitted(true);
+            const failedMembers: string[] = [];
+
+            if (newProfileId) {
+                for (const m of members) {
+                    const memberLabel = `${m.name || "Familiar"} ${m.paternal_surname || ""}`.trim();
+                    try {
+                        const memberPayload: FamilyMemberStoreBody = {
+                            family_profile_id: newProfileId,
+                            name: m.name,
+                            paternal_surname: m.paternal_surname,
+                            maternal_surname: m.maternal_surname || null,
+                            birth_date: m.birth_date,
+                            curp: m.curp || null,
+                            relationship: m.relationship as Relationship,
+                            is_responsible: Boolean(m.is_responsible),
+                            is_land_owner: Boolean(m.is_land_owner),
+                            phone: m.phone || null,
+                            occupation: (m.occupation || null) as Occupation | null,
+                            marital_status: (m.marital_status || null) as MaritalStatus | null,
+                            education_level: (m.education_level || null) as EducationLevel | null,
+                            education_grade: m.education_grade ? Number(m.education_grade) : null,
+                            weekly_income: m.weekly_income ? Number(m.weekly_income) : null,
+                            religion: (m.religion || null) as Religion | null,
+                            speaks_indigenous_language: Boolean(m.speaks_indigenous_language),
+                            indigenous_language: m.speaks_indigenous_language ? m.indigenous_language : null,
+                            is_pregnant: m.relationship === "padre" ? false : Boolean(m.is_pregnant),
+                            pregnancy_months: m.pregnancy_months ? Number(m.pregnancy_months) : null,
+                            medical_notes: m.medical_notes || null,
+                        };
+
+                        const memberResponse = await storeMemberMutation.mutateAsync({ data: memberPayload });
+                        const newMemberId = memberResponse?.data?.id;
+
+                        if (newMemberId) {
+                            const memberDocs: { file: UploadedFileAsset | string | null; type: string }[] = [
+                                { file: m.identification, type: "identification" },
+                                { file: m.birth_certificate, type: "birth_certificate" },
+                                { file: m.income_proof, type: "income_proof" },
+                            ];
+
+                            for (const doc of memberDocs) {
+                                if (!doc.file || typeof doc.file === "string") continue;
+                                try {
+                                    await storeDocumentMutation.mutateAsync({
+                                        data: {
+                                            documentable_id: newMemberId,
+                                            documentable_type: "family_member",
+                                            document_type: doc.type,
+                                            file: {
+                                                uri: doc.file.uri,
+                                                type: doc.file.mimeType || "application/octet-stream",
+                                                name: doc.file.name || `${doc.type}.jpg`,
+                                            } as any,
+                                        },
+                                    });
+                                } catch (docErr) {
+                                    console.error(`Failed to upload ${doc.type} for member ${newMemberId}:`, docErr);
+                                }
+                            }
+                        }
+                    } catch (memberErr: any) {
+                        console.error("Failed to create family member:", memberErr);
+                        failedMembers.push(
+                            `${memberLabel}: ${memberErr?.response?.data?.message || "error desconocido"}`
+                        );
+                    }
+                }
+
+                const landDocs: { file: UploadedFileAsset | string; type: string }[] = [
+                    ...(docs.land_ownership ? [{ file: docs.land_ownership, type: "land_ownership" }] : []),
+                    ...docs.land_receipts.map((receipt) => ({ file: receipt, type: "land_receipt" })),
+                ];
+
+                for (const doc of landDocs) {
+                    if (!doc.file || typeof doc.file === "string") continue;
+                    try {
+                        await storeDocumentMutation.mutateAsync({
+                            data: {
+                                documentable_id: newProfileId,
+                                documentable_type: "family_profile",
+                                document_type: doc.type,
+                                file: {
+                                    uri: doc.file.uri,
+                                    type: doc.file.mimeType || "application/octet-stream",
+                                    name: doc.file.name || `${doc.type}.jpg`,
+                                } as any,
+                            },
+                        });
+                    } catch (docErr) {
+                        console.error(`Failed to upload ${doc.type}:`, docErr);
+                    }
+                }
+
+                await queryClient.invalidateQueries({ queryKey: getFamilyProfileShowQueryKey(newProfileId) });
+            }
+
+            if (failedMembers.length > 0) {
+                Alert.alert(
+                    "Integrantes no guardados",
+                    `El perfil se creó correctamente, pero ${failedMembers.length} integrante(s) no pudieron guardarse:\n\n${failedMembers.join("\n")}`,
+                    [
+                        {
+                            text: "Ver perfil",
+                            onPress: () => router.replace(`/family-profile/${newProfileId}` as any),
+                        },
+                    ]
+                );
+                return;
+            }
+
+            if (newProfileId) {
+                router.replace(`/family-profile/${newProfileId}` as any);
+            }
         } catch (err: any) {
             Alert.alert(
                 "Error al Guardar",
@@ -443,37 +570,6 @@ const [step, setStep] = useState(1);
 
     
     if (!allowed) return null;
-
-    if (isSubmitted) {
-        return (
-            <View className="flex-1 bg-gray-100 items-center justify-center p-6 gap-6">
-                <View className="bg-white p-8 rounded-3xl items-center gap-6 shadow-md shadow-black/5 w-full max-w-sm">
-                    <View className="h-28 w-28 rounded-3xl bg-primary/10 items-center justify-center">
-                        <FluentEmoji emoji="🎉" className="text-6xl" />
-                    </View>
-                    <View className="gap-2 items-center">
-                        <Text className="text-3xl font-black text-gray-800 text-center leading-tight">
-                            ¡Familia Registrada!
-                        </Text>
-                        <Text className="text-gray-500 text-center text-base font-medium">
-                            La información familiar ha sido registrada y guardada exitosamente en el sistema.
-                        </Text>
-                    </View>
-                    <TouchableOpacity
-                        onPress={() => router.replace("/(tabs)/families")}
-                        activeOpacity={0.9}
-                        className="w-full bg-primary py-4 rounded-2xl items-center justify-center shadow-lg shadow-primary/30 mt-2"
-                        accessibilityRole="button"
-                        accessibilityLabel="Volver a Familias"
-                    >
-                        <Text className="text-white font-bold text-lg">
-                            Volver a Familias
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
-    }
 
     return (
         <View className="flex-1 bg-gray-100">
