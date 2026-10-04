@@ -220,7 +220,7 @@ const Page = () => {
         );
     };
 
-    const photoUrl = family.family_photo_path ?? null;
+    const photoUrl = family.family_photo_url ?? null;
 
     return (
         <>

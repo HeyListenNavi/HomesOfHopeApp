@@ -213,7 +213,7 @@ export default function EditFamilyProfilePage() {
         };
 
         const initialDocs = {
-            family_photo: initialData.family_photo_path || null,
+            family_photo: initialData.family_photo_url || null,
         };
 
         setStatusState(initialStatus);

@@ -5962,7 +5962,7 @@
                     "status": {
                         "$ref": "#/components/schemas/FamilyStatus"
                     },
-                    "family_photo_path": {
+                    "family_photo_url": {
                         "type": "null"
                     },
                     "lives_on_land": {
@@ -6260,7 +6260,7 @@
                     "family_name",
                     "slug",
                     "status",
-                    "family_photo_path",
+                    "family_photo_url",
                     "lives_on_land",
                     "interviewer_name",
                     "home_city",

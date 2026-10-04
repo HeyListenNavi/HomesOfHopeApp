@@ -17,7 +17,7 @@ export interface FamilyProfileResource {
   slug: string;
   status: FamilyStatus;
   /** @nullable */
-  family_photo_path: null;
+  family_photo_url: null;
   lives_on_land: boolean;
   /** @nullable */
   interviewer_name: string | null;

@@ -268,7 +268,7 @@ export default function VisitViewPage() {
     );
 
     const responsible_member = visit?.familyProfile?.responsibleMember;
-    const familyPhoto = visit?.familyProfile?.family_photo_path;
+    const familyPhoto = visit?.familyProfile?.family_photo_url;
 
     const isLand = visit?.location_type === "land";
     const relevantMapsLink = isLand
