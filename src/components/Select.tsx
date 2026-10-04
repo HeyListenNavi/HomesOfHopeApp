@@ -32,6 +32,7 @@ export interface SelectProps {
     error?: string;
     required?: boolean;
     optional?: boolean;
+    noneLabel?: string;
 }
 
 const Select = ({
@@ -45,6 +46,7 @@ const Select = ({
     error,
     required = false,
     optional = false,
+    noneLabel = "Ninguna",
 }: SelectProps) => {
     const selectedOption = options.find((opt) => opt.value === value);
     const [triggerWidth, setTriggerWidth] = useState(0);
@@ -183,4 +185,3 @@ const Select = ({
 };
 
 export default Select;
-

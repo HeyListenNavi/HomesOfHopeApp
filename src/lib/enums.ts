@@ -105,7 +105,8 @@ export const RELIGION: Record<Religion, EnumMeta> = {
     other: { value: Religion.other, label: "Otra" },
 };
 
-export const INDIGENOUS_LANGUAGE: Record<IndigenousLanguage, EnumMeta> = {
+export const INDIGENOUS_LANGUAGE: Record<IndigenousLanguage | "none", EnumMeta> = {
+    none: { value: "none", label: "Ninguna" },
     nahuatl: { value: IndigenousLanguage.nahuatl, label: "Náhuatl" },
     maya: { value: IndigenousLanguage.maya, label: "Maya" },
     zapoteco: { value: IndigenousLanguage.zapoteco, label: "Zapoteco" },
