@@ -79,7 +79,9 @@ export default function VisitClosePage() {
             ? "Vivienda Actual"
             : visit?.location_type === "land"
                 ? "Terreno"
-                : visit?.location_type || "Visita";
+                : visit?.location_type === "virtual"
+                    ? "Virtual"
+                    : visit?.location_type || "Visita";
 
     const [localTasks, setLocalTasks] = useState<TaskResource[]>([]);
 

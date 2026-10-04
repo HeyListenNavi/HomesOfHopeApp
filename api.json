@@ -1967,7 +1967,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -2268,15 +2268,6 @@
                                             "null"
                                         ],
                                         "description": "Relationship"
-                                    },
-                                    "family_photo": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ],
-                                        "format": "binary",
-                                        "contentMediaType": "application/octet-stream",
-                                        "description": "Family photo upload"
                                     }
                                 }
                             }
@@ -2360,6 +2351,97 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/family-profiles/{familyProfile}/photo": {
+            "post": {
+                "operationId": "familyProfile.storePhoto",
+                "description": "- Stores the image to Cloudflare R2 under `documents/`.\n- Updates `family_profiles.family_photo_path` with the object key.\n- Creates a `Document` record with `document_type: family_photo` for audit trail.\n\nExpected payload: multipart/form-data with `file` field containing the image.\n\nReturns the updated FamilyProfileResource with a temporary signed R2 URL.",
+                "summary": "Upload a family photo for the profile",
+                "tags": [
+                    "FamilyProfile"
+                ],
+                "parameters": [
+                    {
+                        "name": "familyProfile",
+                        "in": "path",
+                        "required": true,
+                        "description": "The family profile ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "contentMediaType": "application/octet-stream",
+                                        "description": "Maximum file size: 10240 kilobytes."
+                                    }
+                                },
+                                "required": [
+                                    "file"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Family photo uploaded successfully"
+                                        },
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/FamilyProfileResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "responsibleMember",
+                                                        "members",
+                                                        "documents"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"

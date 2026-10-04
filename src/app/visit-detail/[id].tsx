@@ -280,7 +280,9 @@ export default function VisitViewPage() {
             ? "Vivienda Actual"
             : visit?.location_type === "land"
                 ? "Terreno"
-                : visit?.location_type || "Visita";
+                : visit?.location_type === "virtual"
+                    ? "Virtual"
+                    : visit?.location_type || "Visita";
 
     const openMapsLink = async () => {
         if (!relevantMapsLink) {
