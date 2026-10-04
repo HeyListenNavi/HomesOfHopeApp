@@ -194,6 +194,8 @@ export default function EditFamilyMemberPage() {
                 education_grade: formData.education_grade ? Number(formData.education_grade) : null,
                 weekly_income: formData.weekly_income ? Number(formData.weekly_income) : null,
                 religion: (formData.religion || null) as Religion | null,
+                origin_state: formData.origin_state || null,
+                origin_country: formData.origin_country || null,
                 speaks_indigenous_language: formData.indigenous_language !== "none",
                 indigenous_language: formData.indigenous_language === "none" ? null : formData.indigenous_language,
                 is_pregnant: formData.relationship === "padre" ? false : Boolean(formData.is_pregnant),

@@ -451,6 +451,8 @@ const [step, setStep] = useState(1);
                             education_grade: m.education_grade ? Number(m.education_grade) : null,
                             weekly_income: m.weekly_income ? Number(m.weekly_income) : null,
                             religion: (m.religion || null) as Religion | null,
+                            origin_state: m.origin_state || null,
+                            origin_country: m.origin_country || null,
                             speaks_indigenous_language: Boolean(m.speaks_indigenous_language),
                             indigenous_language: m.speaks_indigenous_language ? m.indigenous_language : null,
                             is_pregnant: m.relationship === "padre" ? false : Boolean(m.is_pregnant),
