@@ -1,6 +1,10 @@
 export default ({ config }) => {
   return {
     ...config,
+    extra: {
+      ...config.extra,
+      cartoApiKey: process.env.EXPO_PUBLIC_CARTO_API_KEY,
+    },
     android: {
       ...config.android,
       config: {

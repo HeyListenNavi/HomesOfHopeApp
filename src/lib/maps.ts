@@ -1,4 +1,8 @@
-const CARTO_API_KEY = process.env.EXPO_PUBLIC_CARTO_API_KEY;
+import Constants from "expo-constants";
+
+const CARTO_API_KEY =
+    process.env.EXPO_PUBLIC_CARTO_API_KEY ||
+    Constants.expoConfig?.extra?.cartoApiKey;
 
 const CARTO_VOYAGER_BASE_URL =
     "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png";

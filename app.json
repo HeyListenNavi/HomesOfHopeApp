@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "HomesOfHopeApp",
+    "name": "Hope App",
     "slug": "homes-of-hope-app",
     "scheme": "hopeapp",
     "version": "1.0.0",
@@ -9,17 +9,32 @@
     "icon": "./src/assets/images/icon.png",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ywam.homesofhope"
+      "bundleIdentifier": "com.ywam.homesofhope",
+      "config": {}
     },
     "android": {
       "predictiveBackGestureEnabled": false,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./src/assets/images/adaptative-icon.png",
+        "backgroundColor": "#ffffff",
+        "monochromeImage": "./src/assets/images/monochrome-icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.ywam.homesofhope"
+      "package": "com.ywam.homesofhope",
+      "config": {
+        "googleMaps": {}
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
     },
     "web": {},
     "plugins": [
@@ -55,6 +70,12 @@
       "eas": {
         "projectId": "97282c8c-b55e-44cd-9e56-379809db8bb1"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/97282c8c-b55e-44cd-9e56-379809db8bb1"
     }
   }
 }
