@@ -22,6 +22,40 @@ export const toLocalDateString = (
 export const getTomorrowLocalDateString = (): string =>
     toLocalDateString(addDays(new Date(), 1));
 
+export const toLocalTimeString = (input: Date = new Date()): string =>
+    format(input, "HH:mm");
+
+export const formatTime = (timeString?: string | null): string => {
+    if (!timeString) return "N/A";
+
+    const [hours, minutes] = timeString.split(":").map(Number);
+    if (isNaN(hours) || isNaN(minutes)) return "Hora inválida";
+
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return format(date, "h:mm a", { locale: es });
+};
+
+export const combineDateAndTime = (
+    dateString: string,
+    timeString: string,
+): string => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const [hours, minutes] = timeString.split(":").map(Number);
+    const date = new Date(
+        year,
+        (month || 1) - 1,
+        day || 1,
+        hours || 0,
+        minutes || 0,
+        0,
+        0,
+    );
+    return isNaN(date.getTime())
+        ? format(new Date(), "yyyy-MM-dd HH:mm:ss")
+        : format(date, "yyyy-MM-dd HH:mm:ss");
+};
+
 const DEFAULT_DATE_FORMAT = "d MMM yyyy";
 const DEFAULT_DATE_TIME_FORMAT = "d MMM yyyy, h:mm a";
 

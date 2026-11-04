@@ -4,7 +4,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import BottomSheet from "@/components/BottomSheet";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import AudioPlayer from "@/components/AudioPlayer";
 
@@ -33,7 +33,7 @@ const TestimonySheet = ({
                                 </Text>
                                 <View className="flex-row items-center gap-2">
                                     <Text className="text-gray-500 text-lg font-medium">
-                                        {formatDate(testimony.recorded_at)}
+                                        {formatDateTime(testimony.recorded_at)}
                                     </Text>
                                     {testimony.language && (
                                         <Badge className="bg-gray-100 border border-gray-200 px-3 py-0.5 rounded-full">

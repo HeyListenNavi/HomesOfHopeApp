@@ -5,10 +5,12 @@ import { useNavigation, useLocalSearchParams } from "expo-router";
 import Textarea from "@/components/Textarea";
 import Select from "@/components/Select";
 import DatePickerInput from "@/components/DatePickerInput";
+import TimePickerInput from "@/components/TimePickerInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import * as DocumentPicker from "expo-document-picker";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { useScreenTopPadding } from "@/lib/layout";
+import { toLocalDateString, toLocalTimeString, combineDateAndTime } from "@/lib/utils";
 import AudioPlayer from "@/components/AudioPlayer";
 import Boxicon from "@/components/Boxicons";
 import FluentEmoji from "@/components/FluentEmoji";
@@ -25,9 +27,8 @@ const Page = () => {
     const audio = useVoiceRecorder();
     const [summary, setSummary] = useState("");
     const [language, setLanguage] = useState<"es" | "en">("es");
-    const [recordedAt, setRecordedAt] = useState(
-        new Date().toISOString().split("T")[0],
-    );
+    const [recordedDate, setRecordedDate] = useState(toLocalDateString);
+    const [recordedTime, setRecordedTime] = useState(toLocalTimeString);
     const [pickedFileName, setPickedFileName] = useState<string | null>(null);
     const [pickedMimeType, setPickedMimeType] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -90,7 +91,7 @@ const Page = () => {
                     family_profile_id: targetFamilyId,
                     language: language,
                     summary: summary.trim(),
-                    recorded_at: recordedAt,
+                    recorded_at: combineDateAndTime(recordedDate, recordedTime),
                     audio: {
                         uri,
                         type: mimeType,
@@ -212,9 +213,15 @@ const Page = () => {
 
                     <DatePickerInput
                         label="Fecha de Grabación"
-                        value={recordedAt}
-                        onChange={setRecordedAt}
+                        value={recordedDate}
+                        onChange={setRecordedDate}
                         maximumDate={new Date()}
+                    />
+
+                    <TimePickerInput
+                        label="Hora de Grabación"
+                        value={recordedTime}
+                        onChange={setRecordedTime}
                     />
 
                     <TouchableOpacity

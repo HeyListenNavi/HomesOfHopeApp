@@ -2,7 +2,7 @@ import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import Boxicon from "@/components/Boxicons";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 interface TestimonyCardProps {
@@ -34,7 +34,7 @@ const TestimonyCard = ({ testimony, onPress }: TestimonyCardProps) => {
                 <View className="flex-row items-center gap-2 mt-1">
                     <Badge className="bg-amber-100 border-transparent px-3 py-1.5 rounded-full">
                         <Text className="text-amber-700 text-sm font-bold">
-                            {formatDate(testimony.recorded_at)}
+                            {formatDateTime(testimony.recorded_at)}
                         </Text>
                     </Badge>
                     {testimony.language && (
