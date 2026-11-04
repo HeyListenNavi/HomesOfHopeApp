@@ -1,7 +1,10 @@
-import { View, RefreshControl, ListRenderItem, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { View, RefreshControl, ListRenderItem, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import VisitCard from "@/components/VisitCard";
+import VisitsMapModal from "@/components/VisitsMapModal";
 import FluentEmoji from "@/components/FluentEmoji";
+import Boxicon from "@/components/Boxicons";
 import { useTabBarClearance } from "@/lib/layout";
 import { useVisitIndex, useVisitIndexInfinite } from "@/services/generated/apiEndpoints";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
@@ -13,6 +16,7 @@ const Page = () => {
     const tabBarClearance = useTabBarClearance();
     const today = toLocalDateString();
     const tomorrow = getTomorrowLocalDateString();
+    const [mapModalVisible, setMapModalVisible] = useState(false);
 
     const todayVisits = useVisitIndex({ date: today, status: VisitStatus.scheduled });
     const visits = useVisitIndexInfinite({ min_date: tomorrow, status: VisitStatus.scheduled }, {
@@ -41,6 +45,17 @@ const Page = () => {
                 <Text className="font-bold text-gray-800 text-3xl">
                     Visitas
                 </Text>
+
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    className="ml-auto flex-row items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-2 shadow-lg shadow-primary/30"
+                    onPress={() => setMapModalVisible(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Ver mapa de visitas"
+                >
+                    <Boxicon name="bxs-map" size={18} color="white" />
+                    <Text className="text-white font-bold">Ver Mapa</Text>
+                </TouchableOpacity>
             </View>
 
             {(todayVisits.data?.data.length ?? 0) > 0 ? (
@@ -111,6 +126,12 @@ const Page = () => {
                         colors={["#61b346"]}
                     />
                 }
+            />
+
+            <VisitsMapModal
+                visible={mapModalVisible}
+                onClose={() => setMapModalVisible(false)}
+                initialDate={today}
             />
         </View>
     );
