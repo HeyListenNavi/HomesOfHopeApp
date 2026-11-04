@@ -3,17 +3,35 @@ import { ActivityIndicator, Modal, Pressable, TouchableOpacity, View } from "rea
 import { Image } from "expo-image";
 import React from "react";
 import Pdf from "react-native-pdf";
+import { useVideoPlayer, VideoView } from "expo-video";
 import Boxicon from "@/components/Boxicons";
 import { Text } from "@/components/ui/text";
 
 interface LocalFilePreviewerProps {
-    file: { name: string; uri: string };
+    file: { name: string; uri: string; mimeType?: string };
     onRemove: () => void;
     containerClassName?: string;
 }
 
-const LocalFilePreviewer = ({ file, onRemove, containerClassName = "flex-row items-center gap-3 bg-gray-50 rounded-2xl pl-4 pr-2 py-2 border border-gray-100 mt-1" }: LocalFilePreviewerProps) => {
-    const isImage = file.name.match(/\.(jpeg|jpg|gif|png|webp)(\?|$)/i) != null || file.uri.startsWith('data:image') || !file.name.match(/\.[a-zA-Z]+$/);
+const LocalVideoPlayer = ({ uri }: { uri: string }) => {
+    const player = useVideoPlayer(uri, (p) => {
+        p.loop = false;
+    });
+
+    return (
+        <VideoView
+            player={player}
+            style={{ flex: 1, width: "100%", height: "100%" }}
+            fullscreenOptions={{ enable: true }}
+            allowsPictureInPicture
+            nativeControls
+        />
+    );
+};
+
+const LocalFilePreviewer = ({ file, onRemove, containerClassName = "flex-row items-center gap-3.5 bg-gray-50 rounded-2xl p-3.5 border border-gray-200" }: LocalFilePreviewerProps) => {
+    const isVideo = file.mimeType?.startsWith("video/") || /\.(mp4|mov|webm|m4v|3gp|mkv)(\?|$)/i.test(file.name) || /\.(mp4|mov|webm|m4v|3gp|mkv)(\?|$)/i.test(file.uri);
+    const isImage = !isVideo && (file.name.match(/\.(jpeg|jpg|gif|png|webp|heic)(\?|$)/i) != null || file.uri.startsWith('data:image') || file.mimeType?.startsWith("image/"));
     const [open, setOpen] = useState(false);
     const [pdfLoading, setPdfLoading] = useState(true);
     const [pdfError, setPdfError] = useState(false);
@@ -26,25 +44,39 @@ const LocalFilePreviewer = ({ file, onRemove, containerClassName = "flex-row ite
 
     return (
         <View className={containerClassName}>
-            <TouchableOpacity className="flex-1 flex-row items-center gap-3" activeOpacity={0.7} onPress={() => setOpen(true)}>
-                <View className="h-10 w-10 bg-primary/10 rounded-xl items-center justify-center shrink-0">
-                    <Boxicon name="bxs-file" size={20} color="#61b346" />
+            <TouchableOpacity className="flex-1 flex-row items-center gap-3.5" activeOpacity={0.7} onPress={() => setOpen(true)}>
+                {isImage ? (
+                    <Image
+                        source={{ uri: file.uri }}
+                        style={{ width: 52, height: 52, borderRadius: 12 }}
+                        contentFit="cover"
+                        transition={200}
+                    />
+                ) : (
+                    <View className="bg-primary/10 rounded-xl items-center justify-center shrink-0" style={{ width: 52, height: 52 }}>
+                        <Boxicon name={isVideo ? "bxs-video" : "bxs-file"} size={24} color="#61b346" />
+                    </View>
+                )}
+                <View className="flex-1 gap-0.5">
+                    <Text
+                        className="font-bold text-gray-800 text-base"
+                        numberOfLines={1}
+                    >
+                        {file.name}
+                    </Text>
+                    <Text className="text-xs font-medium text-primary">
+                        Toca para previsualizar
+                    </Text>
                 </View>
-                <Text
-                    className="flex-1 font-medium text-gray-700 text-base"
-                    numberOfLines={1}
-                >
-                    {file.name}
-                </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
                 onPress={onRemove}
-                className="p-2 active:opacity-60"
+                className="h-10 w-10 bg-red-50 rounded-xl items-center justify-center active:bg-red-100"
                 accessibilityRole="button"
                 accessibilityLabel="Quitar archivo"
             >
-                <Boxicon name="bxs-trash" size={20} color="#ef4444" />
+                <Boxicon name="bxs-trash" size={18} color="#ef4444" />
             </TouchableOpacity>
 
             <Modal
@@ -65,7 +97,11 @@ const LocalFilePreviewer = ({ file, onRemove, containerClassName = "flex-row ite
                         </View>
 
                         <View style={{ height: 480 }}>
-                            {isImage ? (
+                            {isVideo ? (
+                                <View className="flex-1 bg-black">
+                                    <LocalVideoPlayer uri={file.uri} />
+                                </View>
+                            ) : isImage ? (
                                 <Image
                                     source={{ uri: file.uri }}
                                     style={{ flex: 1, width: "100%", height: "100%" }}

@@ -3,6 +3,7 @@ import { ActivityIndicator, Linking, Modal, Pressable, TouchableOpacity, View } 
 import { Image } from "expo-image";
 import React from "react";
 import Pdf from "react-native-pdf";
+import { useVideoPlayer, VideoView } from "expo-video";
 import Boxicon from "@/components/Boxicons";
 import { Text } from "@/components/ui/text";
 import { useAuthStore } from "@/store/authStore";
@@ -13,6 +14,22 @@ interface FilePreviewDialogProps {
     file: { name: string; uri: string; mimeType?: string | null } | null;
 }
 
+const RemoteVideoPlayer = ({ uri }: { uri: string }) => {
+    const player = useVideoPlayer(uri, (p) => {
+        p.loop = false;
+    });
+
+    return (
+        <VideoView
+            player={player}
+            style={{ flex: 1, width: "100%", height: "100%" }}
+            fullscreenOptions={{ enable: true }}
+            allowsPictureInPicture
+            nativeControls
+        />
+    );
+};
+
 const FilePreviewDialog = ({ open, onOpenChange, file }: FilePreviewDialogProps) => {
     const token = useAuthStore.getState().token;
     const [loading, setLoading] = useState(true);
@@ -22,8 +39,9 @@ const FilePreviewDialog = ({ open, onOpenChange, file }: FilePreviewDialogProps)
     const uri = file?.uri ?? "";
     const mimeType = file?.mimeType ?? "";
 
-    const isImage = mimeType.startsWith("image/") || name.match(/\.(jpeg|jpg|gif|png|webp)(\?|$)/i) != null;
-    const isPdf = mimeType === "application/pdf" || name.match(/\.pdf(\?|$)/i) != null;
+    const isVideo = mimeType.startsWith("video/") || /\.(mp4|mov|webm|m4v|3gp|mkv)(\?|$)/i.test(name) || /\.(mp4|mov|webm|m4v|3gp|mkv)(\?|$)/i.test(uri);
+    const isImage = !isVideo && (mimeType.startsWith("image/") || name.match(/\.(jpeg|jpg|gif|png|webp|heic)(\?|$)/i) != null);
+    const isPdf = !isVideo && !isImage && (mimeType === "application/pdf" || name.match(/\.pdf(\?|$)/i) != null);
 
     const headers: Record<string, string> = {};
     if (uri.startsWith("http") && token) {
@@ -55,7 +73,11 @@ const FilePreviewDialog = ({ open, onOpenChange, file }: FilePreviewDialogProps)
                     </View>
 
                     <View style={{ height: 480 }}>
-                        {isImage ? (
+                        {isVideo ? (
+                            <View className="flex-1 bg-black">
+                                <RemoteVideoPlayer uri={uri} />
+                            </View>
+                        ) : isImage ? (
                             <Image
                                 source={{ uri, headers }}
                                 style={{ flex: 1, width: "100%", height: "100%" }}

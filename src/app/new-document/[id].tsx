@@ -43,44 +43,108 @@ const Page = () => {
     const targetType = documentable_type || "family_profile";
 
     const takePhotoWithCamera = async () => {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") return;
-        const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            quality: 0.7,
-        });
-        if (!result.canceled) {
-            const asset = result.assets[0];
-            setFile({
-                name: asset.fileName ?? `foto_${Date.now()}.jpg`,
-                uri: asset.uri,
-                mimeType: asset.mimeType ?? "image/jpeg",
+        try {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== "granted") {
+                Alert.alert("Permiso requerido", "Se requiere acceso a la cámara para tomar una foto.");
+                return;
+            }
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                quality: 0.7,
             });
+            if (!result.canceled && result.assets?.[0]) {
+                const asset = result.assets[0];
+                if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE_BYTES) {
+                    Alert.alert(
+                        "Archivo muy pesado",
+                        `La foto seleccionada (${(asset.fileSize / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB.`
+                    );
+                    return;
+                }
+                setFile({
+                    name: asset.fileName ?? `foto_${Date.now()}.jpg`,
+                    uri: asset.uri,
+                    mimeType: asset.mimeType ?? "image/jpeg",
+                });
+            }
+        } catch {
+            Alert.alert("Error", "No se pudo tomar la foto.");
+        }
+    };
+
+    const recordVideoWithCamera = async () => {
+        try {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== "granted") {
+                Alert.alert("Permiso requerido", "Se requiere acceso a la cámara para grabar un video.");
+                return;
+            }
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ['videos'],
+                allowsEditing: false,
+                videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low,
+                videoMaxDuration: 180,
+            });
+            if (!result.canceled && result.assets?.[0]) {
+                const asset = result.assets[0];
+                if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE_BYTES) {
+                    Alert.alert(
+                        "Archivo muy pesado",
+                        `El video grabado (${(asset.fileSize / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB. Intenta grabar un video más corto.`
+                    );
+                    return;
+                }
+                setFile({
+                    name: asset.fileName ?? `video_${Date.now()}.mp4`,
+                    uri: asset.uri,
+                    mimeType: asset.mimeType ?? "video/mp4",
+                });
+            }
+        } catch {
+            Alert.alert("Error", "No se pudo grabar el video.");
         }
     };
 
     const chooseFromGallery = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            quality: 0.7,
-        });
-        if (!result.canceled) {
-            const asset = result.assets[0];
-            setFile({
-                name: asset.fileName ?? `imagen_${Date.now()}.jpg`,
-                uri: asset.uri,
-                mimeType: asset.mimeType ?? "image/jpeg",
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images', 'videos'],
+                allowsEditing: false,
+                quality: 0.7,
+                videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low,
             });
+            if (!result.canceled && result.assets?.[0]) {
+                const asset = result.assets[0];
+                if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE_BYTES) {
+                    Alert.alert(
+                        "Archivo muy pesado",
+                        `El archivo seleccionado (${(asset.fileSize / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB.`
+                    );
+                    return;
+                }
+                const isVideoAsset = asset.type === "video" || asset.mimeType?.startsWith("video/");
+                const defaultName = isVideoAsset ? `video_${Date.now()}.mp4` : `imagen_${Date.now()}.jpg`;
+                const defaultMime = isVideoAsset ? "video/mp4" : "image/jpeg";
+
+                setFile({
+                    name: asset.fileName ?? defaultName,
+                    uri: asset.uri,
+                    mimeType: asset.mimeType ?? defaultMime,
+                });
+            }
+        } catch {
+            Alert.alert("Error", "No se pudo seleccionar el archivo de la galería.");
         }
     };
 
-    const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; 
+    const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; 
 
     const pickDocument = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
-                type: ["application/pdf", "image/*"],
+                type: ["application/pdf", "image/*", "video/*"],
                 copyToCacheDirectory: true,
             });
             if (!result.canceled && result.assets?.[0]) {
@@ -89,15 +153,23 @@ const Page = () => {
                 if (asset.size && asset.size > MAX_FILE_SIZE_BYTES) {
                     Alert.alert(
                         "Archivo muy pesado",
-                        `El archivo seleccionado (${(asset.size / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB. Por favor selecciona o comprime el archivo.`
+                        `El archivo seleccionado (${(asset.size / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 50 MB. Por favor selecciona o comprime el archivo.`
                     );
                     return;
+                }
+
+                let detectedMime = asset.mimeType;
+                if (!detectedMime) {
+                    const lowerName = asset.name.toLowerCase();
+                    if (lowerName.endsWith(".pdf")) detectedMime = "application/pdf";
+                    else if (/\.(mp4|mov|webm|m4v|3gp|mkv)$/.test(lowerName)) detectedMime = "video/mp4";
+                    else detectedMime = "image/jpeg";
                 }
 
                 setFile({
                     name: asset.name,
                     uri: asset.uri,
-                    mimeType: asset.mimeType ?? (asset.name.endsWith(".pdf") ? "application/pdf" : "image/jpeg"),
+                    mimeType: detectedMime,
                 });
             }
         } catch {
@@ -203,41 +275,41 @@ const Page = () => {
                             Archivo
                         </Text>
 
-                        <View className="flex-row gap-3">
-                            <TouchableOpacity
-                                onPress={() => photoSheetRef.current?.present()}
-                                className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 items-center gap-2 active:bg-gray-100 shadow-sm shadow-black/5"
-                                accessibilityRole="button"
-                                accessibilityLabel="Tomar foto o elegir de la galería"
-                            >
-                                <View className="h-12 w-12 rounded-xl bg-primary/10 items-center justify-center">
-                                    <Boxicon name="bxs-camera" size={24} color="#61b346" />
-                                </View>
-                                <Text className="text-gray-700 font-bold text-sm">
-                                    Foto
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                onPress={() => documentSheetRef.current?.present()}
-                                className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 items-center gap-2 active:bg-gray-100 shadow-sm shadow-black/5"
-                                accessibilityRole="button"
-                                accessibilityLabel="Seleccionar archivo del dispositivo"
-                            >
-                                <View className="h-12 w-12 rounded-xl bg-blue-100 items-center justify-center">
-                                    <Boxicon name="bxs-file" size={24} color="#2563eb" />
-                                </View>
-                                <Text className="text-gray-700 font-bold text-sm">
-                                    Archivo
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {file && (
+                        {file ? (
                             <LocalFilePreviewer
                                 file={file}
                                 onRemove={() => setFile(null)}
                             />
+                        ) : (
+                            <View className="flex-row gap-3">
+                                <TouchableOpacity
+                                    onPress={() => photoSheetRef.current?.present()}
+                                    className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 items-center gap-2 active:bg-gray-100 shadow-sm shadow-black/5"
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Abrir cámara para tomar foto o grabar video"
+                                >
+                                    <View className="h-12 w-12 rounded-xl bg-primary/10 items-center justify-center">
+                                        <Boxicon name="bxs-camera" size={24} color="#61b346" />
+                                    </View>
+                                    <Text className="text-gray-700 font-bold text-sm">
+                                        Cámara
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    onPress={() => documentSheetRef.current?.present()}
+                                    className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 items-center gap-2 active:bg-gray-100 shadow-sm shadow-black/5"
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Seleccionar archivo o galería del dispositivo"
+                                >
+                                    <View className="h-12 w-12 rounded-xl bg-blue-100 items-center justify-center">
+                                        <Boxicon name="bxs-file" size={24} color="#2563eb" />
+                                    </View>
+                                    <Text className="text-gray-700 font-bold text-sm">
+                                        Archivo
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
                     </View>
 
@@ -265,37 +337,53 @@ const Page = () => {
             <OptionsSheet
                 ref={photoSheetRef}
                 emoji="📷"
-                title="Agregar Fotografía"
+                title="Usar Cámara"
+                subtitle="Elige si deseas capturar foto o video"
                 options={[
                     {
                         label: "Tomar Foto",
+                        subtitle: "Captura una imagen con la cámara",
                         icon: "bxs-camera",
                         color: "#61b346",
                         iconBgColor: "bg-primary/10",
-                        badge: "Cámara",
+                        badge: "Foto",
                         badgeBgColor: "bg-primary/10",
                         badgeTextColor: "text-primary",
                         onPress: takePhotoWithCamera,
                     },
                     {
-                        label: "Elegir de la Galería",
-                        icon: "bxs-image",
-                        color: "#2563eb",
-                        iconBgColor: "bg-blue-100",
-                        badge: "Galería",
-                        badgeBgColor: "bg-blue-100",
-                        badgeTextColor: "text-blue-700",
-                        onPress: chooseFromGallery,
+                        label: "Grabar Video",
+                        subtitle: "Graba un video corto (hasta 3 min)",
+                        icon: "bxs-video-plus",
+                        color: "#dc2626",
+                        iconBgColor: "bg-red-100",
+                        badge: "Video",
+                        badgeBgColor: "bg-red-100",
+                        badgeTextColor: "text-red-700",
+                        onPress: recordVideoWithCamera,
                     },
                 ]}
             />
             <OptionsSheet
                 ref={documentSheetRef}
-                emoji="📄"
+                emoji="📁"
                 title="Agregar Archivo"
+                subtitle="Selecciona el origen del archivo"
                 options={[
                     {
+                        label: "Elegir de la Galería",
+                        subtitle: "Selecciona fotos o videos guardados",
+                        icon: "bxs-image",
+                        color: "#6366f1",
+                        iconBgColor: "bg-indigo-100",
+                        badge: "Fotos y Videos",
+                        badgeBgColor: "bg-indigo-100",
+                        badgeTextColor: "text-indigo-700",
+                        onPress: chooseFromGallery,
+                    },
+                    {
                         label: "Subir Archivo",
+                        subtitle: "Documentos PDF, imágenes o videos",
                         icon: "bxs-file",
                         color: "#2563eb",
                         iconBgColor: "bg-blue-100",
@@ -306,6 +394,7 @@ const Page = () => {
                     },
                     {
                         label: "Escanear a PDF",
+                        subtitle: "Captura varias páginas y crea un PDF",
                         icon: "bxs-scan",
                         color: "#9333ea",
                         iconBgColor: "bg-purple-100",
