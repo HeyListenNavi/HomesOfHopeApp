@@ -5,7 +5,6 @@ import { useNavigation, useLocalSearchParams } from "expo-router";
 import Textarea from "@/components/Textarea";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useScreenTopPadding } from "@/lib/layout";
-import { Checkbox } from "@/components/ui/checkbox";
 import Boxicon from "@/components/Boxicons";
 import FluentEmoji from "@/components/FluentEmoji";
 import { useNoteStore, getNoteIndexQueryKey } from "@/services/generated/apiEndpoints";
@@ -19,7 +18,6 @@ const Page = () => {
     const storeNote = useNoteStore();
 
     const [content, setContent] = useState("");
-    const [isPrivate, setIsPrivate] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const targetId = Number(id);
@@ -43,7 +41,6 @@ const Page = () => {
                     noteable_id: targetId,
                     noteable_type: targetType,
                     content: content.trim(),
-                    is_private: isPrivate,
                 },
             });
 
@@ -87,23 +84,6 @@ const Page = () => {
                         onChangeText={setContent}
                         multiline
                     />
-
-                    <TouchableOpacity
-                        onPress={() => setIsPrivate((prev) => !prev)}
-                        className="flex-row items-center gap-3 bg-gray-100 rounded-2xl px-4 py-4 active:bg-gray-200"
-                        accessibilityRole="checkbox"
-                        accessibilityState={{ checked: isPrivate }}
-                        accessibilityLabel="Marcar nota como privada"
-                    >
-                        <Checkbox
-                            checked={isPrivate}
-                            onCheckedChange={(checked) => setIsPrivate(!!checked)}
-                            aria-label="Nota privada"
-                        />
-                        <Text className="flex-1 font-medium text-gray-700 text-base">
-                            Nota privada
-                        </Text>
-                    </TouchableOpacity>
 
                     <TouchableOpacity
                         onPress={handleSubmit}
