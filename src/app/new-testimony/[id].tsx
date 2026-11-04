@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { View, TouchableOpacity, ActivityIndicator, ToastAndroid, Alert } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useNavigation, useLocalSearchParams } from "expo-router";
-import Textarea from "@/components/Textarea";
-import Select from "@/components/Select";
 import DatePickerInput from "@/components/DatePickerInput";
 import TimePickerInput from "@/components/TimePickerInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -25,8 +23,6 @@ const Page = () => {
     const storeTestimony = useTestimonyStore();
 
     const audio = useVoiceRecorder();
-    const [summary, setSummary] = useState("");
-    const [language, setLanguage] = useState<"es" | "en">("es");
     const [recordedDate, setRecordedDate] = useState(toLocalDateString);
     const [recordedTime, setRecordedTime] = useState(toLocalTimeString);
     const [pickedFileName, setPickedFileName] = useState<string | null>(null);
@@ -63,10 +59,6 @@ const Page = () => {
             ToastAndroid.show("Graba o adjunta un audio", ToastAndroid.SHORT);
             return;
         }
-        if (!summary.trim()) {
-            ToastAndroid.show("Escribe la descripción del testimonio", ToastAndroid.SHORT);
-            return;
-        }
 
         setIsLoading(true);
         try {
@@ -89,8 +81,7 @@ const Page = () => {
             await storeTestimony.mutateAsync({
                 data: {
                     family_profile_id: targetFamilyId,
-                    language: language,
-                    summary: summary.trim(),
+                    language: "es",
                     recorded_at: combineDateAndTime(recordedDate, recordedTime),
                     audio: {
                         uri,
@@ -189,27 +180,6 @@ const Page = () => {
                             </View>
                         )}
                     </View>
-
-                    <Textarea
-                        label="Descripción"
-                        iconName="bxs-note"
-                        placeholder="Describe brevemente la historia o testimonio..."
-                        value={summary}
-                        onChangeText={setSummary}
-                        multiline
-                    />
-
-                    <Select
-                        label="Idioma"
-                        iconName="bxs-globe"
-                        placeholder="Seleccionar idioma..."
-                        options={[
-                            { label: "Español", value: "es" },
-                            { label: "Inglés", value: "en" },
-                        ]}
-                        value={language}
-                        onValueChange={(val) => setLanguage(val as "es" | "en")}
-                    />
 
                     <DatePickerInput
                         label="Fecha de Grabación"

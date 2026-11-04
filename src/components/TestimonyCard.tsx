@@ -27,9 +27,15 @@ const TestimonyCard = ({ testimony, onPress }: TestimonyCardProps) => {
                     {testimony.recorder?.name ?? "Grabador"}
                 </Text>
                 
-                <Text className="text-gray-500 text-base font-medium" numberOfLines={1}>
-                    {testimony.summary}
-                </Text>
+                {testimony.summary?.trim() ? (
+                    <Text className="text-gray-500 text-base font-medium" numberOfLines={1}>
+                        {testimony.summary}
+                    </Text>
+                ) : (
+                    <Text className="text-gray-400 text-base font-medium italic" numberOfLines={1}>
+                        Sin descripción
+                    </Text>
+                )}
                 
                 <View className="flex-row items-center gap-2 mt-1">
                     <Badge className="bg-amber-100 border-transparent px-3 py-1.5 rounded-full">

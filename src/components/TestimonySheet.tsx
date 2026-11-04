@@ -46,9 +46,15 @@ const TestimonySheet = ({
                             </View>
                         </View>
 
-                        <Text className="text-gray-800 text-lg font-medium leading-relaxed">
-                            {testimony.summary}
-                        </Text>
+                        {testimony.summary?.trim() ? (
+                            <Text className="text-gray-800 text-lg font-medium leading-relaxed">
+                                {testimony.summary}
+                            </Text>
+                        ) : (
+                            <Text className="text-gray-400 text-lg font-medium italic leading-relaxed">
+                                Sin descripción
+                            </Text>
+                        )}
 
                         {testimony.transcription && (
                             <View className="gap-3 mt-2">
