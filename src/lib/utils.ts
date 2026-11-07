@@ -25,6 +25,9 @@ export const getTomorrowLocalDateString = (): string =>
 export const toLocalTimeString = (input: Date = new Date()): string =>
     format(input, "HH:mm");
 
+export const toLocalDateTimeString = (input: Date = new Date()): string =>
+    format(input, "yyyy-MM-dd HH:mm:ss");
+
 export const formatTime = (timeString?: string | null): string => {
     if (!timeString) return "N/A";
 

@@ -39,7 +39,7 @@ import {
     getVisitIndexQueryKey
 } from "@/services/generated/apiEndpoints";
 import { VisitStatus } from "@/services/generated/apiTypes";
-import { toLocalDateString } from "@/lib/utils";
+import { toLocalDateTimeString } from "@/lib/utils";
 import StaffCard from "@/components/StaffCard";
 
 export default function VisitClosePage() {
@@ -128,7 +128,7 @@ export default function VisitClosePage() {
                 visit: id,
                 data: {
                     status: "completed",
-                    completed_at: toLocalDateString(),
+                    completed_at: toLocalDateTimeString(),
                 }
             });
 
