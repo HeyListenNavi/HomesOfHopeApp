@@ -15,6 +15,33 @@ type CloseVisitInputs = {
     audio: string | null;
 };
 
+const VisitVideoPreview = ({ uri, onDiscard }: { uri: string; onDiscard: () => void }) => {
+    const videoPlayer = useVideoPlayer(uri, (p) => {
+        p.loop = false;
+    });
+
+    return (
+        <View
+            key="video-preview"
+            className="rounded-2xl overflow-hidden bg-black aspect-[9/16] max-h-96 w-full mx-auto shadow-md"
+        >
+            <VideoView
+                player={videoPlayer}
+                style={{ width: "100%", height: "100%" }}
+                fullscreenOptions={{ enable: true }}
+                allowsPictureInPicture
+                nativeControls
+            />
+            <TouchableOpacity
+                onPress={onDiscard}
+                className="absolute top-2 right-2 bg-gray-900/80 rounded-full p-2 z-10"
+            >
+                <Boxicon name="bxs-trash" size={16} color="#fff" />
+            </TouchableOpacity>
+        </View>
+    );
+};
+
 const VisitForm = ({
     isSyncing,
     bottomSheetRef,
@@ -24,9 +51,6 @@ const VisitForm = ({
     video,
 }: any) => {
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const videoPlayer = useVideoPlayer(video.video ?? null, (p) => {
-        p.loop = false;
-    });
 
     const {
         register,
@@ -55,6 +79,7 @@ const VisitForm = ({
     }, [audio.recordedUri, setValue]);
 
     const onSubmit: SubmitHandler<CloseVisitInputs> = (data) => onFinalize(data);
+    const isMediaCompressing = Boolean(pictures.isCompressing || video.isCompressing);
 
     return (
         <View className="gap-6">
@@ -100,8 +125,21 @@ const VisitForm = ({
                     />
                 )}
 
+                {pictures.isCompressing && (
+                    <View
+                        key="photos-compressing"
+                        className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex-row items-center justify-center gap-2"
+                    >
+                        <ActivityIndicator size="small" color="#61b346" />
+                        <Text className="text-gray-700 font-bold text-sm">
+                            Comprimiendo fotografías...
+                        </Text>
+                    </View>
+                )}
+
                 <TouchableOpacity
                     onPress={pictures.takePicture}
+                    disabled={pictures.isCompressing}
                     className="bg-gray-100 rounded-2xl py-6 items-center justify-center gap-2 active:bg-gray-200"
                     accessibilityRole="button"
                     accessibilityLabel="Tomar foto con cámara"
@@ -125,24 +163,26 @@ const VisitForm = ({
             <View className="gap-3">
                 <SectionHeader emoji="🎥" title="Video Recorrido" badge="Requerido" />
 
-                {video.video ? (
-                    <View className="rounded-2xl overflow-hidden bg-black aspect-[9/16] max-h-96 w-full mx-auto shadow-md">
-                        <VideoView
-                            player={videoPlayer}
-                            style={{ width: "100%", height: "100%" }}
-                            fullscreenOptions={{ enable: true }}
-                            allowsPictureInPicture
-                            nativeControls
-                        />
-                        <TouchableOpacity
-                            onPress={video.discardVideo}
-                            className="absolute top-2 right-2 bg-gray-900/80 rounded-full p-2 z-10"
-                        >
-                            <Boxicon name="bxs-trash" size={16} color="#fff" />
-                        </TouchableOpacity>
+                {video.isCompressing ? (
+                    <View
+                        key="video-compressing"
+                        className="bg-primary/5 border border-primary/20 rounded-2xl p-5 items-center justify-center gap-2"
+                    >
+                        <ActivityIndicator size="small" color="#61b346" />
+                        <Text className="text-gray-700 font-bold text-sm">
+                            {video.compressionProgress > 0 && video.compressionProgress < 100
+                                ? `Comprimiendo video... ${video.compressionProgress}%`
+                                : "Procesando y comprimiendo video..."}
+                        </Text>
                     </View>
+                ) : video.video ? (
+                    <VisitVideoPreview
+                        key="video-preview"
+                        uri={video.video}
+                        onDiscard={video.discardVideo}
+                    />
                 ) : (
-                    <View className="gap-2">
+                    <View key="video-actions" className="gap-2">
                         <TouchableOpacity
                             onPress={video.recordVideo}
                             className="bg-gray-800 h-[56px] rounded-2xl flex-row justify-center items-center gap-2 active:opacity-80"
@@ -171,7 +211,10 @@ const VisitForm = ({
                 <SectionHeader emoji="🎙️" title="Conclusiones (Audio)" badge="Requerido" />
 
                 {audio.isRecording ? (
-                    <View className="bg-red-50 rounded-2xl p-4 gap-3 border border-red-100">
+                    <View
+                        key="audio-recording"
+                        className="bg-red-50 rounded-2xl p-4 gap-3 border border-red-100"
+                    >
                         <View className="flex-row items-center justify-center gap-3">
                             <ActivityIndicator color="#ef4444" />
                             <Text className="text-red-600 font-bold text-base">
@@ -188,12 +231,14 @@ const VisitForm = ({
                     </View>
                 ) : audio.recordedUri ? (
                     <AudioPlayerPreview
+                        key="audio-preview"
                         uri={audio.recordedUri}
                         onClear={audio.discardRecording}
                         title="Nota de voz"
                     />
                 ) : (
                     <TouchableOpacity
+                        key="audio-start"
                         onPress={audio.startRecording}
                         className="bg-red-500 h-[56px] rounded-2xl flex-row justify-center items-center gap-2 shadow-md shadow-red-500/30 active:opacity-80"
                         accessibilityRole="button"
@@ -208,12 +253,12 @@ const VisitForm = ({
             <View className="gap-3 pt-2 pb-16">
                 <TouchableOpacity
                     onPress={handleSubmit(onSubmit)}
-                    className={`w-full h-[56px] rounded-2xl flex-row justify-center items-center gap-2 ${!isValid || isSyncing
+                    className={`w-full h-[56px] rounded-2xl flex-row justify-center items-center gap-2 ${!isValid || isSyncing || isMediaCompressing
                         ? "bg-gray-200"
                         : "bg-primary"
                         }`}
                     style={
-                        isValid && !isSyncing
+                        isValid && !isSyncing && !isMediaCompressing
                             ? {
                                 shadowColor: "hsl(105.1 43.7% 48.8%)",
                                 shadowOffset: { width: 0, height: 4 },
@@ -223,16 +268,16 @@ const VisitForm = ({
                             }
                             : undefined
                     }
-                    disabled={!isValid || isSyncing}
+                    disabled={!isValid || isSyncing || isMediaCompressing}
                     accessibilityRole="button"
                     accessibilityLabel="Confirmar y finalizar visita"
                 >
                     {isSyncing && <ActivityIndicator color="white" />}
                     <Text
-                        className={`font-bold text-base ${!isValid || isSyncing ? "text-gray-400" : "text-white"
+                        className={`font-bold text-base ${!isValid || isSyncing || isMediaCompressing ? "text-gray-400" : "text-white"
                             }`}
                     >
-                        {isSyncing ? "Guardando..." : "Confirmar y Finalizar"}
+                        {isSyncing ? "Guardando..." : isMediaCompressing ? "Comprimiendo archivos..." : "Confirmar y Finalizar"}
                     </Text>
                 </TouchableOpacity>
 

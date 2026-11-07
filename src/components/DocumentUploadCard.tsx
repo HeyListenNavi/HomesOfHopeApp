@@ -16,6 +16,8 @@ import Boxicon, { BoxIconName } from "@/components/Boxicons";
 import FluentEmoji from "@/components/FluentEmoji";
 import SectionHeader from "@/components/SectionHeader";
 import { usePdfScanner } from "@/hooks/usePdfScanner";
+import { useFileCompression } from "@/hooks/useFileCompression";
+import { DOCUMENT_MAX_BYTES } from "@/lib/mediaCompression";
 import ScanPageModal from "@/components/ScanPageModal";
 
 export interface UploadedFileAsset {
@@ -59,6 +61,7 @@ const DocumentUploadCard = ({
     const optionsSheetRef = useRef<BottomSheetModal>(null);
     const [targetType, setTargetType] = useState<"primary" | "secondary">("primary");
     const [isLoading, setIsLoading] = useState(false);
+    const { compressImage, validatePdf, isCompressing } = useFileCompression();
 
     
     const {
@@ -106,15 +109,22 @@ const DocumentUploadCard = ({
             setIsLoading(true);
             const result = await ImagePicker.launchCameraAsync({
                 allowsEditing: true,
-                quality: 0.85,
+                quality: 1,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
-                const file: UploadedFileAsset = {
+                const compressed = await compressImage({
                     uri: asset.uri,
-                    name: asset.fileName || `foto_${Date.now()}.jpg`,
-                    mimeType: asset.mimeType || "image/jpeg",
-                    size: asset.fileSize,
+                    fileName: asset.fileName || `foto_${Date.now()}.jpg`,
+                    fileSize: asset.fileSize,
+                    maxBytes: DOCUMENT_MAX_BYTES,
+                });
+                if (!compressed) return;
+                const file: UploadedFileAsset = {
+                    uri: compressed.uri,
+                    name: compressed.name,
+                    mimeType: compressed.mimeType,
+                    size: compressed.size,
                 };
                 if (targetType === "secondary" && onSecondaryUpload) {
                     onSecondaryUpload(file);
@@ -135,15 +145,22 @@ const DocumentUploadCard = ({
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ["images"],
                 allowsEditing: true,
-                quality: 0.85,
+                quality: 1,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
-                const file: UploadedFileAsset = {
+                const compressed = await compressImage({
                     uri: asset.uri,
-                    name: asset.fileName || `imagen_${Date.now()}.jpg`,
-                    mimeType: asset.mimeType || "image/jpeg",
-                    size: asset.fileSize,
+                    fileName: asset.fileName || `imagen_${Date.now()}.jpg`,
+                    fileSize: asset.fileSize,
+                    maxBytes: DOCUMENT_MAX_BYTES,
+                });
+                if (!compressed) return;
+                const file: UploadedFileAsset = {
+                    uri: compressed.uri,
+                    name: compressed.name,
+                    mimeType: compressed.mimeType,
+                    size: compressed.size,
                 };
                 if (targetType === "secondary" && onSecondaryUpload) {
                     onSecondaryUpload(file);
@@ -163,15 +180,35 @@ const DocumentUploadCard = ({
             setIsLoading(true);
             const result = await DocumentPicker.getDocumentAsync({
                 type: ["application/pdf", "image/*"],
-                copyToCacheDirectory: true,
+                copyToCacheDirectory: false,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
+                const isPdf =
+                    asset.mimeType === "application/pdf" ||
+                    asset.name?.toLowerCase().endsWith(".pdf");
+
+                const processed = isPdf
+                    ? await validatePdf({
+                          uri: asset.uri,
+                          fileName: asset.name,
+                          fileSize: asset.size,
+                          maxBytes: DOCUMENT_MAX_BYTES,
+                      })
+                    : await compressImage({
+                          uri: asset.uri,
+                          fileName: asset.name,
+                          fileSize: asset.size,
+                          maxBytes: DOCUMENT_MAX_BYTES,
+                      });
+
+                if (!processed) return;
+
                 const file: UploadedFileAsset = {
-                    uri: asset.uri,
-                    name: asset.name,
-                    mimeType: asset.mimeType || "application/pdf",
-                    size: asset.size,
+                    uri: processed.uri,
+                    name: processed.name,
+                    mimeType: processed.mimeType,
+                    size: processed.size,
                 };
                 if (targetType === "secondary" && onSecondaryUpload) {
                     onSecondaryUpload(file);
@@ -257,7 +294,10 @@ const DocumentUploadCard = ({
 
             {}
             {isUploaded ? (
-                <View className="bg-gray-50 border border-gray-200 p-4 rounded-2xl gap-3.5">
+                <View
+                    key="card-uploaded"
+                    className="bg-gray-50 border border-gray-200 p-4 rounded-2xl gap-3.5"
+                >
                     <View className="flex-row items-center gap-3.5">
                         {isImage && fileUri ? (
                             <Image
@@ -306,7 +346,7 @@ const DocumentUploadCard = ({
                 </View>
             ) : (
                 
-                <View className="gap-3">
+                <View key="card-actions" className="gap-3">
                     <TouchableOpacity
                         onPress={() => handleOpenPicker("primary")}
                         activeOpacity={0.85}
@@ -348,10 +388,12 @@ const DocumentUploadCard = ({
                 </View>
             )}
 
-            {isLoading && (
+            {(isLoading || isCompressing) && (
                 <View className="flex-row items-center justify-center gap-2 py-2">
                     <ActivityIndicator size="small" color="#61b346" />
-                    <Text className="text-gray-500 text-sm font-medium">Cargando archivo...</Text>
+                    <Text className="text-gray-500 text-sm font-medium">
+                        {isCompressing ? "Comprimiendo archivo..." : "Cargando archivo..."}
+                    </Text>
                 </View>
             )}
 

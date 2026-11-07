@@ -156,7 +156,7 @@ export default function VisitClosePage() {
                 uploadPromises.push(storeEvidence.mutateAsync({
                     data: {
                         visit_id: id,
-                        file: { uri: data.audio, type: "audio/mpeg", name: `audio.mp3` } as any,
+                        file: { uri: data.audio, type: "audio/mp4", name: `audio.m4a` } as any,
                         description: "Conclusiones (Audio)",
                     }
                 }));

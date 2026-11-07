@@ -1,6 +1,6 @@
 import { useAudioPlayer, useAudioPlayerStatus, AudioPlayer as ExpoAudioPlayer } from "expo-audio";
-import { View, TouchableOpacity, LayoutChangeEvent, GestureResponderEvent } from "react-native";
-import { useState } from "react";
+import { View, TouchableOpacity, LayoutChangeEvent, GestureResponderEvent, Alert } from "react-native";
+import { useEffect, useState } from "react";
 import Boxicon from "./Boxicons";
 import { Text } from "@/components/ui/text";
 
@@ -16,9 +16,10 @@ interface AudioPlayerProps {
     uri?: string | null;
     player?: ExpoAudioPlayer;
     onDiscard?: () => void;
+    maxDurationSeconds?: number;
 }
 
-const AudioPlayer = ({ uri, player: externalPlayer, onDiscard }: AudioPlayerProps) => {
+const AudioPlayer = ({ uri, player: externalPlayer, onDiscard, maxDurationSeconds }: AudioPlayerProps) => {
     
     
     const internalPlayer = useAudioPlayer(uri || "", { updateInterval: 50 });
@@ -30,6 +31,17 @@ const AudioPlayer = ({ uri, player: externalPlayer, onDiscard }: AudioPlayerProp
 
     const duration = status.duration ?? 0;
     const rawCurrentTime = status.currentTime ?? 0;
+
+    useEffect(() => {
+        if (maxDurationSeconds && status.isLoaded && duration > maxDurationSeconds && onDiscard) {
+            activePlayer.pause();
+            onDiscard();
+            Alert.alert(
+                "Audio demasiado largo",
+                `El audio seleccionado dura ${(duration / 60).toFixed(1)} minutos y supera el límite máximo permitido de ${Math.floor(maxDurationSeconds / 60)} minutos.`
+            );
+        }
+    }, [maxDurationSeconds, status.isLoaded, duration, onDiscard, activePlayer]);
     
     
     const displayRatio = scrubRatio !== null 

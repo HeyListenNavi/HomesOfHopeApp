@@ -13,6 +13,8 @@ import LocalFilePreviewer from "@/components/LocalFilePreviewer";
 import OptionsSheet from "@/components/OptionsSheet";
 import ScanPageModal from "@/components/ScanPageModal";
 import { usePdfScanner } from "@/hooks/usePdfScanner";
+import { useFileCompression } from "@/hooks/useFileCompression";
+import { DOCUMENT_MAX_BYTES, MAX_VIDEO_DURATION_SECONDS } from "@/lib/mediaCompression";
 import Boxicon from "@/components/Boxicons";
 import FluentEmoji from "@/components/FluentEmoji";
 import { useDocumentStore, getFamilyProfileShowQueryKey, getFamilyMemberShowQueryKey } from "@/services/generated/apiEndpoints";
@@ -39,6 +41,8 @@ const Page = () => {
     const documentSheetRef = useRef<BottomSheetModal>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const { compressImage, compressVideo, validatePdf, isCompressing, progress } = useFileCompression();
+
     const targetId = Number(id);
     const targetType = documentable_type || "family_profile";
 
@@ -52,21 +56,21 @@ const Page = () => {
             const result = await ImagePicker.launchCameraAsync({
                 mediaTypes: ['images'],
                 allowsEditing: true,
-                quality: 0.7,
+                quality: 1,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
-                if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE_BYTES) {
-                    Alert.alert(
-                        "Archivo muy pesado",
-                        `La foto seleccionada (${(asset.fileSize / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB.`
-                    );
-                    return;
-                }
-                setFile({
-                    name: asset.fileName ?? `foto_${Date.now()}.jpg`,
+                await compressImage({
                     uri: asset.uri,
-                    mimeType: asset.mimeType ?? "image/jpeg",
+                    fileName: asset.fileName ?? `foto_${Date.now()}.jpg`,
+                    fileSize: asset.fileSize,
+                    maxBytes: DOCUMENT_MAX_BYTES,
+                    onSuccess: (compressed) =>
+                        setFile({
+                            name: compressed.name,
+                            uri: compressed.uri,
+                            mimeType: compressed.mimeType,
+                        }),
                 });
             }
         } catch {
@@ -84,22 +88,24 @@ const Page = () => {
             const result = await ImagePicker.launchCameraAsync({
                 mediaTypes: ['videos'],
                 allowsEditing: false,
-                videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low,
-                videoMaxDuration: 180,
+                videoQuality: ImagePicker.UIImagePickerControllerQualityType.High,
+                videoMaxDuration: MAX_VIDEO_DURATION_SECONDS,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
-                if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE_BYTES) {
-                    Alert.alert(
-                        "Archivo muy pesado",
-                        `El video grabado (${(asset.fileSize / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB. Intenta grabar un video más corto.`
-                    );
-                    return;
-                }
-                setFile({
-                    name: asset.fileName ?? `video_${Date.now()}.mp4`,
+                await compressVideo({
                     uri: asset.uri,
-                    mimeType: asset.mimeType ?? "video/mp4",
+                    fileName: asset.fileName ?? `video_${Date.now()}.mp4`,
+                    fileSize: asset.fileSize,
+                    durationMs: asset.duration,
+                    maxBytes: DOCUMENT_MAX_BYTES,
+                    maxDurationSeconds: MAX_VIDEO_DURATION_SECONDS,
+                    onSuccess: (compressed) =>
+                        setFile({
+                            name: compressed.name,
+                            uri: compressed.uri,
+                            mimeType: compressed.mimeType,
+                        }),
                 });
             }
         } catch {
@@ -110,67 +116,105 @@ const Page = () => {
     const chooseFromGallery = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ['images', 'videos'],
+                mediaTypes: ['images'],
                 allowsEditing: false,
-                quality: 0.7,
-                videoQuality: ImagePicker.UIImagePickerControllerQualityType.Low,
+                quality: 1,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
-                if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE_BYTES) {
-                    Alert.alert(
-                        "Archivo muy pesado",
-                        `El archivo seleccionado (${(asset.fileSize / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 10 MB.`
-                    );
-                    return;
-                }
-                const isVideoAsset = asset.type === "video" || asset.mimeType?.startsWith("video/");
-                const defaultName = isVideoAsset ? `video_${Date.now()}.mp4` : `imagen_${Date.now()}.jpg`;
-                const defaultMime = isVideoAsset ? "video/mp4" : "image/jpeg";
-
-                setFile({
-                    name: asset.fileName ?? defaultName,
+                await compressImage({
                     uri: asset.uri,
-                    mimeType: asset.mimeType ?? defaultMime,
+                    fileName: asset.fileName ?? `imagen_${Date.now()}.jpg`,
+                    fileSize: asset.fileSize,
+                    maxBytes: DOCUMENT_MAX_BYTES,
+                    onSuccess: (compressed) =>
+                        setFile({
+                            name: compressed.name,
+                            uri: compressed.uri,
+                            mimeType: compressed.mimeType,
+                        }),
                 });
             }
         } catch {
-            Alert.alert("Error", "No se pudo seleccionar el archivo de la galería.");
+            Alert.alert("Error", "No se pudo seleccionar la imagen de la galería.");
         }
     };
 
-    const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; 
+    const chooseVideoFromGallery = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: ["video/*"],
+                copyToCacheDirectory: false,
+            });
+            if (!result.canceled && result.assets?.[0]) {
+                const asset = result.assets[0];
+                await compressVideo({
+                    uri: asset.uri,
+                    fileName: asset.name ?? `video_${Date.now()}.mp4`,
+                    fileSize: asset.size,
+                    maxBytes: DOCUMENT_MAX_BYTES,
+                    maxDurationSeconds: MAX_VIDEO_DURATION_SECONDS,
+                    onSuccess: (compressed) =>
+                        setFile({
+                            name: compressed.name,
+                            uri: compressed.uri,
+                            mimeType: compressed.mimeType,
+                        }),
+                });
+            }
+        } catch {
+            Alert.alert("Error", "No se pudo seleccionar el video.");
+        }
+    };
 
     const pickDocument = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: ["application/pdf", "image/*", "video/*"],
-                copyToCacheDirectory: true,
+                copyToCacheDirectory: false,
             });
             if (!result.canceled && result.assets?.[0]) {
                 const asset = result.assets[0];
+                const lowerName = asset.name.toLowerCase();
+                const isPdf = asset.mimeType === "application/pdf" || lowerName.endsWith(".pdf");
+                const isVideo =
+                    asset.mimeType?.startsWith("video/") ||
+                    /\.(mp4|mov|webm|m4v|3gp|mkv)$/.test(lowerName);
 
-                if (asset.size && asset.size > MAX_FILE_SIZE_BYTES) {
-                    Alert.alert(
-                        "Archivo muy pesado",
-                        `El archivo seleccionado (${(asset.size / (1024 * 1024)).toFixed(1)} MB) supera el límite máximo permitido de 50 MB. Por favor selecciona o comprime el archivo.`
-                    );
-                    return;
+                const applyProcessed = (processed: { name: string; uri: string; mimeType: string }) => {
+                    setFile({
+                        name: processed.name,
+                        uri: processed.uri,
+                        mimeType: processed.mimeType,
+                    });
+                };
+
+                if (isPdf) {
+                    await validatePdf({
+                        uri: asset.uri,
+                        fileName: asset.name,
+                        fileSize: asset.size,
+                        maxBytes: DOCUMENT_MAX_BYTES,
+                        onSuccess: applyProcessed,
+                    });
+                } else if (isVideo) {
+                    await compressVideo({
+                        uri: asset.uri,
+                        fileName: asset.name,
+                        fileSize: asset.size,
+                        maxBytes: DOCUMENT_MAX_BYTES,
+                        maxDurationSeconds: MAX_VIDEO_DURATION_SECONDS,
+                        onSuccess: applyProcessed,
+                    });
+                } else {
+                    await compressImage({
+                        uri: asset.uri,
+                        fileName: asset.name,
+                        fileSize: asset.size,
+                        maxBytes: DOCUMENT_MAX_BYTES,
+                        onSuccess: applyProcessed,
+                    });
                 }
-
-                let detectedMime = asset.mimeType;
-                if (!detectedMime) {
-                    const lowerName = asset.name.toLowerCase();
-                    if (lowerName.endsWith(".pdf")) detectedMime = "application/pdf";
-                    else if (/\.(mp4|mov|webm|m4v|3gp|mkv)$/.test(lowerName)) detectedMime = "video/mp4";
-                    else detectedMime = "image/jpeg";
-                }
-
-                setFile({
-                    name: asset.name,
-                    uri: asset.uri,
-                    mimeType: detectedMime,
-                });
             }
         } catch {
             Alert.alert("Error", "No se pudo seleccionar el documento.");
@@ -275,13 +319,26 @@ const Page = () => {
                             Archivo
                         </Text>
 
-                        {file ? (
+                        {isCompressing ? (
+                            <View
+                                key="doc-compressing"
+                                className="bg-primary/5 border border-primary/20 rounded-2xl p-5 items-center justify-center gap-2"
+                            >
+                                <ActivityIndicator size="small" color="#61b346" />
+                                <Text className="text-gray-700 font-bold text-sm">
+                                    {progress > 0 && progress < 100
+                                        ? `Comprimiendo archivo... ${progress}%`
+                                        : "Procesando y comprimiendo archivo..."}
+                                </Text>
+                            </View>
+                        ) : file ? (
                             <LocalFilePreviewer
+                                key="doc-preview"
                                 file={file}
                                 onRemove={() => setFile(null)}
                             />
                         ) : (
-                            <View className="flex-row gap-3">
+                            <View key="doc-actions" className="flex-row gap-3">
                                 <TouchableOpacity
                                     onPress={() => photoSheetRef.current?.present()}
                                     className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 items-center gap-2 active:bg-gray-100 shadow-sm shadow-black/5"
@@ -315,7 +372,7 @@ const Page = () => {
 
                     <TouchableOpacity
                         onPress={handleSubmit}
-                        disabled={isLoading}
+                        disabled={isLoading || isCompressing}
                         className="bg-primary rounded-2xl py-4 flex-row items-center justify-center gap-2 shadow-lg shadow-primary/30 active:opacity-90"
                         accessibilityRole="button"
                         accessibilityLabel="Subir documento"
@@ -353,7 +410,7 @@ const Page = () => {
                     },
                     {
                         label: "Grabar Video",
-                        subtitle: "Graba un video corto (hasta 3 min)",
+                        subtitle: "Graba un video corto (hasta 5 min)",
                         icon: "bxs-video-plus",
                         color: "#dc2626",
                         iconBgColor: "bg-red-100",
@@ -371,15 +428,26 @@ const Page = () => {
                 subtitle="Selecciona el origen del archivo"
                 options={[
                     {
-                        label: "Elegir de la Galería",
-                        subtitle: "Selecciona fotos o videos guardados",
+                        label: "Elegir Foto de la Galería",
+                        subtitle: "Selecciona una imagen guardada",
                         icon: "bxs-image",
                         color: "#6366f1",
                         iconBgColor: "bg-indigo-100",
-                        badge: "Fotos y Videos",
+                        badge: "Fotos",
                         badgeBgColor: "bg-indigo-100",
                         badgeTextColor: "text-indigo-700",
                         onPress: chooseFromGallery,
+                    },
+                    {
+                        label: "Elegir Video",
+                        subtitle: "Selecciona un video (máx. 5 min)",
+                        icon: "bxs-video",
+                        color: "#dc2626",
+                        iconBgColor: "bg-red-100",
+                        badge: "Video",
+                        badgeBgColor: "bg-red-100",
+                        badgeTextColor: "text-red-700",
+                        onPress: chooseVideoFromGallery,
                     },
                     {
                         label: "Subir Archivo",

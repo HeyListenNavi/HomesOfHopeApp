@@ -63,7 +63,8 @@
       "expo-status-bar",
       "expo-asset",
       "@config-plugins/react-native-blob-util",
-      "@config-plugins/react-native-pdf"
+      "@config-plugins/react-native-pdf",
+      "react-native-compressor"
     ],
     "extra": {
       "router": {},

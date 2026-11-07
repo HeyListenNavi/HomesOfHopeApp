@@ -1,10 +1,13 @@
 import { deleteFile } from '@/lib/utils';
+import { EVIDENCE_MAX_BYTES } from '@/lib/mediaCompression';
+import { useFileCompression } from '@/hooks/useFileCompression';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Alert, Linking } from 'react-native';
 
 export const usePictures = () => {
     const [pictures, setPictures] = useState<string[]>([]);
+    const { compressImage, isCompressing } = useFileCompression();
 
     const pickPicture = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -18,16 +21,22 @@ export const usePictures = () => {
             return;
         }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsMultipleSelection: true,
-            quality: 0.7,
+            quality: 1,
         });
 
         if (!result.canceled) {
-            result.assets.forEach((asset) => {
-                setPictures((prev) => [...prev, asset.uri]);
-            });
+            for (const asset of result.assets) {
+                await compressImage({
+                    uri: asset.uri,
+                    fileName: asset.fileName,
+                    fileSize: asset.fileSize,
+                    maxBytes: EVIDENCE_MAX_BYTES,
+                    onSuccess: (compressed) => setPictures((prev) => [...prev, compressed.uri]),
+                });
+            }
         }
     };
 
@@ -43,16 +52,22 @@ export const usePictures = () => {
             return;
         }
 
-        let result = await ImagePicker.launchCameraAsync({
+        const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
-            quality: 0.7,
+            quality: 1,
         });
 
         if (!result.canceled) {
-            result.assets.forEach((asset) => {
-                setPictures((prev) => [...prev, asset.uri]);
-            });
+            for (const asset of result.assets) {
+                await compressImage({
+                    uri: asset.uri,
+                    fileName: asset.fileName,
+                    fileSize: asset.fileSize,
+                    maxBytes: EVIDENCE_MAX_BYTES,
+                    onSuccess: (compressed) => setPictures((prev) => [...prev, compressed.uri]),
+                });
+            }
         }
     };
 
@@ -61,11 +76,11 @@ export const usePictures = () => {
         setPictures((prev) => prev.filter((p) => p !== uri));
     };
 
-
     return {
         pickPicture,
         pictures,
         takePicture,
         removePicture,
+        isCompressing,
     };
 };

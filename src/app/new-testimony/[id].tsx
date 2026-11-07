@@ -7,6 +7,8 @@ import TimePickerInput from "@/components/TimePickerInput";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import * as DocumentPicker from "expo-document-picker";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
+import { useFileCompression } from "@/hooks/useFileCompression";
+import { MAX_AUDIO_DURATION_SECONDS, TESTIMONY_MAX_BYTES } from "@/lib/mediaCompression";
 import { useScreenTopPadding } from "@/lib/layout";
 import { toLocalDateString, toLocalTimeString, combineDateAndTime } from "@/lib/utils";
 import AudioPlayer from "@/components/AudioPlayer";
@@ -23,6 +25,7 @@ const Page = () => {
     const storeTestimony = useTestimonyStore();
 
     const audio = useVoiceRecorder();
+    const { compressAudio, isCompressing } = useFileCompression();
     const [recordedDate, setRecordedDate] = useState(toLocalDateString);
     const [recordedTime, setRecordedTime] = useState(toLocalTimeString);
     const [pickedFileName, setPickedFileName] = useState<string | null>(null);
@@ -32,13 +35,23 @@ const Page = () => {
     const pickAudio = async () => {
         const result = await DocumentPicker.getDocumentAsync({
             type: ["audio/mpeg", "audio/wav", "audio/mp4", "audio/m4a", "audio/*"],
-            copyToCacheDirectory: true,
+            copyToCacheDirectory: false,
         });
         if (!result.canceled && result.assets?.[0]) {
             const asset = result.assets[0];
-            setPickedFileName(asset.name);
-            setPickedMimeType(asset.mimeType ?? "audio/mpeg");
-            audio.setRecordedUri(asset.uri);
+            await compressAudio({
+                uri: asset.uri,
+                fileName: asset.name,
+                mimeType: asset.mimeType,
+                fileSize: asset.size,
+                maxBytes: TESTIMONY_MAX_BYTES,
+                maxDurationSeconds: MAX_AUDIO_DURATION_SECONDS,
+                onSuccess: (processed) => {
+                    setPickedFileName(processed.name);
+                    setPickedMimeType(processed.mimeType);
+                    audio.setRecordedUri(processed.uri);
+                },
+            });
         }
     };
 
@@ -75,7 +88,7 @@ const Page = () => {
                 else if (lower.endsWith(".wav")) mimeType = "audio/wav";
                 else if (lower.endsWith(".mp4")) mimeType = "audio/mp4";
                 else if (lower.endsWith(".aac")) mimeType = "audio/aac";
-                else mimeType = "audio/m4a";
+                else mimeType = "audio/mp4";
             }
 
             await storeTestimony.mutateAsync({
@@ -128,11 +141,24 @@ const Page = () => {
 
                     <View className="gap-2">
                         <Text className="text-sm font-medium text-gray-500">
-                            Audio
+                            Audio (máx. 15 min)
                         </Text>
 
-                        {audio.isRecording ? (
-                            <View className="bg-red-50 rounded-2xl p-4 gap-3 border border-red-100">
+                        {isCompressing ? (
+                            <View
+                                key="testimony-compressing"
+                                className="bg-primary/5 border border-primary/20 rounded-2xl p-5 items-center justify-center gap-2"
+                            >
+                                <ActivityIndicator size="small" color="#61b346" />
+                                <Text className="text-gray-700 font-bold text-sm">
+                                    Procesando y comprimiendo audio...
+                                </Text>
+                            </View>
+                        ) : audio.isRecording ? (
+                            <View
+                                key="testimony-recording"
+                                className="bg-red-50 rounded-2xl p-4 gap-3 border border-red-100"
+                            >
                                 <View className="flex-row items-center justify-center gap-3">
                                     <ActivityIndicator color="#ef4444" />
                                     <Text className="text-red-600 font-bold text-base">
@@ -149,11 +175,13 @@ const Page = () => {
                             </View>
                         ) : audio.recordedUri ? (
                             <AudioPlayer
+                                key="testimony-preview"
                                 uri={audio.recordedUri}
                                 onDiscard={handleDiscard}
+                                maxDurationSeconds={MAX_AUDIO_DURATION_SECONDS}
                             />
                         ) : (
-                            <View className="gap-3">
+                            <View key="testimony-actions" className="gap-3">
                                 <TouchableOpacity
                                     onPress={audio.startRecording}
                                     className="bg-primary rounded-2xl px-4 py-4 flex-row items-center justify-center gap-2 shadow-md shadow-primary/30 active:opacity-90"
@@ -196,7 +224,7 @@ const Page = () => {
 
                     <TouchableOpacity
                         onPress={handleSubmit}
-                        disabled={isLoading}
+                        disabled={isLoading || isCompressing}
                         className="bg-primary rounded-2xl py-4 flex-row items-center justify-center gap-2 shadow-md shadow-primary/30 active:opacity-90"
                         accessibilityRole="button"
                         accessibilityLabel="Guardar testimonio"
