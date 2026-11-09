@@ -85,6 +85,7 @@ const Page = () => {
             if (!mimeType) {
                 const lower = fileName.toLowerCase();
                 if (lower.endsWith(".mp3")) mimeType = "audio/mpeg";
+                else if (lower.endsWith(".m4a")) mimeType = "audio/x-m4a";
                 else if (lower.endsWith(".wav")) mimeType = "audio/wav";
                 else if (lower.endsWith(".mp4")) mimeType = "audio/mp4";
                 else if (lower.endsWith(".aac")) mimeType = "audio/aac";
